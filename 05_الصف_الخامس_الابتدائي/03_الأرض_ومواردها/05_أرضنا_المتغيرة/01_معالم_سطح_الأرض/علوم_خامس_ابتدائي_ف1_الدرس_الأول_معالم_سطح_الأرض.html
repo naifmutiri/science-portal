@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – خامس ابتدائي – ف1 – معالم سطح الأرض</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#3E9A8A;--g-dark:#245F55;--g-light:#E9F5F2}
+.card{border-color:#B9DED6}
+.cover{background:linear-gradient(140deg,#245F55 0%,#3E9A8A 55%,#7CC2B6 100%)}
+.endS{background:linear-gradient(140deg,#245F55,#3E9A8A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>معالم سطح الأرض</h1><div class="rule"></div>
+<div class="meta">الصف الخامس الابتدائي<br>الوحدة الثالثة: الأرض ومواردها<br>الفصل الخامس: أرضنا المتغيرة — الدرس الأول</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ١٤٤</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الثالثة</h3><p>الأرض ومواردها</p></div><div class="card"><h3>الفصل الخامس</h3><p>أرضنا المتغيرة</p></div><div class="card"><h3>الدرس الأول</h3><p>معالم سطح الأرض</p></div></div><div class="box idea" style="font-size:33px;">السؤال الأساسي: كيف توصَف تضاريس الأرض؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:26px"><li>أُعرِّف التضاريس وأذكر أمثلة عليها.</li><li>أُصنِّف معالم اليابسة والمعالم المائية.</li><li>أَصِف أهمَّ معالم قاع المحيط.</li><li>أُبيِّن كيف توصَّل العلماء إلى معرفة قاع المحيط.</li><li>أُميِّز أغلفة الأرض: الجوي والمائي والحيوي.</li><li>أَصِف طبقات الأرض: القشرة والسِّتار واللُّب.</li><li>أُوضِّح الصفائح الأرضية وحركتها وأثرها.</li><li>أُوظِّف مهارة <b>التصنيف</b>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:32px;">البحر الأحمر يتَّسع بمعدل ٢ سم كلَّ سنة… فما الذي يجعله يتَّسع؟</div><p class="c">حركة <b>الصفائح الأرضية</b>. لنتعرَّف أولًا معالم سطح الأرض وأغلفتها.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>اليابسة والماء</h3><p>سطح الأرض فيه يابسة وماء.</p></div><div class="card center" style="text-align:center;"><h3>الصخور</h3><p>الجزء الصلب من سطح الأرض.</p></div><div class="card center" style="text-align:center;"><h3>البراكين والزلازل</h3><p>أحداث طبيعية تغيِّر سطح الأرض.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١٤٦</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(3,1fr)"><div class="card"><h3>التضاريس</h3><p style="font-size:25px">المعالم الطبيعية لسطح الأرض.</p></div><div class="card"><h3>الغلاف الجويُّ</h3><p style="font-size:25px">غطاء غازيٌّ يحيط بالأرض ويحوي جميع الغازات الموجودة على سطحها.</p></div><div class="card"><h3>الغلاف المائيُّ</h3><p style="font-size:25px">يشمل المياه في الحالتين الصلبة والسائلة.</p></div><div class="card"><h3>القشرة الأرضية</h3><p style="font-size:25px">الجزء الصخريُّ (الصلب) من سطح الأرض.</p></div><div class="card"><h3>السِّتار</h3><p style="font-size:25px">المنطقة التي تلي القشرة الأرضية.</p></div><div class="card"><h3>اللُّبُّ</h3><p style="font-size:25px">يقع أسفل الستار السفليِّ ويشكِّل الكتلة المركزية للأرض.</p></div><div class="card"><h3>اللُّبُّ الخارجيُّ</h3><p style="font-size:25px">نطاق خارجيٌّ سائل من اللُّب.</p></div><div class="card"><h3>اللُّبُّ الداخليُّ</h3><p style="font-size:25px">نطاق داخليٌّ صلب من اللُّب.</p></div><div class="card"><h3>الغلاف الحيويُّ</h3><p style="font-size:25px">جزء من الأرض تعيش فيه جميع المخلوقات الحيَّة.</p></div></div><div class="box note" style="font-size:28px;">مهارة القراءة في هذا الدرس: <b>التصنيف</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>ما معالم سطح الأرض؟</h2><span class="src">ص ١٤٥ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:30px;"><b>الهدف:</b> أتفحَّص معالمَ سطح الأرض وأصنِّفها.</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:1 1 0"><p class="c"><b>الخطوات:</b></p><ul class="list num" style="font-size:26px"><li><b>ألاحظ.</b> أنظر إلى الصور.</li><li>أعدُّ قائمةً بمعالم سطح الأرض الظاهرة في الصور.</li><li><b>أتواصل.</b> فيمَ تتشابه هذه المعالم، وفيمَ تختلف؟</li></ul></div><div style="flex:0 0 380px"><div class="box note" style="font-size:26px;"><b>صور النشاط من الكتاب:</b><br>شاطئ شمال ينبع &nbsp;·&nbsp; وادي حنيفة – الرياض<br>جبال طويق – الرياض &nbsp;·&nbsp; وادي لجب – جازان</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ١٤٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أصنِّف.</b> أتعرَّف المجموعات التي أستطيع من خلالها تصنيف هذه المعالم.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٥</span>إجابة نموذجية مقترحة: أصنِّفها إلى <b>معالم يابسة</b> (جبال طويق) و<b>معالم مائية</b> (شاطئ شمال ينبع). ويمكن تصنيفها أيضًا إلى: مرتفعات (الجبال) ومنخفضات (الأودية: وادي حنيفة ووادي لجب) ومناطق مستوية. وكذلك بحسب طريقة تشكُّلها: ما شكَّلته المياه الجارية (الأودية) وما شكَّلته حركة الصفائح (الجبال).</div></div><div class="qa"><p class="q">٥. <b>أستنتج.</b> ما العمليات التي نتج عنها واحد أو أكثر من المعالم التي حدَّدتها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٥</span>إجابة نموذجية مقترحة: <b>الأودية</b> نتجت عن جريان المياه وتعريتها للصخور والتربة عبر زمن طويل. و<b>الشاطئ</b> نتج عن التقاء اليابسة بالماء وعمل الأمواج في الصخور والرمال. و<b>الجبال</b> نتجت عن حركة الصفائح الأرضية وتقاربها.</div></div><div class="box ask" style="font-size:25px;"><b>أستكشف أكثر:</b> أجد صورًا لواد سحيق، وأتوقَّع ما يحدث للصخور عندما تتدفَّق عليها المياه فترةً طويلةً. أكوِّن فرضية حول دور المياه في تشكُّل الوادي. أصمِّم تجربة أختبر فيها فرضيَّتي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما معالم سطح الأرض؟</h2><span class="src">ص ١٤٦</span></div>
+<div class="body"><p class="c">ماذا ترى عندما تسافر عبر بلادنا الغالية أو إلى مناطق أخرى من العالم؟ إنك ترى الشواطئَ الرملية والشواطئَ الصخرية، وقد تشاهد تلالًا وهضابًا وجبالًا وصحاريَ ووديانًا. قد تسافر متنقلًا عبر البحار والأنهار والبحيرات.</p><div class="box idea" style="font-size:25px;">جميع هذه المعالم تشكِّل <b>التضاريس</b>، وهي المعالم الطبيعية لسطح الأرض. ولكلِّ واحد من هذه التضاريس خواصُّه التي تميِّزه، وتجعله يتشكَّل بطريقة مختلفة عن غيره.</div><div class="box note" style="font-size:23px;">وقد أشار القرآن الكريم إلى بعض هذه التضاريس باعتبارها شاهدًا على عظمة خالقها عزَّ وجلَّ. قال تعالى: ﴿أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا ۝ وَالْجِبَالَ أَوْتَادًا﴾ <span class="muted" style="font-size:23px">سورة النبأ: الآيتان ٦ – ٧</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>معالم اليابسة</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:26%">المَعْلَم</th><th>التعريف</th></tr><tr><td>الجبل</td><td>منطقة مرتفعة كثيرًا فوق سطح الأرض.</td></tr><tr><td>التلُّ</td><td>أقلُّ ارتفاعًا من الجبل، وأكثر استدارةً.</td></tr><tr><td>الوادي</td><td>منطقة منخفضة تمتدُّ بين جبلين أو تلَّين.</td></tr><tr><td>الخانق (الوادي السحيق)</td><td>واد ضيِّق، جوانبه عالية وشديدة الانحدار.</td></tr><tr><td>الجرف</td><td>الجانب الحادُّ الميل من الصخور أو التربة.</td></tr><tr><td>السهل</td><td>منطقة واسعة منبسطة.</td></tr><tr><td>الهضبة</td><td>منطقة منبسطة أكثر ارتفاعًا من الأراضي المحيطة.</td></tr><tr><td>الصحراء</td><td>أرض واسعة يندر هطول الأمطار عليها.</td></tr><tr><td>الشاطئ</td><td>أرض على امتداد حافة المسطحات المائيَّة.</td></tr><tr><td>الكثبان الرملية</td><td>كومة أو نتوء من الرمال.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>المعالم المائية</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:26%">المَعْلَم</th><th>التعريف</th></tr><tr><td>البحر أو المحيط</td><td>مساحة واسعة مغطَّاة بالمياه المالحة.</td></tr><tr><td>الساحل</td><td>خطٌّ تلتقي عنده اليابسة مع الماء.</td></tr><tr><td>النهر</td><td>مساحة طبيعية لجريان الماء وانتقاله.</td></tr><tr><td>الرافد</td><td>نهر صغير أو جدول ماء يصبُّ في نهر كبير.</td></tr><tr><td>الشلَّال</td><td>تيار من المياه الطبيعية يسقط من مكان مرتفع.</td></tr><tr><td>البُحَيْرة</td><td>مساحة من المياه تحيط بها الأراضي اليابسة.</td></tr><tr><td>المصبُّ</td><td>مُلتقَى مياه النهر ومياه المحيطات أو البحار.</td></tr><tr><td>الدلتا</td><td>أرض لها شكل المثلث تتشكَّل عند مصبِّ النهر.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>يابسة أم مائية؟</h2><span class="src">ص ١٤٧</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأ اسم المَعْلَم، ثم أختار نوعه.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="land">معالم اليابسة</button><button class="simBtn ghost" type="button" data-k="water">المعالم المائية</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أصنِّف.</b> ما اسم المَعْلَم المُحاذي لحافَة البحر في الصُّورة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٧</span><b>الساحل</b>؛ وهو خطٌّ تلتقي عنده اليابسة مع الماء. ويظهر بجواره في الصورة <b>الجرف</b>، وهو الجانب الحادُّ الميل من الصخور أو التربة.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما المَعْلَم أو المعالم التي أراها بالقرب من المدينة التي أسكن فيها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٧</span>إجابة نموذجية مقترحة: يذكر الطالب معالم بيئته؛ ففي الرياض مثلًا: <b>جبال طويق</b> (هضبة وجبال) و<b>وادي حنيفة</b>. وفي ينبع: <b>الشاطئ</b> و<b>الساحل</b>. وفي جازان: <b>وادي لجب</b> (خانق) والجبال. وفي المناطق الصحراوية: <b>الكثبان الرملية</b> و<b>الصحراء</b>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما معالم قاع المحيط؟</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><p class="c">هل هناك تضاريس تشبهها تحت سطح مياه المحيطات والبحار؟ لو استطعتُ أن أغوص تحت سطح مياه المحيط فسوف أشاهد معالمَ تشبه الجبالَ والوديانَ والسهولَ.</p><div class="cards"><div class="card"><h3>الرَّصيف القاريُّ</h3><p style="font-size:25px">شريط يحاذي شواطئ القارة، وهو يميل ميلًا خفيفًا، ويمتدُّ من خطِّ الشاطئ حتى حافة المنحدر، حيث يصير الانحدار شديدًا.</p></div><div class="card"><h3>المنحدر القاريُّ</h3><p style="font-size:25px">يبدأ من حافة الرصيف، حيث يتزايد العمق سريعًا، ويتزايد انحدار السطح نحو قاع المحيط.</p></div><div class="card"><h3>المرتفع القاريُّ</h3><p style="font-size:25px">منطقة ذات ميل خفيف تلي المنحدرَ القاريَّ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>معالم أخرى في قاع المحيط</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الأخاديد البحرية</h3><p style="font-size:25px">أعمق مناطق قاع المحيط، تتميَّز بطولها الكبير وعرضها الضيِّق.</p></div><div class="card"><h3>ظهر المحيط</h3><p style="font-size:25px">سلسلة جبلية طويلة تحت الماء يخترقها بشكل طوليٍّ واد متصدِّع يكون على قمة هذه الجبال.</p></div><div class="card"><h3>سهول قاعية منبسطة</h3><p style="font-size:25px">سهول شاسعة تعدُّ أكثر مناطق قاع المحيط انبساطًا، وتشكِّل <b>٤/١٠</b> من مساحة قاعه.</p></div><div class="card"><h3>الجبال البحرية</h3><p style="font-size:25px">جبال ترتفع من قاع المحيط، من دون أن تعلوَ فوق سطح المياه. فإذا ارتفعت فوق سطح الماء سُمِّيت جزرًا بركانية.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="qa"><p class="q">ماذا نطلق على الجزء المستوي من قاع المحيط؟ <br><span class="muted" style="font-size:24px">إرشاد: أتتبَّع الخطَّ الذي يشير إلى المنطقة المستوية.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٨</span><b>سهول قاعية منبسطة</b>؛ وهي سهول شاسعة تعدُّ أكثر مناطق قاع المحيط انبساطًا، وتشكِّل ٤/١٠ من مساحة قاعه.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف عرف العلماء قاع المحيط؟</h2><span class="src">ص ١٤٩</span></div>
+<div class="body"><p class="c">توصَّل العلماء إلى معرفة شكل وتركيب معالم قاع المحيط باستعمال <b>غوَّاصات صغيرة</b> مزودة بآلات تصوير، وأدوات لقياس بيئة المحيط، وأذرع لجمع العينات. كما استفادوا من صور <b>الأقمار الاصطناعية</b>.</p><div class="box idea" style="font-size:27px;">وهم اليوم يستطيعون تحديد عمق أيِّ نقطة في أعماق المحيطات بدقة عن طريق جهاز <b>السَّبر الصوتيِّ</b> الذي يعمل وفق مبدأ الصوت والصَّدى.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>نمذجة قاع المحيط</h2><span class="src">ص ١٤٩ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:25px"><li>أضع الصلصال في قاع الوعاء، وأعيد تشكيله، بحيث يمثِّل تضاريس قاع المحيط. وكذلك يفعل زملائي بأوعية أخرى.</li><li>يغطِّي كلٌّ منَّا الوعاءَ بغطاء مثقَّب على مسافات متساوية مع ترقيم الثُّقوب.</li><li>أتبادل الأوعية مع أحد زملائي.</li><li><b>أقيس.</b> أُسقط الماصَّة البلاستيكية بلطف في ثقوب الغطاء، وأقيس المسافة التي غاصتها في كل مرة.</li><li><b>أفسِّر البيانات.</b> أستعمل نتائج قياساتي لأجد ارتفاع تضاريس النموذج، ثم أرسمها.</li><li>أنزع غطاء الوعاء، وأقارن نتائجي ورسمي مع تضاريس قاع المحيط.</li></ul><div class="box safe" style="font-size:25px;">أتعامل مع الماصَّة والوعاء بحذر، وأغسل يديَّ بعد التعامل مع الصلصال.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٤٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أصنِّف.</b> أيُّ معالم المحيط المرتفعة لا يصل إلى السطح؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٩</span><b>الجبال البحرية</b>؛ وهي جبال ترتفع من قاع المحيط من دون أن تعلوَ فوق سطح المياه. فإذا ارتفعت فوق سطح الماء سُمِّيت <b>جزرًا بركانية</b>.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> استعملت إحدى الغوَّاصات صدى الصوت لقياس عمق الماء في مناطق مختلفة. أيُّ تضاريس قاع المحيط يستغرق صدى الصوت فوقه زمنًا أطول للوصول إلى الغوَّاصة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٤٩</span><b>الأخاديد البحرية</b>؛ لأنها أعمق مناطق قاع المحيط، فتكون المسافة التي يقطعها الصوت ذهابًا وإيابًا أطول، فيستغرق الصدى زمنًا أطول للعودة. أما فوق الجبال البحرية أو الرصيف القاريِّ فالعمق أقلُّ والزمن أقصر.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما أغلفة الأرض؟</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الغلاف الجويُّ</h3><p style="font-size:25px">يحيط بالأرض غطاء غازيٌّ يسمَّى الغلاف الجويَّ، ويحوي جميع الغازات الموجودة على سطح الأرض.</p></div><div class="card"><h3>الغلاف المائيُّ</h3><p style="font-size:25px">يشمل المياه في الحالتين: الصلبة والسائلة، ومنها المحيطات والأنهار والبحيرات والجليديات. ويغطِّي الماء حوالَي <b>٧/١٠</b> من سطح الأرض.</p></div><div class="card"><h3>الغلاف الحيويُّ</h3><p style="font-size:25px">جزء من الأرض تعيش فيه جميع المخلوقات الحيَّة، ويمتدُّ من الجزء السُّفليِّ للغلاف الجويِّ وحتى قاع المحيط.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>طبقات الأرض</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><p class="c">يسمَّى الجزء الصخريُّ (الصلب) من سطح الأرض <b>القشرةَ الأرضيةَ</b>، ويتضمَّن القارات وقيعان المحيطات. أمَّا المنطقة التي تلي القشرة الأرضية فتسمَّى <b>السِّتارَ</b>.</p><div class="map"><div class="node">طبقات الأرض من الخارج إلى الداخل</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">القشرة الأرضية</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">القارات وقيعان المحيطات</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">السِّتار</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">الستار العلويُّ</span><span class="node leaf">الستار السفليُّ</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">اللُّبُّ</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">اللُّبُّ الخارجيُّ: نطاق سائل</span><span class="node leaf">اللُّبُّ الداخليُّ: نطاق صلب</span></div></div></div></div><div class="box note" style="font-size:29px;"><b>حقيقة:</b> يتكوَّن لُبُّ الأرض من صخور صلبة وسائلة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أصنِّف.</b> هل مادة الغلاف الصخريِّ صلبةٌ أم سائلةٌ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٠</span><b>صلبة</b>؛ فالغلاف الصخريُّ للأرض يتكوَّن من القشرة الأرضية وجزء من الستار العلويِّ، وهو صلب. أما الطبقة التي تليه فهي <b>الغلاف المائع</b> المكوَّن من الصخور المنصهرة.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما طبقات الأرض التي تشكِّل الغلاف الحيويَّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٠</span>الغلاف الحيويُّ يمتدُّ من <b>الجزء السُّفليِّ للغلاف الجويِّ</b> وحتى <b>قاع المحيط</b>. فهو يشمل الجزء الأسفل من الغلاف الجويِّ، والغلاف المائيَّ كلَّه، والجزء السطحيَّ من القشرة الأرضية (التربة وسطح الصخور) حيث تعيش المخلوقات الحيَّة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الصَّفائح الأرضية؟</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><p class="c">يتكوَّن الغلاف الصخريُّ للأرض من القشرة الأرضية وجزء من الستار العلويِّ. يلي هذا الغلافَ الصخريَّ طبقةٌ من الصخور المنصهرة أُطلق عليها <b>الغلاف المائع</b>، وهو يتكوَّن من الستار السفليِّ وبقية الستار العلويِّ.</p><div class="box idea" style="font-size:26px;">ينقسم الغلاف الصخريُّ الصلب إلى ألواح ضخمة تسمَّى <b>صفائحَ</b>. وقد أطلق العلماء اسم <b>الصَّدع</b> على الحدِّ الذي يفصل الصفيحتين إحداهما عن الأخرى.</div><p class="c">تطفو الصفائح فوق الغلاف المائع. ولأنَّ الغلاف المائع يتكوَّن من موادَّ منصهرة تسمَّى <b>الصهارة (الماجما)</b> فإنَّه يشكِّل سطحًا لزجًا يتيح للصفائح الانزلاق فوقه.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>حركة الصفائح</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><p class="c">فإذا اندفعت الصهارة بين صفيحتين فإنَّهما تنزلقان مبتعدةً إحداهُما عن الأخرى. وتأخذ منطقة الصدع في الاتساع لتتشكَّل عبر ملايين السنين محيطًا صغيرًا يستمرُّ في الاتساع مع الزمن.</p><p class="c">أمَّا في الجهة الثانية فتقترب الصفيحة المنزلقة من صفائحَ أخرى، وقد تنثني لتشكِّلَ مناطقَ جبليةً.</p><div class="map"><div class="node">حركة الصفائح وتكوُّن المحيطات والجبال</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">١</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">اندفاع الصهارة بين الصفيحتين</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">٢</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">تباعد الصفيحتين وتكوُّن المحيط</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">٣</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">تندفع الصهارة بين الصفائح</span><span class="node leaf">فتتسع المحيطات وتتكون الجبال</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الصفيحة العربية</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><div class="box idea" style="font-size:25px;">وتعدُّ شبه الجزيرة العربية مثالًا على إحدى الصفائح التي تتحرَّك نحو الشمال الشرقيِّ، فيتَّسع البحر الأحمر تدريجيًّا بمعدل <b>٢ سم كلَّ سنة</b>، وفي الوقت نفسه تتكوَّن السَّلاسل الجبلية في الجهة الشَّمالية الشَّرقية من الصَّفيحة.</div><div class="box note" style="font-size:24px;"><b>إثراء:</b> يمكنك الرجوع للمتحف الوطني الافتراضي للاطلاع على: الصفيحة العربية. <span class="muted" style="font-size:23px">(ورد في الكتاب رمز استجابة سريعة QR؛ ولا يعمل هذا العرض بالإنترنت، فيُرجع إليه من الكتاب.)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أصنِّف.</b> أيُّ معالم سطح الأرض ينتج عن التقارب بين صفيحتين؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥١</span><b>المناطق الجبلية (السلاسل الجبلية)</b>؛ فعندما تقترب الصفيحة المنزلقة من صفائح أخرى قد تنثني لتشكِّلَ مناطقَ جبليةً — كما تتكوَّن السلاسل الجبلية في الجهة الشمالية الشرقية من الصفيحة العربية.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> كيف تحرِّك الصهارةُ الصفائحَ الأرضية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥١</span>الصهارة (الماجما) موادُّ منصهرة يتكوَّن منها <b>الغلاف المائع</b>، فيشكِّل سطحًا لزجًا تطفو فوقه الصفائح ويتيح لها الانزلاق. وعندما تندفع الصهارة بين صفيحتين تدفعهما فتنزلقان مبتعدةً إحداهما عن الأخرى، فتتَّسع منطقة الصدع، وفي الجهة المقابلة تقترب الصفيحة من صفائح أخرى.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">تحتوي الأرض على <b>الغلاف الجويِّ، والغلاف المائيِّ، والقشرة، والستار، واللُّبِّ</b>.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px">تغطِّي <b>معالم الأرض</b> كلًّا من سطحها وقاع المحيط.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px"><b>حركة الصفائح الأرضية</b> تفسِّر تشكيل تكوُّن المحيطات والجبال.</p></div></div><div class="box note" style="font-size:25px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمته عن معالم سطح الأرض: (معالم سطح الأرض · معالم قاع المحيط · أغلفة الأرض · حركة الصفائح الأرضية).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">معالم سطح الأرض</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">معالم اليابسة</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">جبل · تلٌّ · وادٍ · خانق</span><span class="node leaf">جرف · سهل · هضبة</span><span class="node leaf">صحراء · شاطئ · كثبان</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">المعالم المائية</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">بحر · ساحل · نهر · رافد</span><span class="node leaf">شلَّال · بحيرة · مصبٌّ · دلتا</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">معالم قاع المحيط</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">رصيف ومنحدر ومرتفع قاريٌّ</span><span class="node leaf">أخاديد · ظهر المحيط</span><span class="node leaf">سهول قاعية · جبال بحرية</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">أغلفة الأرض وطبقاتها</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">جويٌّ · مائيٌّ · حيويٌّ</span><span class="node leaf">قشرة · ستار · لُبٌّ</span><span class="node leaf">الصفائح الأرضية</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكر وأتحدَّث وأكتب</h2><span class="src">ص ١٥٢ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> الجبال والوديان والصَّحاري والأنهار أمثلة على …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span><b>التضاريس</b>؛ وهي المعالم الطبيعية لسطح الأرض.</div></div><div class="qa"><p class="q">٢. <b>أصنِّف.</b> أيُّ أجزاء الأرض صخور صلبةٌ، وأيُّها سائلةٌ أو شبه منصهرةٍ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span><b>صلبة:</b> القشرة الأرضية، والغلاف الصخريُّ (القشرة وجزء من الستار العلويِّ)، واللُّبُّ الداخليُّ.<br><b>سائلة أو شبه منصهرة:</b> الغلاف المائع (الصهارة/الماجما) المكوَّن من الستار السفليِّ وبقية الستار العلويِّ، واللُّبُّ الخارجيُّ.</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> ما طبقات الأرض التي يوجد بها النفط والمعادن النفيسة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span>توجد في <b>القشرة الأرضية</b> — الجزء الصخريِّ الصلب من سطح الأرض الذي يتضمَّن القارات وقيعان المحيطات — وفي الجزء الأعلى منها. فهي الطبقة التي يمكن للإنسان الوصول إليها بالحفر والتنقيب.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ١٥٢ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> ما السهول القاعية المنبسطة؟<br>أ. جبال تحت بحرية. &nbsp;&nbsp; ب. واد منحدر الجوانب.<br>جـ. منحدر مغطًّى بمياه ضحلة. &nbsp;&nbsp; د. منطقة مسطَّحة واسعة في قاع المحيط.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span><b>د - منطقة مسطَّحة واسعة في قاع المحيط</b>؛ فالسهول القاعية المنبسطة سهول شاسعة تعدُّ أكثر مناطق قاع المحيط انبساطًا وتشكِّل ٤/١٠ من مساحة قاعه.</div></div><div class="qa"><p class="q">٥. <b>السؤال الأساسي.</b> كيف توصَف تضاريس الأرض؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span>توصَف بأنها <b>المعالم الطبيعية لسطح الأرض</b>، ولكلٍّ منها خواصُّ تميِّزه وطريقة تشكُّل مختلفة. وتصنَّف إلى: <b>معالم يابسة</b> (جبل، تلٌّ، وادٍ، خانق، جرف، سهل، هضبة، صحراء، شاطئ، كثبان)، و<b>معالم مائية</b> (بحر، ساحل، نهر، رافد، شلَّال، بحيرة، مصبٌّ، دلتا)، و<b>معالم قاع المحيط</b> (الرصيف والمنحدر والمرتفع القاريُّ، والأخاديد، وظهر المحيط، والسهول القاعية، والجبال البحرية). وتفسِّر <b>حركة الصفائح الأرضية</b> تكوُّن المحيطات والجبال.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والكتابة · العلوم والفن</h2><span class="src">ص ١٥٢ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والكتابة — الأخدود العميق.</b> أبحث في الموسوعات وفي الإنترنت أو أيِّ مصادر أخرى علمية موثوقة عن مَعْلَم متميِّز من معالم سطح الأرض في بلدي (الأخدود العميق في نجران مثلًا)، وأكتب تقريرًا عنه. أضمِّن التقرير وصفًا لهذا المَعْلَم، وموقعه، وأبيِّن أهميته.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span>إجابة نموذجية مقترحة: هذا سؤال بحثيٌّ يرجع فيه الطالب إلى مصادر موثوقة. ويرتبط بالدرس في أن الأخدود العميق نوع من <b>الخانق (الوادي السحيق)</b>؛ وهو واد ضيِّق جوانبه عالية وشديدة الانحدار، ويتشكَّل بفعل جريان المياه وتعريتها للصخور عبر زمن طويل. ويُذكر موقعه وأهميته السياحية والبيئية. <span class="muted">(تفاصيله ليست واردة في صفحات الدرس؛ فلا تُنسب إلى الكتاب.)</span></div></div><div class="qa"><p class="q"><b>العلوم والفن — لوحة فنية.</b> أرسم لوحةً أضمِّنها بعض معالم سطح الأرض أو قاع المحيط، أو كليهما. أستعمل الخطوط والألوان لبيان خصائص هذه المعالم، وتباينها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٢</span>إجابة نموذجية مقترحة: أرسم مقطعًا يجمع الجانبين: على اليمين اليابسة (جبل، تلٌّ، هضبة، وادٍ، صحراء وكثبان)، ثم الشاطئ والساحل، ثم تحت الماء (الرصيف القاريُّ، المنحدر القاريُّ، المرتفع القاريُّ، السهول القاعية المنبسطة، الأخدود، ظهر المحيط، جبل بحريٌّ وجزيرة بركانية). وأستعمل تدرُّجات البنيِّ لليابسة والأزرق للماء، وأكتب اسم كل مَعْلَم عليه.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">المعالم الطبيعية لسطح الأرض تسمَّى:</p><div class="opts"><button class="opt" type="button">الأغلفة</button><button class="opt" type="button">التضاريس</button><button class="opt" type="button">الصفائح</button><button class="opt" type="button">الصهارة</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">منطقة منبسطة أكثر ارتفاعًا من الأراضي المحيطة:</p><div class="opts"><button class="opt" type="button">السهل</button><button class="opt" type="button">الهضبة</button><button class="opt" type="button">الوادي</button><button class="opt" type="button">الجرف</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">أرض لها شكل المثلث تتشكَّل عند مصبِّ النهر:</p><div class="opts"><button class="opt" type="button">الدلتا</button><button class="opt" type="button">الرافد</button><button class="opt" type="button">البحيرة</button><button class="opt" type="button">الشلَّال</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">أعمق مناطق قاع المحيط هي:</p><div class="opts"><button class="opt" type="button">السهول القاعية</button><button class="opt" type="button">الأخاديد البحرية</button><button class="opt" type="button">الرصيف القاريُّ</button><button class="opt" type="button">ظهر المحيط</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الجزء الصخريُّ الصلب من سطح الأرض يسمَّى:</p><div class="opts"><button class="opt" type="button">الستار</button><button class="opt" type="button">القشرة الأرضية</button><button class="opt" type="button">اللُّبَّ</button><button class="opt" type="button">الغلاف المائع</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">يتَّسع البحر الأحمر بمعدل:</p><div class="opts"><button class="opt" type="button">٢ ملم كل سنة</button><button class="opt" type="button">٢ سم كل سنة</button><button class="opt" type="button">٢ م كل سنة</button><button class="opt" type="button">٢ كم كل سنة</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أذكر ثلاثة من معالم اليابسة وثلاثة من المعالم المائية.</li><li>أُرتِّب طبقات الأرض من الخارج إلى الداخل.</li><li>لماذا يتَّسع البحر الأحمر سنةً بعد سنة؟</li></ul><div class="box idea" style="font-size:27px;">الفكرة الرئيسة: تضاريس الأرض معالم طبيعية على اليابسة وفي الماء وقاع المحيط، وتفسِّر حركة الصفائح تكوُّن المحيطات والجبال.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: معالمُ سطح الأرض</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="470" viewBox="0 0 1360 470" xmlns="http://www.w3.org/2000/svg" role="img" id="g5l9SvgHost"><defs><linearGradient id="g5l9sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDE7F7"/><stop offset="1" stop-color="#EFF8FD"/></linearGradient></defs><rect x="0" y="0" width="1360" height="300" fill="url(#g5l9sk)"/><rect x="0" y="300" width="1360" height="170" fill="#8FAE63"/><polygon points="60,300 230,100 400,300" fill="#7E8E97"/><polygon points="230,100 400,300 270,300" fill="#A9B7BE" opacity=".55"/><polygon points="230,100 204,140 256,140" fill="#FFFFFF" opacity=".92"/><polygon points="260,300 390,160 520,300" fill="#8C9AA2"/><polygon points="390,160 520,300 421,300" fill="#B3BEC4" opacity=".55"/><path d="M520 300 q 90 -46 180 0 q 90 46 180 0 l 0 40 q -90 46 -180 0 q -90 -46 -180 0z" fill="#A8C47E"/><rect x="900" y="300" width="460" height="170" fill="#2E7BA6"/><path d="M900 316 q 26 -12 52 0 t 52 0 t 52 0 t 52 0 t 52 0 t 52 0 t 52 0 t 52 0" stroke="#8FC7E4" stroke-width="5" fill="none"/><path d="M470 470 L560 300 L640 300 L720 470z" fill="#C9B78E"/><path d="M498 470 L578 320 L622 320 L692 470z" fill="#3E93C4" opacity=".85"/><ellipse cx="1000" cy="392" rx="70" ry="24" fill="#E5CE9B"/><g transform="translate(830,300) scale(0.70)"><rect x="-9" y="-64" width="18" height="66" rx="6" fill="#8A5A2B"/><ellipse cx="0" cy="-84" rx="56" ry="42" fill="#3B7D2A"/><ellipse cx="-24" cy="-70" rx="34" ry="26" fill="#59A03B"/><ellipse cx="26" cy="-72" rx="32" ry="25" fill="#59A03B"/></g><g transform="translate(880,300) scale(0.55)"><rect x="-9" y="-64" width="18" height="66" rx="6" fill="#8A5A2B"/><ellipse cx="0" cy="-84" rx="56" ry="42" fill="#3B7D2A"/><ellipse cx="-24" cy="-70" rx="34" ry="26" fill="#59A03B"/><ellipse cx="26" cy="-72" rx="32" ry="25" fill="#59A03B"/></g><g class="eHot" data-k="mountain"><path d="M190 112 L200 176" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="200" cy="176" r="6.5" fill="#8A97A0"/><g><text x="190" y="120" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">جبال</text><text x="190" y="120" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">جبال</text></g><rect class="hitBox" x="90" y="86" width="200" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="valley"><path d="M500 84 L596 322" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="596" cy="322" r="6.5" fill="#8A97A0"/><g><text x="500" y="92" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">وادٍ</text><text x="500" y="92" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">وادٍ</text></g><rect class="hitBox" x="400" y="58" width="200" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="plain"><path d="M820 84 L780 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="780" cy="300" r="6.5" fill="#8A97A0"/><g><text x="820" y="92" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">سهل</text><text x="820" y="92" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">سهل</text></g><rect class="hitBox" x="720" y="58" width="200" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="river"><path d="M470 412 L590 400" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="590" cy="400" r="6.5" fill="#8A97A0"/><g><text x="470" y="420" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">نهر</text><text x="470" y="420" font-size="26" fill="#0E4B67" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">نهر</text></g><rect class="hitBox" x="380" y="386" width="180" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="sea"><path d="M1180 122 L1120 340" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1120" cy="340" r="6.5" fill="#8A97A0"/><g><text x="1180" y="130" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">بحر</text><text x="1180" y="130" font-size="26" fill="#12557A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">بحر</text></g><rect class="hitBox" x="1090" y="96" width="180" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="beach"><path d="M1000 444 L1000 392" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1000" cy="392" r="6.5" fill="#8A97A0"/><g><text x="1000" y="452" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">شاطئ</text><text x="1000" y="452" font-size="26" fill="#0E4B67" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">شاطئ</text></g><rect class="hitBox" x="900" y="418" width="200" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">معالمُ سطح الأرض من حولنا.</div></div><div class="eSteps" id="g5l9Pills"><span class="eStepPill" data-s="0">الجبال</span><span class="eStepPill" data-s="1">الوادي</span><span class="eStepPill" data-s="2">السهل</span><span class="eStepPill" data-s="3">النهر</span><span class="eStepPill" data-s="4">البحر</span><span class="eStepPill" data-s="5">الشاطئ</span></div><div class="eInfo" id="g5l9Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g5l9Prev">◀ السابق</button><button class="simBtn" type="button" id="g5l9Next">التالي ▶</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — أرضٌ متنوِّعة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>في المملكة تتنوَّع التضاريس تنوُّعًا لافتًا: <b>جبالُ السروات</b> غربًا، و<b>الربع الخالي</b> جنوبًا، وسهولٌ ساحليةٌ على البحرين.</p></div><div class="fFact"><div class="n">٢</div><p>معظم المدن الكبرى في العالم نشأت على <b>سهولٍ</b> أو قرب أنهار؛ لسهولة البناء والزراعة والتنقُّل.</p></div><div class="fFact"><div class="n">٣</div><p>أعمق نقاطٍ على الأرض ليست على اليابسة بل في <b>قيعان المحيطات</b>.</p></div></div><div class="fCap">شكلُ الأرض يحدِّد أين يعيش الناس وكيف.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s5i1"><div class="fCard"><div class="fIn"><div class="fF"><span>التضاريس</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>المعالم الطبيعية لسطح الأرض.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الغلاف الجويُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>غطاء غازيٌّ يحيط بالأرض ويحوي جميع الغازات الموجودة على سطحها.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الغلاف المائيُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>يشمل المياه في الحالتين الصلبة والسائلة.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>القشرة الأرضية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الجزء الصخريُّ (الصلب) من سطح الأرض.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>السِّتار</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>المنطقة التي تلي القشرة الأرضية.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>اللُّبُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>يقع أسفل الستار السفليِّ ويشكِّل الكتلة المركزية للأرض.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5i1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: صواب أم خطأ</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fQ" id="s5i2Q">—</div><div class="fOpts" style="max-width:760px"><button class="fOpt" type="button" id="s5i2T">صواب ✔</button><button class="fOpt" type="button" id="s5i2F">خطأ ✖</button></div><div class="fFb" id="s5i2Fb"></div><div class="fBar"><span class="fPill" id="s5i2Sc">النتيجة</span><button class="fBtn ghost" type="button" id="s5i2R">↻ إعادة</button></div></div><div class="fCap">اقرأ العبارة ثم اختر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>ارسم منطقتك</h4><p>ارسم خريطةً بسيطةً لمنطقتك وحدِّد عليها المعالم: جبلًا أو واديًا أو سهلًا أو ساحلًا.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا تُبنى الطرق في الأودية والسهول لا على قمم الجبال؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="5" aria-label="إثراء مصور: معالم سطح الأرض">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">هل تكفي مشاهدة أمواج البحر لمعرفة شكل قاعه؟ وكيف يمكن أن يساعد السونار؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/ocean.jpg" alt="أمواج بحرية تتكسر قرب شاطئ صخري" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>أمواج على الساحل؛ تتحرك مياه البحر وتؤثر في شكل الشاطئ.</figcaption><p class="se-credit">الصورة: Jon Sullivan · <a href="https://commons.wikimedia.org/wiki/File:Waves_on_Ocean_Coast.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://commons.wikimedia.org/wiki/File:Waves_on_Ocean_Coast.jpg#Licensing" target="_blank" rel="noopener noreferrer">Public domain</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>يضم قاع المحيط جبالًا وسهولًا وأخاديد، فلا يشكل سطحًا مستويًا واحدًا.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>يرسل السونار نبضات صوتية ويستخدم صداها للمساعدة على قياس أعماق الماء ورسم القاع.</span></p>
+<p class="se-fact"><span aria-hidden="true">🌍</span><span>تتكون الأرض من قشرة وستار ولب؛ واللب الخارجي سائل بينما اللب الداخلي صلب.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://oceanservice.noaa.gov/facts/sonar.html" target="_blank" rel="noopener noreferrer">NOAA: ما السونار؟</a></li><li><a href="https://pubs.usgs.gov/gip/dynamic/inside.html" target="_blank" rel="noopener noreferrer">USGS: داخل الأرض</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="5" aria-label="رسم توضيحي: كيف يرسم السونار القاع؟">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>كيف يرسم السونار القاع؟</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="كيف يرسم السونار القاع؟"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🚢</span><span class="se-node-label">إرسال نبضة</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🌊</span><span class="se-node-label">رحلة إلى القاع</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">↩️</span><span class="se-node-label">عودة الصدى</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🗺️</span><span class="se-node-label">خريطة أعماق</span></button></div>
+
+<p class="se-diagram-caption">يُحسب العمق من رحلة الصوت ذهابًا وإيابًا مع معرفة سرعته؛ ثم تُجمع القياسات لتظهر التضاريس.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🚢</span><div><strong data-detail-title>إرسال نبضة</strong><p data-detail-text>ينطلق الصوت من جهاز السفينة</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="5" aria-label="محاكاة إثرائية: الصدى يكشف العمق">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>الصدى يكشف العمق</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير زمن رجوع الصدى عندما يتغير العمق فقط وتبقى سرعة الصوت ثابتة؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">عمق قاع النموذج</p><div class="se-options" role="group" aria-label="عمق قاع النموذج"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">ضحل</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">متوسط</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">عميق</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">الأعداد ليست ثواني أو أمتار؛ تتغير سرعة الصوت الحقيقية مع خصائص الماء، ويعالج المسح هذه العوامل.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر تصوري لزمن عودة صدى الصوت</p><div class="se-model" role="img" data-model aria-label="رجوع أسرع"><span class="se-symbol se-active" aria-hidden="true">🔊</span><span class="se-symbol se-active" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span><span class="se-symbol" aria-hidden="true">🔊</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>رجوع أسرع</p><p class="se-observation" data-observation>مؤشر قصير لزمن رحلة الصوت.</p></div><p class="se-explanation" data-explanation>المسافة من السفينة إلى القاع والعودة قصيرة، لذلك يصل الصدى أسرع في الظروف المفترضة.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا لا يكفي إرسال نبضة واحدة لرسم خريطة قاع محيط كامل؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الخامس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثالثة: الأرض ومواردها · الفصل الخامس: أرضنا المتغيرة · معالم سطح الأرض<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٤٤ – ١٥٢ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['الهضبة','land','منطقة منبسطة أكثر ارتفاعًا من الأراضي المحيطة.'],
+           ['الدلتا','water','أرض لها شكل المثلث تتشكَّل عند مصبِّ النهر.'],
+           ['الخانق (الوادي السحيق)','land','واد ضيِّق جوانبه عالية وشديدة الانحدار.'],
+           ['الرافد','water','نهر صغير أو جدول ماء يصبُّ في نهر كبير.'],
+           ['الكثبان الرملية','land','كومة أو نتوء من الرمال.'],
+           ['البُحَيْرة','water','مساحة من المياه تحيط بها الأراضي اليابسة.'],
+           ['الجرف','land','الجانب الحادُّ الميل من الصخور أو التربة.'],
+           ['الشلَّال','water','تيار من المياه الطبيعية يسقط من مكان مرتفع.'],
+           ['السهل','land','منطقة واسعة منبسطة.'],
+           ['الساحل','water','خطٌّ تلتقي عنده اليابسة مع الماء.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع المعالم.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='مَعْلَم '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g5l9SvgHost','g5l9Info',{'mountain':'<span><b>الجبال</b> — أعلى معالم سطح الأرض؛ قممها مرتفعةٌ وجوانبها شديدة الانحدار.</span>','valley':'<span><b>الوادي</b> — منخفضٌ بين مرتفعين، وكثيرًا ما يجري فيه الماء.</span>','plain':'<span><b>السهل</b> — أرضٌ منبسطةٌ واسعة، وغالبًا ما تكون <b>صالحةً للزراعة</b>.</span>','river':'<span><b>النهر</b> — مجرى ماءٍ عذبٍ يجري على سطح اليابسة نحو البحر.</span>','sea':'<span><b>البحر</b> — مسطَّحٌ مائيٌّ واسعٌ مالح.</span>','beach':'<span><b>الشاطئ</b> — الشريط الذي يلتقي فيه الماء باليابسة.</span>'},'');
+ERT.stepper({pills:'g5l9Pills', info:'g5l9Info', svg:'g5l9SvgHost', next:'g5l9Next', prev:'g5l9Prev', stages:[['mountain','الجبال','أعلى معالم سطح الأرض؛ قممها مرتفعةٌ وجوانبها شديدة الانحدار.'],['valley','الوادي','منخفضٌ بين مرتفعين، وكثيرًا ما يجري فيه الماء.'],['plain','السهل','أرضٌ منبسطةٌ واسعة، وغالبًا ما تكون <b>صالحةً للزراعة</b>.'],['river','النهر','مجرى ماءٍ عذبٍ يجري على سطح اليابسة نحو البحر.'],['sea','البحر','مسطَّحٌ مائيٌّ واسعٌ مالح.'],['beach','الشاطئ','الشريط الذي يلتقي فيه الماء باليابسة.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s5i1');
+EG.tf({q:'s5i2Q', fb:'s5i2Fb', score:'s5i2Sc', btnT:'s5i2T', btnF:'s5i2F', reset:'s5i2R', data:[['السهل أرضٌ منبسطةٌ غالبًا ما تكون صالحةً للزراعة.','T','لهذا تقوم المدن والمزارع على السهول.'],['الوادي مرتفعٌ عالٍ في سطح الأرض.','F','الوادي <b>منخفضٌ</b> بين مرتفعين، وكثيرًا ما يجري فيه الماء.'],['الجبال أعلى معالم سطح الأرض.','T','وقممها مرتفعةٌ وجوانبها شديدة الانحدار.'],['المحيطات تغطِّي أقلَّ من نصف سطح الأرض.','F','بل تغطِّي أكثر من <b>٧٠٪</b> من سطح الأرض.']]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"05_الصف_الخامس_الابتدائي/03_الأرض_ومواردها/05_أرضنا_المتغيرة/01_معالم_سطح_الأرض/علوم_خامس_ابتدائي_ف1_الدرس_الأول_معالم_سطح_الأرض.html","title":"معالم سطح الأرض","grade":5,"emoji":"🌍","photoTopic":"ocean","observeQuestion":"هل تكفي مشاهدة أمواج البحر لمعرفة شكل قاعه؟ وكيف يمكن أن يساعد السونار؟","facts":["يضم قاع المحيط جبالًا وسهولًا وأخاديد، فلا يشكل سطحًا مستويًا واحدًا.","يرسل السونار نبضات صوتية ويستخدم صداها للمساعدة على قياس أعماق الماء ورسم القاع.","تتكون الأرض من قشرة وستار ولب؛ واللب الخارجي سائل بينما اللب الداخلي صلب."],"diagram":{"title":"كيف يرسم السونار القاع؟","relation":"sequence","nodes":[{"emoji":"🚢","label":"إرسال نبضة","detail":"ينطلق الصوت من جهاز السفينة"},{"emoji":"🌊","label":"رحلة إلى القاع","detail":"تنتقل الموجة خلال الماء"},{"emoji":"↩️","label":"عودة الصدى","detail":"يرتد جزء من الصوت"},{"emoji":"🗺️","label":"خريطة أعماق","detail":"تجمع قياسات مواقع متعددة"}],"caption":"يُحسب العمق من رحلة الصوت ذهابًا وإيابًا مع معرفة سرعته؛ ثم تُجمع القياسات لتظهر التضاريس."},"lab":{"title":"الصدى يكشف العمق","question":"كيف يتغير زمن رجوع الصدى عندما يتغير العمق فقط وتبقى سرعة الصوت ثابتة؟","controlLabel":"عمق قاع النموذج","options":["ضحل","متوسط","عميق"],"states":[{"label":"رجوع أسرع","emoji":"🔊","amount":2,"explanation":"المسافة من السفينة إلى القاع والعودة قصيرة، لذلك يصل الصدى أسرع في الظروف المفترضة.","observation":"مؤشر قصير لزمن رحلة الصوت."},{"label":"رجوع بعد مدة أطول","emoji":"🔊","amount":5,"explanation":"كلما ازداد العمق طال مسار الصوت في الاتجاهين، وزمن عودة الصدى يزداد.","observation":"يرتفع مؤشر زمن الرحلة."},{"label":"أطول رحلة في المقارنة","emoji":"🔊","amount":8,"explanation":"القاع الأعمق يطيل المسافة التي يقطعها الصوت ذهابًا وعودة مع ثبات سرعته في النموذج.","observation":"أكبر مؤشر لزمن رجوع الصدى."}],"quantityLabel":"مؤشر تصوري لزمن عودة صدى الصوت","modelNote":"الأعداد ليست ثواني أو أمتار؛ تتغير سرعة الصوت الحقيقية مع خصائص الماء، ويعالج المسح هذه العوامل.","tryPrompt":"لماذا لا يكفي إرسال نبضة واحدة لرسم خريطة قاع محيط كامل؟"},"sources":[{"title":"NOAA: ما السونار؟","url":"https://oceanservice.noaa.gov/facts/sonar.html"},{"title":"USGS: داخل الأرض","url":"https://pubs.usgs.gov/gip/dynamic/inside.html"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

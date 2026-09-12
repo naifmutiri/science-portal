@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – رابع ابتدائي – ف1 – الدرس الثاني: الحيوانات الفقارية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#5E9E1E;--g-dark:#3B650F;--g-light:#EFF7E5}
+.card{border-color:#CFE5B4}
+.cover{background:linear-gradient(140deg,#3B650F 0%,#5E9E1E 55%,#8FC456 100%)}
+.endS{background:linear-gradient(140deg,#3B650F,#5E9E1E)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>الحيواناتُ الفقاريةُ</h1><div class="rule"></div>
+<div class="meta">الصف الرابع الابتدائي<br>الوحدة الأولى: المخلوقات الحية<br>الفصل الثاني: المملكة الحيوانية — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أينَ نحنُ في الكتابِ؟</h2><span class="src">صفحات ٦٦ – ٧٤</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الصف</h3><p>الرابع الابتدائي</p></div><div class="card"><h3>الوحدة الأولى</h3><p style="font-size:27px">المخلوقات الحية</p></div><div class="card"><h3>الفصل الثاني</h3><p style="font-size:27px">المملكة الحيوانية</p></div><div class="card"><h3>الدرس الثاني</h3><p style="font-size:25px">الحيوانات الفقارية<br><span class='muted' style='font-size:22px'>صفحات ٦٦ – ٧٤</span></p></div></div><div class="box idea" style="font-size:32px;"><strong>السؤالُ الأساسيُّ:</strong> أيُّ الحيواناتِ لها عمودٌ فقريٌّ؟ &nbsp;<span class='muted' style='font-size:25px'>(ص ٦٨)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأهداف</span><h2>أهدافُ التعلُّمِ</h2><span class="src">مستخلصة من ص ٦٦ – ٧٤</span></div>
+<div class="body"><p class="t">في نهايةِ الدرسِ أكونُ قادرًا على أنْ:</p><ul class="list num"><li>أُعرِّفَ الفقارياتِ وأُبيِّنَ وظيفةَ العمودِ الفقريِّ.</li><li>أُميِّزَ بينَ ثابتةِ درجةِ الحرارةِ ومتغيِّرةِ درجةِ الحرارةِ.</li><li>أُسمِّيَ طوائفَ الفقارياتِ السبعَ.</li><li>أصفَ الأسماكَ والبرمائياتِ والزواحفَ والطيورَ.</li><li>أُصنِّفَ الثدييَّاتِ في مجموعاتِها الثلاثِ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">التهيئة</span><h2>نشاطُ الاستكشافِ</h2><span class="src">ص ٦٧ — سؤال الكتاب</span></div>
+<div class="body center"><svg width="440" height="200" viewBox="0 0 340 155" role="img" aria-label="رسم هيكل عظمي لسمكة يبين العمود الفقري والأضلاع">
+<rect x="0" y="0" width="340" height="155" fill="#EAF2F7"/>
+<path d="M52 78 q46 -50 128 -46 q76 4 106 46 q-30 42 -106 46 q-82 4 -128 -46z" fill="#F7FAFC" stroke="#B8CEDC" stroke-width="3"/>
+<path d="M286 78 l40 -30 v60z" fill="#F2C4D0" opacity="0.85"/>
+<g stroke="#D9436A" stroke-width="5" fill="none" stroke-linecap="round"><path d="M74 78 H288"/></g>
+<g stroke="#E86A88" stroke-width="2.4" fill="none" stroke-linecap="round">
+ <path d="M108 78 q-4 -26 -14 -34 M124 78 q-4 -28 -12 -36 M140 78 q-3 -30 -10 -38 M156 78 q-2 -30 -8 -38
+          M172 78 q-2 -30 -6 -38 M188 78 q-1 -28 -4 -36 M204 78 q0 -28 -2 -34 M220 78 q0 -26 0 -32 M236 78 q1 -24 2 -28
+          M252 78 q2 -22 4 -26 M268 78 q2 -18 4 -22"/>
+ <path d="M108 78 q-4 26 -14 34 M124 78 q-4 28 -12 36 M140 78 q-3 30 -10 38 M156 78 q-2 30 -8 38
+          M172 78 q-2 30 -6 38 M188 78 q-1 28 -4 36 M204 78 q0 28 -2 34 M220 78 q0 26 0 32 M236 78 q1 24 2 28
+          M252 78 q2 22 4 26 M268 78 q2 18 4 22"/></g>
+<g><ellipse cx="66" cy="78" rx="26" ry="24" fill="#E86A88" opacity="0.5"/>
+ <circle cx="56" cy="70" r="6" fill="#F2C230"/><circle cx="56" cy="70" r="2.6" fill="#3A2B18"/>
+ <path d="M42 84 q-10 4 -6 12 q10 2 14 -6z" fill="#D9436A" opacity="0.7"/></g>
+<g fill="#8FBFD9" opacity="0.5"><ellipse cx="150" cy="122" rx="34" ry="10"/><ellipse cx="176" cy="34" rx="30" ry="9"/></g>
+</svg><div class="box ask" style="font-size:36px;max-width:1230px">هلْ أستطيعُ تحديدَ العمودِ الفقريِّ في هذهِ السمكةِ؟ وما وظيفةُ العمودِ الفقريِّ؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ماذا أعرفُ منْ قبلُ؟</h2><span class="src">تمهيد تربوي</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>اللافقارياتُ</h3><p style="font-size:24px">حيواناتٌ ليسَ لها عمودٌ فقريٌّ</p></div><div class="card"><h3>الهيكلُ الداخليُّ</h3><p style="font-size:23px">دعامةٌ داخليةٌ في شوكياتِ الجلدِ</p></div><div class="card"><h3>الطائفةُ</h3><p style="font-size:26px">مجموعةٌ أصغرُ منَ الشعبةِ</p></div><div class="card"><h3>اليومَ</h3><p style="font-size:21px">ماذا عنِ الحيواناتِ ذاتِ العمودِ الفقريِّ؟</p></div></div><div class="box note"><strong>توضيح إضافي:</strong> درسْنا اللافقارياتِ في الدرسِ السابقِ، واليومَ نتعرَّفُ القسمَ الآخرَ منَ المملكةِ الحيوانيةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>المفرداتُ العلميةُ (١)</h2><span class="src">ص ٦٨ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>الفقارياتُ</h3><p style="font-size:26px">الحيواناتُ التي لها عمودٌ فقريٌّ.</p></div><div class="card"><h3>ثابتةُ درجةِ الحرارةِ</h3><p style="font-size:23px">حيواناتٌ تستخدمُ طاقةَ الغذاءِ لتحافظَ على درجةِ حرارةِ أجسامِها ثابتةً.</p></div></div><div class="cards"><div class="card"><h3>متغيِّرةُ درجةِ الحرارةِ</h3><p style="font-size:21px">حيواناتٌ لا تستطيعُ تنظيمَ درجةِ حرارةِ أجسامِها؛ حيثُ تتغيَّرُ تبعًا لدرجةِ حرارةِ البيئةِ المحيطةِ بها، وتستمدُّ حرارتَها منها.</p></div><div class="card"><h3>البرمائياتُ</h3><p style="font-size:23px">ومنها الضفادعُ والسلمندراتُ، تعدُّ منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>المفرداتُ العلميةُ (٢)</h2><span class="src">ص ٦٨ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>الزواحفُ</h3><p style="font-size:22px">منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ التي تعيشُ على اليابسةِ، وجلدُها مغطًّى بحراشفَ أوْ صفائحَ.</p></div><div class="card"><h3>الطيورُ</h3><p style="font-size:23px">حيواناتٌ فقاريةٌ ثابتةُ درجةِ الحرارةِ، لها ريشٌ خفيفٌ ومناقيرُ.</p></div></div><div class="cards"><div class="card"><h3>الثدييَّاتُ</h3><p style="font-size:23px">فقارياتٌ ثابتةُ درجةِ الحرارةِ، لها شعرٌ أوْ فروٌ يكسو جسمَها، وترعى صغارَها.</p></div></div><p class="t muted' style='font-size:25px">المفرداتُ السِّتُّ كما وردتْ في صفحةِ «أقرأُ وأتعلَّمُ» ص ٦٨.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">مهارة القراءة</span><h2>المقارنةُ</h2><span class="src">ص ٦٨ — مهارة القراءة في الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>اختلافٌ</h3></div><div class="card center" style="text-align:center;background:#FDF2E1;border-color:#F3D9AE"><h3>تشابهٌ</h3></div><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>اختلافٌ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>السؤالُ الأساسيُّ</h2><span class="src">ص ٦٨</span></div>
+<div class="body center"><div class="box idea" style="font-size:46px;max-width:1250px;text-align:center;border-right:none;border-top:12px solid var(--g)">أيُّ الحيواناتِ لها عمودٌ فقريٌّ؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>ما الفقارياتُ؟</h2><span class="src">ص ٦٨ — نص الكتاب</span></div>
+<div class="body"><p class="big">تُرى، ما الشيءُ المشتركُ بينَ أجسامِنا وبينَ أجسامِ الطيورِ والأسماكِ والضفادعِ والأفاعي؟ <span class='hl'>جميعُ هذهِ المخلوقاتِ لها عمودٌ فقريٌّ</span>.</p><div class="box idea" style="font-size:23px;">العمودُ الفقريُّ هوَ ما <strong>يميِّزُ الفقارياتِ منَ اللافقارياتِ</strong>. ويمثِّلُ العمودُ الفقريُّ <strong>جزءًا منَ الهيكلِ الداخليِّ</strong> الذي <strong>يدعمُ الجسمَ ويسمحُ بحريَّةِ الحركةِ للحيواناتِ الثقيلةِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>ثابتةُ ومتغيِّرةُ درجةِ الحرارةِ</h2><span class="src">ص ٦٨ — نص الكتاب</span></div>
+<div class="body"><p class="big">بعضُ الفقارياتِ، ومنها <span class='hl'>الطيورُ والثدييَّاتُ</span>، لا تتغيَّرُ درجةُ حرارةِ أجسامِها كثيرًا. وهذهِ الحيواناتُ تستخدمُ طاقةَ الغذاءِ لتحافظَ على درجةِ حرارةِ أجسامِها ثابتةً، وتسمَّى الحيواناتِ <span class='hl'>الثابتةَ درجةِ الحرارةِ</span>.</p><div class="box idea" style="font-size:22px;">أمَّا <strong>الأسماكُ والبرمائياتُ والزواحفُ</strong> فتعدُّ منَ الحيواناتِ <span class='hl'>المتغيِّرةِ درجةِ الحرارةِ</span>، أيِ التي <strong>لا تستطيعُ تنظيمَ درجةِ حرارةِ أجسامِها</strong>؛ حيثُ تتغيَّرُ تبعًا لدرجةِ حرارةِ البيئةِ المحيطةِ بها، وتستمدُّ حرارتَها منها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>طوائفُ الفقارياتِ السبعُ</h2><span class="src">ص ٦٨ — نص الكتاب</span></div>
+<div class="body center"><p class="big">تقسَّمُ الفقارياتُ إلى <span class='hl'>سبعِ طوائفَ</span>، هيَ:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الأسماكُ العديمةُ الفكِّ (اللافكِّيَّةُ)</h3></div><div class="card center" style="text-align:center;"><h3>الأسماكُ الغضروفيَّةُ</h3></div><div class="card center" style="text-align:center;"><h3>الأسماكُ العظميَّةُ</h3></div><div class="card center" style="text-align:center;"><h3>البرمائيَّاتُ</h3></div></div><div class="cards"><div class="card center" style="text-align:center;"><h3>الزواحفُ</h3></div><div class="card center" style="text-align:center;"><h3>الطيورُ</h3></div><div class="card center" style="text-align:center;"><h3>الثدييَّاتُ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>طوائفُ الفقارياتِ السبعُ</h2><span class="src">محاكاة لشكل ص ٦٩ ونص ص ٦٨ – ٧٣</span></div>
+<div class="body"><div class="sim" id="simA">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:25px">أضغطُ على الطائفةِ:</p>
+    <button class="tgl on" type="button" data-k="jaw"><span class="dot"></span>الأسماكُ اللافكِّيَّةُ</button>
+    <button class="tgl" type="button" data-k="car"><span class="dot"></span>الأسماكُ الغضروفيَّةُ</button>
+    <button class="tgl" type="button" data-k="bon"><span class="dot"></span>الأسماكُ العظميَّةُ</button>
+    <button class="tgl" type="button" data-k="amp"><span class="dot"></span>البرمائيَّاتُ</button>
+    <button class="tgl" type="button" data-k="rep"><span class="dot"></span>الزواحفُ</button>
+    <button class="tgl" type="button" data-k="bir"><span class="dot"></span>الطيورُ</button>
+    <button class="tgl" type="button" data-k="mam"><span class="dot"></span>الثدييَّاتُ</button>
+  </div>
+  <div class="simStage">
+    <div class="simTag" id="aTemp" style="margin-bottom:6px"></div>
+    <svg width="330" height="150" viewBox="0 0 260 120" role="img" aria-label="رسوم تمثل طوائف الفقاريات السبع">
+      <rect x="0" y="0" width="260" height="120" rx="12" fill="#EFF7E5"/>
+      <g id="tJaw"><path d="M60 60 q56 -26 118 0 q-56 26 -118 0z" fill="#9EB0BC"/>
+        <circle cx="176" cy="60" r="16" fill="#B8C6D0"/>
+        <g fill="none" stroke="#7A8A96" stroke-width="2"><circle cx="176" cy="60" r="10"/><circle cx="176" cy="60" r="5"/></g>
+        <g fill="#7A8A96"><circle cx="170" cy="52" r="1.8"/><circle cx="182" cy="52" r="1.8"/><circle cx="170" cy="68" r="1.8"/><circle cx="182" cy="68" r="1.8"/></g>
+        <path d="M60 60 l-18 -14 v28z" fill="#9EB0BC"/></g>
+      <g id="tCar" style="opacity:0">
+        <path d="M46 62 q60 -34 130 -6 q30 12 44 6 l-30 22 q-40 14 -80 6 q-44 -8 -64 -28z" fill="#8FA3B0"/>
+        <path d="M110 34 l14 -22 l10 26z" fill="#8FA3B0"/>
+        <path d="M220 62 l26 -20 l-4 40z" fill="#8FA3B0"/>
+        <path d="M92 84 l-6 20 l22 -14z" fill="#7A8E9A"/>
+        <circle cx="176" cy="52" r="3.4" fill="#2E3A42"/>
+        <g stroke="#6E828E" stroke-width="2"><path d="M160 58 l-4 12 M150 60 l-4 12 M140 62 l-4 12"/></g></g>
+      <g id="tBon" style="opacity:0">
+        <path d="M56 60 q50 -32 108 -4 q26 12 40 4 l-24 24 q-38 14 -78 4 q-38 -10 -46 -28z" fill="#E8A03C"/>
+        <path d="M112 32 l16 -20 l6 24z" fill="#D98A2C"/>
+        <path d="M204 60 l30 -20 l-6 40z" fill="#D98A2C"/>
+        <circle cx="164" cy="50" r="4" fill="#2E2118"/>
+        <g fill="#D98A2C" opacity="0.7"><circle cx="120" cy="56" r="5"/><circle cx="136" cy="66" r="5"/><circle cx="152" cy="60" r="5"/><circle cx="104" cy="66" r="5"/></g></g>
+      <g id="tAmp" style="opacity:0">
+        <ellipse cx="130" cy="72" rx="42" ry="26" fill="#6FAE4F"/>
+        <circle cx="106" cy="50" r="13" fill="#6FAE4F"/><circle cx="152" cy="50" r="13" fill="#6FAE4F"/>
+        <g fill="#FFFFFF"><circle cx="106" cy="48" r="6"/><circle cx="152" cy="48" r="6"/></g>
+        <g fill="#2E2118"><circle cx="106" cy="48" r="3"/><circle cx="152" cy="48" r="3"/></g>
+        <g stroke="#4E8A3A" stroke-width="7" fill="none" stroke-linecap="round">
+          <path d="M92 88 q-22 12 -26 24 M168 88 q22 12 26 24"/></g>
+        <path d="M112 82 q18 8 36 0" stroke="#4E8A3A" stroke-width="3" fill="none"/></g>
+      <g id="tRep" style="opacity:0">
+        <path d="M60 74 q34 -20 68 -4 q30 14 68 -8" stroke="#B08A4E" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <circle cx="56" cy="76" r="12" fill="#B08A4E"/><circle cx="50" cy="72" r="2.6" fill="#2E2118"/>
+        <g stroke="#96733E" stroke-width="5" fill="none" stroke-linecap="round">
+          <path d="M84 84 l-10 16 M116 88 l-6 16 M148 84 l10 16 M176 74 l14 14"/></g>
+        <g fill="#96733E" opacity="0.6"><circle cx="86" cy="70" r="3"/><circle cx="108" cy="74" r="3"/><circle cx="130" cy="76" r="3"/><circle cx="152" cy="70" r="3"/><circle cx="174" cy="62" r="3"/></g></g>
+      <g id="tBir" style="opacity:0">
+        <ellipse cx="132" cy="66" rx="34" ry="24" fill="#8A6A4E"/>
+        <circle cx="164" cy="42" r="15" fill="#9A7A5E"/>
+        <path d="M178 42 q14 2 16 6 q-14 4 -18 0z" fill="#E8A93C"/>
+        <circle cx="168" cy="38" r="2.6" fill="#2E2118"/>
+        <path d="M104 60 q-30 -6 -40 8 q26 14 46 4z" fill="#7A5A3E"/>
+        <path d="M100 78 q-24 12 -26 26" stroke="#7A5A3E" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <g stroke="#C9964A" stroke-width="3.4" fill="none" stroke-linecap="round">
+          <path d="M124 90 v14 M140 90 v14"/></g></g>
+      <g id="tMam" style="opacity:0">
+        <ellipse cx="136" cy="64" rx="42" ry="24" fill="#C9964A"/>
+        <circle cx="90" cy="52" r="18" fill="#C9964A"/>
+        <g fill="#C9964A"><path d="M78 38 l2 -14 l12 8z"/><path d="M100 36 l10 -12 l4 14z"/></g>
+        <circle cx="84" cy="48" r="3" fill="#2E2118"/>
+        <path d="M178 60 q18 4 20 22" stroke="#C9964A" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <g fill="#A87B36"><rect x="108" y="84" width="9" height="22" rx="4"/><rect x="156" y="84" width="9" height="22" rx="4"/></g>
+        <g stroke="#A87B36" stroke-width="2" opacity="0.6"><path d="M120 50 l6 -8 M140 46 l4 -8 M158 52 l6 -8"/></g></g>
+    </svg>
+    <div class="simTag" id="aTag"></div>
+    <div class="simMsg good" id="aMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال من الكتاب</span><h2>أقرأُ الصورةَ</h2><span class="src">ص ٦٩</span></div>
+<div class="body"><div class="qa"><p class="q">أيُّ مجموعاتِ الفقارياتِ ثابتةُ درجةِ الحرارةِ وأيُّها متغيِّرُ درجةِ الحرارةِ؟</p><p class="t muted" style="font-size:26px;margin-top:8px">إرشادُ الكتابِ: أنظرُ إلى أسماءِ طوائفِ المخلوقاتِ تحتَ كلِّ لونٍ في القائمةِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>ثابتةُ درجةِ الحرارةِ:</strong> <strong>الطيورُ</strong> وَ<strong>الثدييَّاتُ</strong>.<br><strong>متغيِّرةُ درجةِ الحرارةِ:</strong> <strong>الأسماكُ</strong> (الغضروفيَّةُ واللافكِّيَّةُ والعظميَّةُ) وَ<strong>البرمائيَّاتُ</strong> وَ<strong>الزواحفُ</strong>. (ص ٦٨ – ٦٩)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الأسماكُ</h2><span class="src">ص ٦٩ — نص الكتاب</span></div>
+<div class="body"><p class="big">تنقسمُ الأسماكُ إلى ثلاثِ طوائفَ هيَ: <span class='hl'>الأسماكُ العديمةُ الفكِّ، والأسماكُ الغضروفيَّةُ، والأسماكُ العظميَّةُ</span>.</p><div class="box idea" style="font-size:22px;">تحتوي هياكلُ <strong>الأسماكِ العديمةِ الفكِّ والأسماكِ الغضروفيَّةِ</strong> على مادةٍ مرنةٍ تسمَّى <strong>الغضروفَ</strong>، وهوَ يشبهُ المادةَ الموجودةَ في هيكلِ سمكِ القرشِ، وفي <strong>صيوانِ أذانِ الإنسانِ ومقدِّمةِ أنفِهِ</strong>.</div><div class="box note" style="font-size:23px;">أمَّا <strong>الأسماكُ العظميَّةُ</strong> فهيَ <strong>الأكثرُ تنوُّعًا</strong> بينَ مجموعاتِ الفقارياتِ، وتتكوَّنُ هياكلُها منَ <strong>العظامِ</strong>، وتغطِّي أجسامَها <strong>القشورُ</strong>. ومنها <strong>الكنعدُ والهامورُ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٦٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> فيمَ تتشابهُ أسماكُ الطوائفِ الثلاثِ، وفيمَ تختلفُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>تتشابهُ:</strong> جميعُها <strong>فقارياتٌ</strong> لها عمودٌ فقريٌّ · وَ<strong>متغيِّرةُ درجةِ الحرارةِ</strong> · وَ<strong>تعيشُ في الماءِ</strong>.<br><strong>تختلفُ في مادةِ الهيكلِ:</strong> هياكلُ <strong>العديمةِ الفكِّ والغضروفيَّةِ</strong> منَ <strong>الغضروفِ</strong> (مادةٍ مرنةٍ)، أمَّا <strong>العظميَّةُ</strong> فهياكلُها منَ <strong>العظامِ</strong>.<br><strong>وفي الفكِّ:</strong> <strong>العديمةُ الفكِّ</strong> ليسَ لها فكٌّ.<br><strong>وفي الغطاءِ:</strong> الأسماكُ العظميَّةُ تغطِّي أجسامَها <strong>القشورُ</strong>، وهيَ <strong>الأكثرُ تنوُّعًا</strong>. (ص ٦٩)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> لماذا تأكلُ الحيواناتُ الثابتةُ درجةِ الحرارةِ أكثرَ منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>لأنَّ الحيواناتِ الثابتةَ درجةِ الحرارةِ <strong>تستخدمُ طاقةَ الغذاءِ لتحافظَ على درجةِ حرارةِ أجسامِها ثابتةً</strong>. (ص ٦٨)<br>فهيَ تحتاجُ إلى <strong>طاقةٍ إضافيةٍ باستمرارٍ</strong> لتدفئةِ جسمِها — خاصةً في الجوِّ الباردِ — فتأكلُ أكثرَ.<br>أمَّا المتغيِّرةُ درجةِ الحرارةِ فَ<strong>تستمدُّ حرارتَها منَ البيئةِ المحيطةِ بها</strong> مجانًا، فلا تحتاجُ إلى صرفِ طاقةِ الغذاءِ في التدفئةِ، فتأكلُ أقلَّ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>البرمائيَّاتُ</h2><span class="src">ص ٧٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big"><span class='hl'>البرمائيَّاتُ</span>، ومنها <strong>الضفادعُ والسلمندراتُ</strong> تعدُّ منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ.</p><div class="box idea" style="font-size:30px;">تقضي البرمائيَّاتُ <strong>جزءًا منْ دورةِ حياتِها في الماءِ</strong>، وتقضي <strong>الجزءَ الآخرَ على اليابسةِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>دورةُ حياةِ الضفدعِ</h2><span class="src">محاكاة لنص ص ٧٠</span></div>
+<div class="body"><div class="sim" id="simB" style="flex-direction:column;gap:14px">
+  <div style="display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap">
+    <button class="simBtn" type="button" id="bGo">أُشغِّلُ دورةَ الحياةِ</button>
+    <button class="simBtn ghost" type="button" id="bRe">أُعيدُ</button>
+    <span class="simTag" id="bTag">١ منْ ٤</span>
+  </div>
+  <svg width="450" height="200" viewBox="0 0 350 155" role="img" aria-label="محاكاة دورة حياة الضفدع من البيضة إلى الضفدع البالغ">
+    <rect x="0" y="0" width="350" height="58" fill="#CDE7F7"/>
+    <rect id="fWater" x="0" y="58" width="350" height="97" fill="#5E9AC4" opacity="0.8"/>
+    <path d="M0 62 q40 -8 80 0 q40 8 80 0 q40 -8 80 0 q40 8 110 0" stroke="#A9CFE4" stroke-width="4" fill="none"/>
+    <g id="fLand" style="opacity:0"><path d="M188 58 q46 -12 162 -4 v101 H188z" fill="#8FBF66"/>
+      <rect x="188" y="140" width="162" height="15" fill="#8A6A44"/></g>
+    <g id="s0"><g fill="#3A3A3A" opacity="0.85"><circle cx="70" cy="88" r="5"/><circle cx="88" cy="82" r="5"/><circle cx="104" cy="90" r="5"/>
+      <circle cx="80" cy="100" r="5"/><circle cx="98" cy="104" r="5"/></g>
+      <g fill="#DCEFF8" opacity="0.55"><circle cx="70" cy="88" r="11"/><circle cx="88" cy="82" r="11"/><circle cx="104" cy="90" r="11"/>
+        <circle cx="80" cy="100" r="11"/><circle cx="98" cy="104" r="11"/></g></g>
+    <g id="s1" style="opacity:0"><ellipse cx="110" cy="96" rx="20" ry="14" fill="#3F4A3A"/>
+      <path d="M128 96 q26 -12 32 12 q-22 -2 -32 -4z" fill="#3F4A3A"/>
+      <circle cx="102" cy="90" r="3" fill="#EAF4FA"/>
+      <g stroke="#5E7A50" stroke-width="2.4" fill="none"><path d="M92 106 q-8 8 -14 8 M94 86 q-8 -8 -14 -8"/></g></g>
+    <g id="s2" style="opacity:0"><ellipse cx="150" cy="98" rx="22" ry="15" fill="#5E8A48"/>
+      <path d="M170 98 q22 -10 26 10 q-18 -2 -26 -4z" fill="#5E8A48"/>
+      <circle cx="141" cy="92" r="3" fill="#EAF4FA"/>
+      <g stroke="#4E7B3A" stroke-width="4" fill="none" stroke-linecap="round">
+        <path d="M142 112 l-8 12 M158 112 l8 12"/></g></g>
+    <g id="s3" style="opacity:0"><ellipse cx="262" cy="106" rx="34" ry="20" fill="#6FAE4F"/>
+      <circle cx="242" cy="88" r="11" fill="#6FAE4F"/><circle cx="280" cy="88" r="11" fill="#6FAE4F"/>
+      <g fill="#FFFFFF"><circle cx="242" cy="86" r="5"/><circle cx="280" cy="86" r="5"/></g>
+      <g fill="#2E2118"><circle cx="242" cy="86" r="2.6"/><circle cx="280" cy="86" r="2.6"/></g>
+      <g stroke="#4E8A3A" stroke-width="6" fill="none" stroke-linecap="round">
+        <path d="M232 120 q-18 10 -22 20 M292 120 q18 10 22 20"/></g></g>
+  </svg>
+  <div class="simMsg good" id="bMsg"></div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>دورةُ حياةِ الضفدعِ</h2><span class="src">ص ٧٠ — نص الكتاب</span></div>
+<div class="body"><p class="big">تبدأُ دورةُ حياةِ الضفدعِ في الماءِ مثلَ جميعِ البرمائيَّاتِ؛ حيثُ تضعُ الأنثى بيضًا يخرجُ منهُ <span class='hl'>أبو ذُنَيْبَةَ</span>،</p><div class="box idea" style="font-size:26px;">ولهُ <strong>خياشيمُ</strong> تساعدُهُ على العيشِ في الماءِ، وعندَما ينمو <strong>تتحوَّلُ هذهِ الخياشيمُ إلى رئاتٍ</strong> ليتمكَّنَ منَ العيشِ على اليابسةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>تنفُّسُ البرمائيَّاتِ</h2><span class="src">ص ٧٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">ومعَ أنَّ للبرمائيَّاتِ رئاتٍ فهيَ <span class='hl'>تتنفَّسُ عنْ طريقِ الجلدِ أيضًا</span>.</p><div class="box idea" style="font-size:27px;">لذا يجبُ أنْ يكونَ <strong>جلدُها رطبًا</strong>، وإذا جفَّ جلدُها فإنَّها <strong>تموتُ</strong>. ولأجلِ ذلكَ <strong>تعيشُ البرمائيَّاتُ قربَ الماءِ باستمرارٍ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال من الكتاب</span><h2>أقرأُ الصورةَ</h2><span class="src">ص ٧٠</span></div>
+<div class="body"><div class="qa"><p class="q">كيفَ تختلفُ السحالي عنِ الضفادعِ؟</p><p class="t muted" style="font-size:26px;margin-top:8px">إرشادُ الكتابِ: ألاحظُ البيئةَ المحيطةَ بكلٍّ منها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>البيئةُ:</strong> السحالي <strong>زواحفُ تعيشُ على اليابسةِ</strong> — ويظهرُ في الصورةِ الرملُ حولَها؛ أمَّا الضفادعُ فَ<strong>برمائيَّاتٌ تعيشُ قربَ الماءِ باستمرارٍ</strong> — ويظهرُ الماءُ وأوراقُ النباتِ حولَها.<br><strong>الجلدُ:</strong> جلدُ السحالي <strong>جافٌّ وخشنٌ مغطًّى بحراشفَ أوْ صفائحَ</strong> تحميها منْ فقدانِ الماءِ؛ وجلدُ الضفادعِ <strong>رطبٌ</strong> ولوْ جفَّ ماتتْ.<br><strong>التنفُّسُ:</strong> السحالي <strong>تعتمدُ على رئتيها فقطْ</strong>؛ والضفادعُ <strong>تتنفَّسُ بالرئاتِ وبالجلدِ أيضًا</strong>.<br><strong>دورةُ الحياةِ:</strong> الضفدعُ يبدأُ حياتَهُ في الماءِ أبا ذُنَيْبَةَ لهُ خياشيمُ. (ص ٧٠ – ٧١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الزواحفُ</h2><span class="src">ص ٧١ — نص الكتاب</span></div>
+<div class="body"><p class="big">تنتمي <span class='hl'>السحالي والثعابينُ والسلاحفُ والحرابيُّ</span> إلى الزواحفِ.</p><div class="box idea" style="font-size:23px;">وَ<span class='hl'>الزواحفُ</span> منَ الحيواناتِ <strong>المتغيِّرةِ درجةِ الحرارةِ</strong> التي <strong>تعيشُ على اليابسةِ</strong>، وجلدُها <strong>مغطًّى بحراشفَ أوْ صفائحَ تحميها منْ فقدانِ الماءِ</strong>.</div><div class="box note" style="font-size:26px;">وهذهِ المخلوقاتُ <strong>لا تتنفَّسُ عنْ طريقِ جلدِها كالبرمائيَّاتِ، بلْ تعتمدُ على رئتيها</strong> في ذلكَ.</div><div class="box safe" style="font-size:29px;"><strong>حقيقةٌ (ص ٧١):</strong> الزواحفُ لها جلدٌ جافٌّ وخشنٌ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الطيورُ</h2><span class="src">ص ٧٢ — نص الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:22px;"><span class='hl'>الطيورُ</span> حيواناتٌ فقاريةٌ <strong>ثابتةُ درجةِ الحرارةِ</strong>، لها <strong>ريشٌ خفيفٌ يُبقيها دافئةً وجافَّةً</strong>، ولها <strong>مناقيرُ</strong> ورجلانِ تنتهيانِ بقدمينِ لهما مخالبُ، ويوجدُ على أقدامِها <strong>حراشفُ</strong>.</div><div class="box note" style="font-size:28px;"><strong>الطيورُ هيَ الحيواناتُ الوحيدةُ التي يغطِّي جسمَها الريشُ.</strong> <span class='muted'>(ص ٧٢)</span></div><p class="big">على الرغمِ منْ أنَّ كلَّ الطيورِ لها ريشٌ إلَّا أنَّ <span class='hl'>بعضَها لا يستطيعُ الطيرانَ</span>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>كيفَ تطيرُ الطيورُ؟</h2><span class="src">ص ٧٢ — نص الكتاب</span></div>
+<div class="body center"><p class="big">وقدْ جعلَ اللهُ تعالى للطيورِ القادرةِ على الطيرانِ:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>عظامًا خفيفةً مجوَّفةً</h3></div><div class="card center" style="text-align:center;"><h3>ورئاتٍ قويةً</h3></div><div class="card center" style="text-align:center;"><h3>وشكلَ أجنحتِها وعضلاتِها القويةَ</h3><p style="font-size:22px">يساعدانِها على الارتفاعِ والطيرانِ.</p></div></div><div class="box note" style="font-size:25px;">تضعُ الطيورُ بيضًا قشرُهُ سميكٌ، وترقدُ معظمُ الطيورِ على البيضِ لتبقيَهُ دافئًا إلى أنْ يفقسَ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">آية كريمة</span><h2>قالَ تعالى</h2><span class="src">ص ٧٢ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:30px;max-width:1250px;text-align:center">﴿ أَلَمْ يَرَوْا إِلَى الطَّيْرِ مُسَخَّرَاتٍ فِي جَوِّ السَّمَاءِ مَا يُمْسِكُهُنَّ إِلَّا اللَّهُ ۗ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يُؤْمِنُونَ ۝ ﴾</div><p class="t' style='font-size:30px">سورةُ النحلِ — الآيةُ ٧٩</p></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>نشاطُ الكتابِ — طيرانُ الطيورِ</h2><span class="src">ص ٧٢ — خطوات النشاط</span></div>
+<div class="body"><ul class="list num"><li><span><strong style='color:var(--g-dark)'>أقيسُ.</strong> أقصُّ شريطًا ورقيًّا عرضُهُ ٥ سم، وطولُهُ ٢٠ سم.</span></li><li><span><strong style='color:var(--g-dark)'>أصنعُ نموذجًا.</strong> أُثبِّتُ ٢ سم منهُ بينَ غلافِ الكتابِ والورقةِ الأولى، ثمَّ أغلقُ الكتابَ.</span></li><li><span>أُمسكُ الكتابَ بحيثُ تكونُ حافَّتُهُ الطويلةُ أفقيةً وطرفُ الشريطِ المثنيُّ قربَ فمي، وأنفخُ على امتدادِ الشريطِ.</span></li><li><span>ماذا يحدثُ عندَما أنفخُ على الشريطِ؟</span></li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">إجابة النشاط</span><h2>الخطوتانِ ٤ وَ ٥</h2><span class="src">ص ٧٢</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٤.</b> ماذا يحدثُ عندَما أنفخُ على الشريطِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>يرتفعُ الشريطُ الورقيُّ إلى أعلى</strong> ويصبحُ أفقيًّا، ولا ينزلُ إلى الأسفلِ كما يُتوقَّعُ.<br>والسببُ أنَّ <strong>الهواءَ يمرُّ على السطحِ العلويِّ أسرعَ</strong>، فيدفعُ الهواءُ الأسفلُ الشريطَ إلى أعلى.</div></div><div class="qa"><p class="q"><b>٥. أستنتجُ.</b> شكلُ جناحِ الطائرِ والطائرةِ متشابهانِ، فكلاهُما يسمحُ بمرورِ الهواءِ على السطحِ العلويِّ أكثرَ منَ السطحِ السفليِّ. كيفَ يساعدُ ذلكَ الطائرَ على الطيرانِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>لأنَّ الهواءَ الذي يمرُّ فوقَ الجناحِ <strong>أسرعُ</strong> منَ الهواءِ الذي يمرُّ تحتَهُ، فيتولَّدُ <strong>دفعٌ منْ أسفلَ إلى أعلى</strong> <strong>يرفعُ الطائرَ</strong> — تمامًا كما ارتفعَ الشريطُ الورقيُّ في النشاطِ.<br>ويساعدُ ذلكَ أنَّ اللهَ تعالى جعلَ للطيورِ <strong>عظامًا خفيفةً مجوَّفةً</strong> وَ<strong>رئاتٍ قويةً</strong> وَ<strong>عضلاتٍ قويةً</strong> فتستطيعُ الارتفاعَ والطيرانَ. (ص ٧٢)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٧٢</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> كيفَ يختلفُ جلدُ كلٍّ منَ البرمائيَّاتِ والزواحفِ والطيورِ بعضُهُ عنْ بعضٍ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>البرمائيَّاتُ:</strong> جلدُها <strong>رطبٌ</strong>، وَ<strong>تتنفَّسُ عنْ طريقِهِ</strong> إلى جانبِ الرئاتِ؛ فإذا جفَّ ماتتْ.<br><strong>الزواحفُ:</strong> جلدُها <strong>جافٌّ وخشنٌ مغطًّى بحراشفَ أوْ صفائحَ</strong> تحميها منْ فقدانِ الماءِ، وَ<strong>لا تتنفَّسُ عنْ طريقِهِ</strong>.<br><strong>الطيورُ:</strong> يغطِّي جسمَها <strong>ريشٌ خفيفٌ</strong> يُبقيها <strong>دافئةً وجافَّةً</strong>، ويوجدُ على أقدامِها <strong>حراشفُ</strong>. وهيَ الحيواناتُ الوحيدةُ التي يغطِّي جسمَها الريشُ. (ص ٧٠ – ٧٢)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> هلْ يمكنُ للسحالي العيشُ في بيئةٍ باردةٍ جدًّا؟ لماذا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>لا يمكنُ ذلكَ.</strong><br><strong>لأنَّ</strong> السحاليَ منَ <strong>الزواحفِ</strong>، وهيَ منَ الحيواناتِ <strong>المتغيِّرةِ درجةِ الحرارةِ</strong> التي <strong>لا تستطيعُ تنظيمَ درجةِ حرارةِ أجسامِها</strong>، بلْ <strong>تستمدُّ حرارتَها منَ البيئةِ المحيطةِ بها</strong>.<br>ففي البيئةِ الباردةِ جدًّا <strong>تنخفضُ حرارةُ جسمِها</strong> فَ<strong>تخملُ حركتُها</strong> ولا تستطيعُ البحثَ عنِ الغذاءِ ولا الهربَ منْ أعدائِها، وقدْ تموتُ. (ص ٦٨ و ٧١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>ثابتةٌ أمْ متغيِّرةُ درجةِ الحرارةِ؟</h2><span class="src">تدريب تفاعلي على نص ص ٦٨ – ٧٣</span></div>
+<div class="body"><div class="sim" id="simC" style="flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+    <span class="simTag" id="cN">١ منْ ٦</span><span class="score" id="cSc">الإجاباتُ الصحيحةُ: ٠</span>
+  </div>
+  <div class="sortCard" style="width:100%"><div class="nm" id="cNm" style="text-align:center"></div></div>
+  <div class="sortBtns">
+    <button class="simBtn" id="cA" type="button">ثابتةُ درجةِ الحرارةِ</button>
+    <button class="simBtn ghost" id="cB" type="button">متغيِّرةُ درجةِ الحرارةِ</button>
+  </div>
+  <div class="simMsg neutral" id="cMsg">أختارُ، ثمَّ أعرفُ السببَ.</div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>ما الثدييَّاتُ؟</h2><span class="src">ص ٧٣ — نص الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:22px;"><span class='hl'>الثدييَّاتُ</span> فقارياتٌ <strong>ثابتةُ درجةِ الحرارةِ</strong>. لها <strong>شعرٌ أوْ فروٌ يكسو جسمَها</strong>، وتعيشُ في <strong>معظمِ البيئاتِ على اليابسةِ وفي الماءِ وبينَ الأشجارِ</strong>، كما أنَّها <strong>ترعى صغارَها</strong>.</div><p class="big">تصنَّفُ الثدييَّاتُ في <span class='hl'>ثلاثِ مجموعاتٍ</span> بحسبِ طريقةِ ولادةِ صغارِها.</p><div class="box note" style="font-size:25px;">معظمُ الثدييَّاتِ <strong>تلدُ صغارَها</strong>، وبعضُها <strong>يضعُ بيضًا</strong>. وإناثُ الثدييَّاتِ <strong>تنتجُ الحليبَ لإرضاعِ صغارِها</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">آية كريمة</span><h2>قالَ تعالى</h2><span class="src">ص ٧٣ — نص الكتاب</span></div>
+<div class="body center"><p class="t' style='font-size:28px">ونحنُ نتناولُ حليبَ بعضِ الثدييَّاتِ؛ فهوَ شرابٌ لذيذٌ وغذاءٌ مفيدٌ تتجلَّى في تكوينِهِ ونقاوتِهِ عظمةُ الخالقِ سبحانَهُ وتعالى وحكمتُهُ.</p><div class="box idea" style="font-size:29px;max-width:1250px;text-align:center">﴿ وَإِنَّ لَكُمْ فِي الْأَنْعَامِ لَعِبْرَةً ۖ نُّسْقِيكُم مِّمَّا فِي بُطُونِهِ مِن بَيْنِ فَرْثٍ وَدَمٍ لَّبَنًا خَالِصًا سَائِغًا لِّلشَّارِبِينَ ۝ ﴾</div><p class="t' style='font-size:30px">سورةُ النحلِ — الآيةُ ٦٦</p></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>مجموعاتُ الثدييَّاتِ الثلاثُ</h2><span class="src">محاكاة لشكل ص ٧٣</span></div>
+<div class="body"><div class="sim" id="simD">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:25px">مجموعاتُ الثدييَّاتِ:</p>
+    <button class="tgl on" type="button" data-k="egg"><span class="dot"></span>ثدييَّاتٌ تضعُ بيضًا</button>
+    <button class="tgl" type="button" data-k="pou"><span class="dot"></span>ثدييَّاتٌ لها كيسٌ</button>
+    <button class="tgl" type="button" data-k="pla"><span class="dot"></span>تنمو داخلَ الأجسامِ</button>
+  </div>
+  <div class="simStage">
+    <svg width="330" height="150" viewBox="0 0 260 120" role="img" aria-label="رسوم تمثل مجموعات الثدييات الثلاث">
+      <rect x="0" y="0" width="260" height="120" rx="12" fill="#EFF7E5"/>
+      <g id="gEgg">
+        <ellipse cx="118" cy="72" rx="44" ry="26" fill="#9A7A54"/>
+        <g stroke="#6E5535" stroke-width="3" stroke-linecap="round">
+          <path d="M86 52 l-6 -16 M100 46 l-2 -18 M116 44 l2 -18 M132 46 l6 -18 M148 52 l10 -16
+                   M78 62 l-16 -10 M158 62 l16 -10"/></g>
+        <ellipse cx="164" cy="80" rx="16" ry="9" fill="#9A7A54"/>
+        <path d="M178 82 q14 2 18 6 q-14 4 -18 0z" fill="#7A5E3E"/>
+        <circle cx="170" cy="76" r="2.4" fill="#2E2118"/>
+        <g fill="#F2E4C0" stroke="#D8C79A" stroke-width="2"><ellipse cx="76" cy="102" rx="12" ry="9"/><ellipse cx="100" cy="106" rx="12" ry="9"/></g></g>
+      <g id="gPou" style="opacity:0">
+        <ellipse cx="140" cy="64" rx="30" ry="34" fill="#C9964A"/>
+        <path d="M126 34 q-8 -22 8 -26 q16 4 8 26z" fill="#C9964A"/>
+        <circle cx="134" cy="16" r="12" fill="#C9964A"/>
+        <g fill="#C9964A"><ellipse cx="126" cy="4" rx="4" ry="9"/><ellipse cx="142" cy="4" rx="4" ry="9"/></g>
+        <circle cx="128" cy="14" r="2.4" fill="#2E2118"/>
+        <path d="M168 74 q28 14 32 36" stroke="#C9964A" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <g fill="#B0803A"><rect x="126" y="92" width="12" height="22" rx="5"/><rect x="148" y="92" width="12" height="22" rx="5"/></g>
+        <ellipse cx="122" cy="70" rx="18" ry="16" fill="#E0B478"/>
+        <circle cx="118" cy="66" r="9" fill="#C9964A"/><circle cx="115" cy="63" r="1.8" fill="#2E2118"/></g>
+      <g id="gPla" style="opacity:0">
+        <ellipse cx="132" cy="52" rx="40" ry="22" fill="#E8DCC8"/>
+        <circle cx="96" cy="42" r="16" fill="#E8DCC8"/>
+        <g fill="#C4B49A"><ellipse cx="86" cy="30" rx="6" ry="9"/><ellipse cx="104" cy="28" rx="6" ry="9"/></g>
+        <circle cx="90" cy="40" r="2.6" fill="#2E2118"/>
+        <g fill="#C4B49A"><rect x="106" y="70" width="9" height="24" rx="4"/><rect x="152" y="70" width="9" height="24" rx="4"/></g>
+        <ellipse cx="188" cy="84" rx="22" ry="13" fill="#F2EADC"/>
+        <circle cx="206" cy="76" r="10" fill="#F2EADC"/>
+        <circle cx="210" cy="74" r="2" fill="#2E2118"/>
+        <g fill="#D8CCB4"><rect x="178" y="94" width="6" height="14" rx="3"/><rect x="194" y="94" width="6" height="14" rx="3"/></g></g>
+    </svg>
+    <div class="simTag" id="dTag"></div>
+    <div class="simMsg good" id="dMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">جدول الكتاب</span><h2>مجموعاتُ الثدييَّاتِ</h2><span class="src">ص ٧٣ — شكل الكتاب</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:30%">المجموعةُ</th><th>الوصفُ والأمثلةُ</th></tr><tr><td>ثدييَّاتٌ تضعُ بيضًا</td><td>آكلُ النملِ الشوكيُّ ومنقارُ البطِّ الثدييَّانِ الوحيدانِ اللذانِ يضعانِ البيضَ.</td></tr><tr><td>ثدييَّاتٌ لها كيسٌ</td><td>الكنغرُ والكوالا يحملانِ الصغارَ داخلَ كيسٍ حتى يكتملَ نموُّها.</td></tr><tr><td>ثدييَّاتٌ تنمو داخلَ الأجسامِ</td><td>الخرافُ والخفاشُ والقرودُ وثدييَّاتٌ أخرى تنمو داخلَ أجسامِ أمَّهاتِها.</td></tr></table><div class="box note" style="font-size:27px;"><strong>منْ صورةِ الكتابِ (ص ٧٣):</strong> الخفاشُ منَ الثدييَّاتِ لكنَّهُ يطيرُ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٧٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> فيمَ تتشابهُ الثدييَّاتُ؟ وفيمَ تختلفُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>تتشابهُ:</strong> جميعُها <strong>فقارياتٌ</strong> · <strong>ثابتةُ درجةِ الحرارةِ</strong> · لها <strong>شعرٌ أوْ فروٌ يكسو جسمَها</strong> · <strong>ترعى صغارَها</strong> · وإناثُها <strong>تنتجُ الحليبَ لإرضاعِ صغارِها</strong>.<br><strong>تختلفُ في طريقةِ ولادةِ صغارِها</strong> فتصنَّفُ في ثلاثِ مجموعاتٍ: <strong>تضعُ بيضًا</strong> (آكلُ النملِ الشوكيُّ ومنقارُ البطِّ) · <strong>لها كيسٌ</strong> (الكنغرُ والكوالا) · <strong>تنمو داخلَ أجسامِ أمَّهاتِها</strong> (الخرافُ والخفاشُ والقرودُ).<br>وتختلفُ أيضًا في <strong>البيئةِ</strong>؛ فمنها ما يعيشُ على اليابسةِ وفي الماءِ وبينَ الأشجارِ. (ص ٧٣)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> اكتشفَ عالمٌ نوعًا منَ الحيواناتِ اعتقدَ أنَّهُ منَ الثدييَّاتِ. فكيفَ يمكنُهُ التحقُّقُ منْ ذلكَ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>يتحقَّقُ بفحصِ <strong>صفاتِ الثدييَّاتِ</strong> فيهِ:<br><strong>١.</strong> هلْ لهُ <strong>عمودٌ فقريٌّ</strong>؟ (فقاريٌّ)<br><strong>٢.</strong> هلْ يكسو جسمَهُ <strong>شعرٌ أوْ فروٌ</strong>؟<br><strong>٣.</strong> هلْ درجةُ حرارةِ جسمِهِ <strong>ثابتةٌ</strong> لا تتغيَّرُ بتغيُّرِ البيئةِ؟<br><strong>٤.</strong> هلْ <strong>ترضعُ إناثُهُ صغارَها الحليبَ</strong> وَ<strong>ترعاها</strong>؟ — وهيَ أوضحُ علامةٍ.<br>فإذا توافرتْ هذهِ الصفاتُ فهوَ منَ الثدييَّاتِ، ولوْ كانَ يضعُ بيضًا كمنقارِ البطِّ. (ص ٧٣)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أستكشفُ — التوقُّعُ والأدواتُ</h2><span class="src">ص ٦٧ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:32px;"><strong>سؤال النشاط:</strong> ما وظيفةُ العمودِ الفقريِّ؟</div><div class="box note" style="font-size:26px;"><strong>أتوقَّعُ:</strong> أيُّهما يستطيعُ أنْ يحملَ وزنًا أكبرَ: حيوانٌ لهُ عمودٌ فقريٌّ أمْ حيوانٌ ليسَ لهُ عمودٌ فقريٌّ؟ أكتبُ توقُّعاتي.</div><p class="t"><strong>أحتاجُ إلى:</strong></p><div class="cards"><div class="card center" style="text-align:center;"><h3>صلصالٍ</h3></div><div class="card center" style="text-align:center;"><h3>قلمِ رصاصٍ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أستكشفُ — الخطواتُ</h2><span class="src">ص ٦٧ — الخطوات ١ – ٣</span></div>
+<div class="body"><ul class="list num"><li><span><strong style='color:var(--g-dark)'>أعملُ نموذجًا.</strong> أعملُ نموذجًا منَ الصلصالِ لحيوانٍ لهُ أربعُ أرجلٍ، وليسَ لهُ عمودٌ فقريٌّ.</span></li><li><span>أعملُ نموذجًا مماثلًا للنموذجِ الأولِ معَ وجودِ عمودٍ فقريٍّ وأتأكَّدُ أنَّ النموذجَ الثانيَ لهُ حجمُ وشكلُ النموذجِ الأولِ. يمكنُ عملُ النموذجِ بوضعِ الصلصالِ حولَ القلمِ.</span></li><li><span><strong style='color:var(--g-dark)'>ألاحظُ.</strong> أضعُ كراتٍ متساويةَ الحجمِ منَ الصلصالِ على كلِّ نموذجٍ لزيادةِ وزنِهِ، ما الوزنُ الإضافيُّ الذي يتحمَّلُهُ كلُّ نموذجٍ قبلَ أنْ ينهارَ؟</span></li></ul><div class="box safe" style="font-size:25px;">أتعاملُ معَ القلمِ بحذرٍ ولا أُوجِّهُ سنَّهُ نحوي أوْ نحوَ زميلي، وأغسلُ يديَّ بعدَ النشاطِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستخلص النتائج</span><h2>الخطواتُ ٤ – ٦</h2><span class="src">ص ٦٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٤.</b> أيُّ النموذجينِ يحملُ وزنًا أكبرَ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>النموذجُ الذي فيهِ القلمُ</strong> — أيْ الذي لهُ <strong>عمودٌ فقريٌّ</strong> — هوَ الذي يحملُ وزنًا أكبرَ.<br>أمَّا النموذجُ الذي بلا قلمٍ <strong>فينهارُ سريعًا</strong> عندَ إضافةِ كراتٍ قليلةٍ.</div></div><div class="qa"><p class="q"><b>٥.</b> ما فائدةُ العمودِ الفقريِّ للحيواناتِ التي تعيشُ على اليابسةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>يمثِّلُ العمودُ الفقريُّ <strong>جزءًا منَ الهيكلِ الداخليِّ الذي يدعمُ الجسمَ</strong>، فَ<strong>يحملُ وزنَهُ</strong> ولا ينهارُ تحتَ تأثيرِ الجاذبيةِ.<br>وهوَ <strong>يسمحُ بحريَّةِ الحركةِ للحيواناتِ الثقيلةِ</strong>، فتمشي وتجري وتقفزُ.<br>كما يعطي الجسمَ <strong>شكلَهُ الثابتَ</strong> وترتكزُ عليهِ العضلاتُ. (ص ٦٨)</div></div><div class="qa"><p class="q"><b>٦. أستنتجُ.</b> ما فوائدُ العمودِ الفقريِّ لحيوانٍ يعيشُ تحتَ الماءِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>في الماءِ <strong>يحملُ الماءُ جزءًا منْ وزنِ الجسمِ</strong>، ولكنَّ العمودَ الفقريَّ يظلُّ مفيدًا:<br><strong>يدعمُ الجسمَ</strong> ويعطيهِ <strong>شكلَهُ الانسيابيَّ</strong> فيسهلُ شقُّ الماءِ.<br><strong>ترتكزُ عليهِ العضلاتُ</strong> التي تُحرِّكُ الجسمَ والذيلَ، فَ<strong>يساعدُ على السباحةِ</strong>.<br>وَ<strong>يحمي</strong> الأجزاءَ الداخليةَ. ولوْلاهُ لما استطاعتِ الحيواناتُ الكبيرةُ كالحوتِ التحرُّكَ بقوةٍ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف أكثر</span><h2>أستكشفُ أكثرَ</h2><span class="src">ص ٦٧</span></div>
+<div class="body"><div class="qa"><p class="q">أعملُ نموذجًا ثالثًا، مستخدمًا أقلامًا للأرجلِ والعمودِ الفقريِّ. كيفَ يختلفُ النموذجُ الثالثُ عنِ النموذجينِ الآخرينِ؟ ماذا تمثِّلُ الأقلامُ في الأرجلِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>يختلفُ:</strong> بأنَّهُ <strong>يحملُ أكبرَ وزنٍ منَ الثلاثةِ</strong>، ويبقى <strong>واقفًا ثابتًا</strong> ولا تنثني أرجلُهُ ولا ينهارُ.<br><strong>وتمثِّلُ الأقلامُ في الأرجلِ:</strong> <strong>عظامَ الأرجلِ</strong> في الهيكلِ الداخليِّ للحيوانِ.<br><strong>وأستنتجُ:</strong> أنَّ <strong>الهيكلَ الداخليَّ كلَّهُ</strong> — لا العمودَ الفقريَّ وحدَهُ — هوَ الذي يدعمُ جسمَ الحيوانِ ويسمحُ لهُ بالحركةِ وحملِ وزنِهِ. (ص ٦٨)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ١ وَ ٢</h2><span class="src">ص ٧٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>١. المفرداتُ.</b> الحيواناتُ التي تستمدُّ الحرارةَ منَ البيئةِ الخارجيةِ لتبقى دافئةً تسمَّى ...............</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>تسمَّى الحيواناتِ <strong>متغيِّرةَ درجةِ الحرارةِ</strong>؛ فهيَ لا تستطيعُ تنظيمَ درجةِ حرارةِ أجسامِها، بلْ تتغيَّرُ تبعًا لدرجةِ حرارةِ البيئةِ المحيطةِ بها وتستمدُّ حرارتَها منها. (ص ٦٨)</div></div><div class="qa"><p class="q"><b>٢. أقارنُ.</b> فيما بينَ طائفةِ البرمائيَّاتِ وطائفةِ الزواحفِ منْ حيثُ التشابهُ والاختلافُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>التشابهُ:</strong> كلتاهُما <strong>فقارياتٌ</strong> · وَ<strong>متغيِّرةُ درجةِ الحرارةِ</strong> · ولكلتيهِما <strong>رئاتٌ</strong>.<br><strong>الاختلافُ:</strong><br><strong>الجلدُ:</strong> البرمائيَّاتُ جلدُها <strong>رطبٌ</strong>؛ والزواحفُ جلدُها <strong>جافٌّ وخشنٌ مغطًّى بحراشفَ أوْ صفائحَ</strong> تحميها منْ فقدانِ الماءِ.<br><strong>التنفُّسُ:</strong> البرمائيَّاتُ تتنفَّسُ <strong>بالرئاتِ وبالجلدِ أيضًا</strong>؛ والزواحفُ <strong>تعتمدُ على رئتيها</strong> فقطْ.<br><strong>البيئةُ:</strong> البرمائيَّاتُ تقضي <strong>جزءًا منْ دورةِ حياتِها في الماءِ</strong> وتعيشُ قربَهُ باستمرارٍ؛ والزواحفُ <strong>تعيشُ على اليابسةِ</strong>. (ص ٧٠ – ٧١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ٣ وَ ٤</h2><span class="src">ص ٧٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٣. التفكيرُ الناقدُ.</b> السلمندرُ مخلوقٌ حيٌّ يشبهُ السحليةَ إلَّا أنَّهُ ينتمي إلى البرمائيَّاتِ. ما الصفةُ التي لدى السلمندرِ وليستْ لدى السحليةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>الصفةُ هيَ: الجلدُ الرطبُ الذي يتنفَّسُ منْ خلالِهِ.</strong><br>فالسلمندرُ منَ <strong>البرمائيَّاتِ</strong>؛ جلدُهُ <strong>رطبٌ</strong> وَ<strong>يتنفَّسُ عنْ طريقِهِ</strong> إلى جانبِ الرئاتِ، ولوْ جفَّ جلدُهُ <strong>ماتَ</strong>؛ لذا يعيشُ قربَ الماءِ باستمرارٍ.<br>وَ<strong>يقضي جزءًا منْ دورةِ حياتِهِ في الماءِ</strong>.<br>أمَّا السحليةُ فمنَ <strong>الزواحفِ</strong>؛ جلدُها <strong>جافٌّ وخشنٌ مغطًّى بحراشفَ</strong>، وَ<strong>لا تتنفَّسُ عنْ طريقِ جلدِها</strong>، وتعيشُ على اليابسةِ. (ص ٧٠ – ٧١)</div></div><div class="qa"><p class="q"><b>٤. أختارُ الإجابةَ الصحيحةَ.</b> جميعُ الطيورِ والثدييَّاتِ:<br>أ – لها عمودٌ فقريٌّ وتنتجُ الحليبَ &nbsp;|&nbsp; ب – تبيضُ، ولها عمودٌ فقريٌّ<br>جـ – لها عمودٌ فقريٌّ وترعى صغارَها &nbsp;|&nbsp; د – تبيضُ، ودرجةُ حرارةِ أجسامِها ثابتةٌ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الإجابةُ الصحيحةُ: <strong>جـ – لها عمودٌ فقريٌّ وترعى صغارَها</strong>.<br><span class='muted'>أمَّا (أ) فلا تصحُّ؛ لأنَّ الطيورَ لا تنتجُ الحليبَ. وَ(ب) وَ(د) لا تصحَّانِ؛ لأنَّ معظمَ الثدييَّاتِ تلدُ ولا تبيضُ. (ص ٧٢ – ٧٣)</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالُ الأساسيُّ</h2><span class="src">ص ٧٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٥. السؤالُ الأساسيُّ.</b> أيُّ الحيواناتِ لها عمودٌ فقريٌّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الحيواناتُ التي لها عمودٌ فقريٌّ هيَ <strong>الفقارياتُ</strong>، وتقسَّمُ إلى <strong>سبعِ طوائفَ</strong>:<br><strong>متغيِّرةُ درجةِ الحرارةِ:</strong> الأسماكُ العديمةُ الفكِّ (اللافكِّيَّةُ) · الأسماكُ الغضروفيَّةُ · الأسماكُ العظميَّةُ · البرمائيَّاتُ · الزواحفُ.<br><strong>ثابتةُ درجةِ الحرارةِ:</strong> الطيورُ · الثدييَّاتُ.<br>والعمودُ الفقريُّ <strong>جزءٌ منَ الهيكلِ الداخليِّ يدعمُ الجسمَ ويسمحُ بحريَّةِ الحركةِ للحيواناتِ الثقيلةِ</strong>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخَّصٌ مصوَّرٌ</h2><span class="src">ص ٧٤ — ملخص الكتاب</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:20%">المحورُ</th><th>الخلاصةُ</th></tr><tr><td>الفقارياتُ</td><td>الفقارياتُ لها عمودٌ فقريٌّ. تضمُّ الفقارياتُ سبعَ طوائفَ، منها: الثدييَّاتُ، والطيورُ، والزواحفُ.</td></tr><tr><td>درجةُ الحرارةِ</td><td>الأسماكُ والبرمائيَّاتُ والزواحفُ فقارياتٌ متغيِّرةُ درجةِ الحرارةِ. والطيورُ فقارياتٌ ثابتةُ درجةِ الحرارةِ ويغطِّي جسمَها ريشٌ.</td></tr><tr><td>الثدييَّاتُ</td><td>الثدييَّاتُ فقارياتٌ ثابتةُ درجةِ الحرارةِ، ويغطِّي جسمَها الشعرُ أوِ الفروُ، وهيَ تضعُ صغارَها بثلاثِ طرائقَ.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">المطويات</span><h2>أنظِّمُ أفكاري</h2><span class="src">ص ٧٤ — المطويات</span></div>
+<div class="body center"><div class="box idea" style="font-size:31px;max-width:1250px;text-align:center">أعملُ مطويةً كالمبيَّنةِ في الشكلِ ألخِّصُ فيها ما تعلَّمتُهُ عنِ الحيواناتِ الفقاريةِ.</div><div class="cards"><div class="card center" style="text-align:center;background:#FBEDEC;border-color:#F0CDCA"><h3>حيواناتٌ لها عمودٌ فقريٌّ</h3></div></div><div class="cards"><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>الفقارياتُ</h3></div><div class="card center" style="text-align:center;background:#E9F4FF;border-color:#A9CDEB"><h3>الأسماكُ والبرمائياتُ والزواحفُ</h3></div><div class="card center" style="text-align:center;background:#FDF2E1;border-color:#F3D9AE"><h3>الطيورُ والثدييَّاتُ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">العلوم والكتابة والرياضيات</span><h2>أنشطةُ التوسُّعِ</h2><span class="src">ص ٧٤ — الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:25px;"><strong>العلومُ والكتابةُ — الكتابةُ الوصفيةُ:</strong> أختارُ حيوانًا فقاريًّا منَ الحيواناتِ التي تعيشُ في منطقتي. أكتبُ فقرةً أوضِّحُ فيها نوعَ هذا الحيوانِ وأصفُ بعضَ خصائصِهِ.</div><div class="box note" style="font-size:26px;"><strong>العلومُ والرياضياتُ — كتلةُ الحوتِ الأزرقِ:</strong> إذا كانتْ كتلةُ الحوتِ الأزرقِ حوالَي ١٠٠ طنٍّ، فما كتلتُهُ بالكيلوجراماتِ؟</div><div class="qa"><p class="q">إجابةُ مسألةِ الرياضياتِ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span>الطنُّ الواحدُ = <strong>١٠٠٠ كجم</strong>.<br>١٠٠ × ١٠٠٠ = <strong>١٠٠٠٠٠ كجم</strong> (مئةُ ألفِ كيلوجرامٍ).</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تدريب إضافي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ</h2><span class="src">من إعداد المعلم — ليست من الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. ما الثدييَّانِ الوحيدانِ اللذانِ يضعانِ البيضَ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>آكلُ النملِ الشوكيُّ</strong> وَ<strong>منقارُ البطِّ</strong>. (ص ٧٣)</div></div><div class="qa"><p class="q">٢. ما المادةُ المرنةُ في هياكلِ الأسماكِ العديمةِ الفكِّ والغضروفيَّةِ؟ وأينَ توجدُ في الإنسانِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span>هيَ <strong>الغضروفُ</strong>، وتوجدُ في الإنسانِ في <strong>صيوانِ الأذنينِ ومقدِّمةِ الأنفِ</strong>. (ص ٦٩)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الملخص</span><h2>ماذا تعلَّمتُ؟</h2><span class="src">خلاصة ص ٦٦ – ٧٤</span></div>
+<div class="body"><ul class="list"><li>الفقارياتُ حيواناتٌ لها عمودٌ فقريٌّ، وهوَ جزءٌ منَ الهيكلِ الداخليِّ يدعمُ الجسمَ.</li><li>الطيورُ والثدييَّاتُ ثابتةُ درجةِ الحرارةِ، والأسماكُ والبرمائيَّاتُ والزواحفُ متغيِّرةُ درجةِ الحرارةِ.</li><li>تقسَّمُ الفقارياتُ إلى سبعِ طوائفَ.</li><li>البرمائيَّاتُ تقضي جزءًا منْ حياتِها في الماءِ وتتنفَّسُ بالجلدِ أيضًا، فيجبُ أنْ يبقى رطبًا.</li><li>الزواحفُ جلدُها جافٌّ مغطًّى بحراشفَ، وتعتمدُ على رئتيها في التنفُّسِ.</li><li>الطيورُ هيَ الحيواناتُ الوحيدةُ التي يغطِّي جسمَها الريشُ، والثدييَّاتُ ترضعُ صغارَها الحليبَ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة مفاهيم</span><h2>أرتِّبُ أفكاري</h2><span class="src">تنظيم لمحتوى الدرس</span></div>
+<div class="body center"><div class="map"><div class="node">الفقارياتُ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">متغيِّرةُ درجةِ الحرارةِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">أسماكٌ لافكِّيَّةٌ وغضروفيَّةٌ وعظميَّةٌ</span><span class="node leaf">برمائيَّاتٌ: جلدٌ رطبٌ</span><span class="node leaf">زواحفُ: حراشفُ ورئاتٌ</span></div></div><div class="col"><div class="node sub" style="background:#FDF2E1;border-color:#8C5709;color:#8C5709">ثابتةُ درجةِ الحرارةِ</div><div class="line" style="background:#8C5709"></div><div class="leaves"><span class="node leaf">طيورٌ: ريشٌ ومناقيرُ</span><span class="node leaf">ثدييَّاتٌ: شعرٌ أوْ فروٌ</span><span class="node leaf">ترعى صغارَها وترضعُها</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختارُ الإجابةَ الصحيحةَ</h2><span class="src">تفاعلي — أسئلة تدريبية</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">١. الحيواناتُ الوحيدةُ التي يغطِّي جسمَها الريشُ هيَ:</p><div class="opts"><button class="opt" type="button">الزواحفُ</button><button class="opt" type="button">الطيورُ</button><button class="opt" type="button">الثدييَّاتُ</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">٢. البرمائيَّاتُ تتنفَّسُ بالرئاتِ وأيضًا عنْ طريقِ:</p><div class="opts"><button class="opt" type="button">الجلدِ</button><button class="opt" type="button">الحراشفِ</button><button class="opt" type="button">المنقارِ</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">٣. الأسماكُ الأكثرُ تنوُّعًا بينَ مجموعاتِ الفقارياتِ هيَ:</p><div class="opts"><button class="opt" type="button">اللافكِّيَّةُ</button><button class="opt" type="button">الغضروفيَّةُ</button><button class="opt" type="button">العظميَّةُ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبلَ أنْ أُغادرَ الصفَّ</h2><span class="src">تقويم ختامي</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;"><h3>١</h3><p style="font-size:27px">ما وظيفةُ العمودِ الفقريِّ؟</p></div><div class="card center" style="text-align:center;"><h3>٢</h3><p style="font-size:25px">أذكرُ طائفتينِ ثابتتَي درجةِ الحرارةِ.</p></div><div class="card center" style="text-align:center;"><h3>٣</h3><p style="font-size:23px">لماذا يجبُ أنْ يبقى جلدُ البرمائيَّاتِ رطبًا؟</p></div></div><p class="t' style='font-size:32px">أكتبُ إجاباتي في بطاقةٍ صغيرةٍ وأُسلِّمُها للمعلِّمِ.</p></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>مقارنةٌ مصوَّرة: حرارةُ أجسام الفقاريات</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1280" height="460" viewBox="0 0 1280 460" xmlns="http://www.w3.org/2000/svg" role="img" id="g4l4SvgHost"><g class="eHot" data-k="warm"><rect x="30" y="20" width="590" height="410" rx="20" fill="#B8860B" opacity=".16"/><rect x="30" y="20" width="590" height="410" rx="20" fill="none" stroke="#B8860B" stroke-width="4"/><g transform="translate(256,46) scale(1.15)"><ellipse cx="62" cy="62" rx="34" ry="24" fill="#3E7BB5"/><circle cx="34" cy="48" r="16" fill="#4E8CC7"/><circle cx="28" cy="45" r="3" fill="#1A2A3A"/><path d="M18 48 l-12 5 l12 5z" fill="#E8A33D"/><path d="M62 56 q 22 -18 38 -4 q -12 16 -38 12z" fill="#2E6392"/><path d="M92 66 l22 10 l-22 8z" fill="#2E6392"/></g><g><text x="325" y="216" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ثابتة درجة الحرارة</text><text x="325" y="216" font-size="30" fill="#B8860B" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ثابتة درجة الحرارة</text></g><circle cx="586" cy="258" r="7" fill="#B8860B"/><g><text x="564" y="266" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الطيور</text><text x="564" y="266" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الطيور</text></g><circle cx="586" cy="302" r="7" fill="#B8860B"/><g><text x="564" y="310" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الثدييات</text><text x="564" y="310" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الثدييات</text></g><rect class="hitBox" x="30" y="20" width="590" height="410" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="cold"><rect x="680" y="20" width="590" height="410" rx="20" fill="#2E6DA4" opacity=".16"/><rect x="680" y="20" width="590" height="410" rx="20" fill="none" stroke="#2E6DA4" stroke-width="4"/><g transform="translate(906,46) scale(1.15)"><ellipse cx="58" cy="62" rx="38" ry="22" fill="#E2703A"/><path d="M96 62 l20 -16 v32z" fill="#C9552A"/><circle cx="34" cy="56" r="4" fill="#2A2A2A"/><path d="M56 40 q 10 -14 20 -2" stroke="#C9552A" stroke-width="6" fill="none"/><path d="M50 84 q 10 12 22 2" stroke="#C9552A" stroke-width="6" fill="none"/></g><g><text x="975" y="216" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">متغيِّرة درجة الحرارة</text><text x="975" y="216" font-size="30" fill="#2E6DA4" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">متغيِّرة درجة الحرارة</text></g><circle cx="1236" cy="258" r="7" fill="#2E6DA4"/><g><text x="1214" y="266" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الأسماك</text><text x="1214" y="266" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الأسماك</text></g><circle cx="1236" cy="302" r="7" fill="#2E6DA4"/><g><text x="1214" y="310" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">البرمائيات</text><text x="1214" y="310" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">البرمائيات</text></g><circle cx="1236" cy="346" r="7" fill="#2E6DA4"/><g><text x="1214" y="354" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الزواحف</text><text x="1214" y="354" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الزواحف</text></g><rect class="hitBox" x="680" y="20" width="590" height="410" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">تُقسَم الفقاريات بحسب ثبات درجة حرارة الجسم.</div></div><div class="eSteps" id="g4l4Pills"><span class="eStepPill" data-s="0">ثابتة درجة الحرارة</span><span class="eStepPill" data-s="1">متغيِّرة درجة الحرارة</span></div><div class="eInfo" id="g4l4Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g4l4Prev">◀ السابق</button><button class="simBtn" type="button" id="g4l4Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: طوائفُ الفقاريات</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="58" cy="62" rx="38" ry="22" fill="#E2703A"/><path d="M96 62 l20 -16 v32z" fill="#C9552A"/><circle cx="34" cy="56" r="4" fill="#2A2A2A"/><path d="M56 40 q 10 -14 20 -2" stroke="#C9552A" stroke-width="6" fill="none"/><path d="M50 84 q 10 12 22 2" stroke="#C9552A" stroke-width="6" fill="none"/></g></svg><h4>الأسماك</h4><p>تتنفَّس بالخياشيم وتعيش في الماء</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="74" rx="36" ry="26" fill="#4E9A34"/><circle cx="42" cy="46" r="15" fill="#57A83E"/><circle cx="78" cy="46" r="15" fill="#57A83E"/><circle cx="42" cy="44" r="7" fill="#fff"/><circle cx="78" cy="44" r="7" fill="#fff"/><circle cx="42" cy="44" r="4" fill="#1A2A10"/><circle cx="78" cy="44" r="4" fill="#1A2A10"/><path d="M44 82 q 16 12 32 0" stroke="#2F6B1F" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M24 92 l-14 12 M96 92 l14 12" stroke="#4E9A34" stroke-width="9" stroke-linecap="round"/></g></svg><h4>البرمائيات</h4><p>صغارها في الماء وبالغوها على اليابسة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M14 92 q 24 -34 46 -12 q 22 22 46 -18" stroke="#7A9A3A" stroke-width="16" fill="none" stroke-linecap="round"/><circle cx="106" cy="62" r="10" fill="#6B8A2E"/><circle cx="110" cy="58" r="2.6" fill="#20260E"/><path d="M116 64 l10 3 l-10 3" stroke="#C0392B" stroke-width="3" fill="none"/></g></svg><h4>الزواحف</h4><p>جلدٌ مغطًّى بالحراشف وتتنفَّس بالرئات</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="62" cy="62" rx="34" ry="24" fill="#3E7BB5"/><circle cx="34" cy="48" r="16" fill="#4E8CC7"/><circle cx="28" cy="45" r="3" fill="#1A2A3A"/><path d="M18 48 l-12 5 l12 5z" fill="#E8A33D"/><path d="M62 56 q 22 -18 38 -4 q -12 16 -38 12z" fill="#2E6392"/><path d="M92 66 l22 10 l-22 8z" fill="#2E6392"/></g></svg><h4>الطيور</h4><p>لها ريشٌ ومناقيرُ وتتكاثر بالبيض</p></div></div><div class="eCap">الفقاريات حيواناتٌ لها عمودٌ فقريٌّ وهيكلٌ داخلي.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — عمودٌ يحمل الجسم</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>العمود الفقريُّ ليس عظمةً واحدة، بل <b>سلسلةٌ من الفقرات</b> تسمح بالانحناء وتحمي الحبل الشوكي.</p></div><div class="fFact"><div class="n">٢</div><p>الحيوان ثابت درجة الحرارة ينشط في البرد والحرِّ؛ أما متغيِّر درجة الحرارة فيبطئ نشاطه حين يبرد الجو.</p></div><div class="fFact"><div class="n">٣</div><p>بعض الطيور تهاجر مسافاتٍ هائلةً كلَّ عامٍ بحثًا عن الغذاء والدفء.</p></div></div><div class="fCap">الفقاريات أقلُّ عددًا لكنها أكبر حجمًا في الغالب.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s4d1"><div class="fCard"><div class="fIn"><div class="fF"><span>الفقارياتُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الحيواناتُ التي لها عمودٌ فقريٌّ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>ثابتةُ درجةِ الحرارةِ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حيواناتٌ تستخدمُ طاقةَ الغذاءِ لتحافظَ على درجةِ حرارةِ أجسامِها ثابتةً.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>متغيِّرةُ درجةِ الحرارةِ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حيواناتٌ لا تستطيعُ تنظيمَ درجةِ حرارةِ أجسامِها؛ حيثُ تتغيَّرُ تبعًا لدرجةِ حرارةِ البيئةِ المحيطةِ بها، وتستمدُّ حرارتَها منها.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>البرمائياتُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>ومنها الضفادعُ والسلمندراتُ، تعدُّ منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4d1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: صواب أم خطأ</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fQ" id="s4d2Q">—</div><div class="fOpts" style="max-width:760px"><button class="fOpt" type="button" id="s4d2T">صواب ✔</button><button class="fOpt" type="button" id="s4d2F">خطأ ✖</button></div><div class="fFb" id="s4d2Fb"></div><div class="fBar"><span class="fPill" id="s4d2Sc">النتيجة</span><button class="fBtn ghost" type="button" id="s4d2R">↻ إعادة</button></div></div><div class="fCap">اقرأ العبارة ثم اختر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>لاحِظ</h4><p>تحسَّس عمودك الفقريَّ برفقٍ من أعلى ظهرك إلى أسفله: ستشعر بالفقرات واحدةً بعد أخرى.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا يقلُّ نشاط السحلية في الأيام الباردة؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="4" aria-label="إثراء مصور: الحيوانات الفقارية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">إلى أي مجموعة ينتمي الأرنب ذو الشعر، وما التركيب الداخلي الذي يجعله فقاريًا؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/animal.jpg" alt="أرنب بني يقف بين الأعشاب" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>أرنب أوروبي يتغذى على العشب؛ مثال لحيوان ثديي عاشب.</figcaption><p class="se-credit">الصورة: Diliff · <a href="https://commons.wikimedia.org/wiki/File:European_Rabbit,_Lake_District,_UK_-_August_2011.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>تمتلك الفقاريات هيكلًا داخليًا وعمودًا فقريًا يدعم الجسم ويحمي الحبل الشوكي.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>الريش صفة مميزة للطيور، والشعر والغدد المنتجة للحليب من الصفات المميزة للثدييات.</span></p>
+<p class="se-fact"><span aria-hidden="true">🦴</span><span>لا يكفي مكان المعيشة وحده للتصنيف؛ فالحوت ثديي يتنفس الهواء رغم معيشته في الماء.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/concepts-biology/pages/15-6-vertebrates" target="_blank" rel="noopener noreferrer">OpenStax: الفقاريات وخصائص مجموعاتها</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="4" aria-label="رسم توضيحي: مجموعات فقارية مألوفة">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>مجموعات فقارية مألوفة</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="مجموعات فقارية مألوفة"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🐟</span><span class="se-node-label">أسماك</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🐸</span><span class="se-node-label">برمائيات</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🦎</span><span class="se-node-label">زواحف</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🐦</span><span class="se-node-label">طيور</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="4" aria-pressed="false"><span class="se-node-index">5</span><span class="se-node-icon" aria-hidden="true">🐈</span><span class="se-node-label">ثدييات</span></button></div>
+
+<p class="se-diagram-caption">مجموعات عامة للمقارنة؛ يفصل الدرس الأسماك إلى طوائف متعددة، وتوجد اختلافات داخل كل مجموعة.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🐟</span><div><strong data-detail-title>أسماك</strong><p data-detail-text>تتنفس معظمها بالخياشيم</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="4" aria-label="محاكاة إثرائية: قائمة صفات ثابتة">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>قائمة صفات ثابتة</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كم صفة نجد من هذه الثلاث: عمود فقري، رئتان، شعر؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">العينة التي نفحصها</p><div class="se-options" role="group" aria-label="العينة التي نفحصها"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">سمكة ذهبية</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">عصفور</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">قطة</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">العدد يصف القائمة المختارة فقط؛ لا يقيس قيمة الحيوان أو نجاحه أو تعقيد جسمه.</p></div>
+ <div class="se-result"><p class="se-model-label">عدد الصفات المنطبقة من قائمة محددة من ثلاث صفات</p><div class="se-model" role="img" data-model aria-label="صفة واحدة من القائمة"><span class="se-symbol se-active" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span><span class="se-symbol" aria-hidden="true">✅</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>صفة واحدة من القائمة</p><p class="se-observation" data-observation>تنطبق صفة العمود الفقري.</p></div><p class="se-explanation" data-explanation>للسمكة الذهبية عمود فقري؛ وهي تتنفس بالخياشيم ولا تمتلك شعرًا، فلا تنطبق الصفتان الأخريان.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 هل سيتغير ترتيب الأعداد لو اخترنا صفات تخص الأسماك بدل الشعر والرئتين؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الرابع الابتدائي — الجزء الأول من المقرر<br>الوحدة الأولى: المخلوقات الحية · الفصل الثاني: المملكة الحيوانية · الدرس الثاني: الحيوانات الفقارية<br>المصدر: كتاب الطالب، صفحات ٦٦ – ٧٤ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), tmp=document.getElementById('aTemp');
+    var EL={jaw:'tJaw',car:'tCar',bon:'tBon',amp:'tAmp',rep:'tRep',bir:'tBir',mam:'tMam'};
+    var D={jaw:['الأسماكُ العديمةُ الفكِّ (اللافكِّيَّةُ)','متغيِّرةُ درجةِ الحرارةِ','يحتوي هيكلُها على مادةٍ مرنةٍ تسمَّى الغضروفَ، وليسَ لها فكٌّ. (ص ٦٩)'],
+           car:['الأسماكُ الغضروفيَّةُ','متغيِّرةُ درجةِ الحرارةِ','يحتوي هيكلُها على الغضروفِ، وهوَ يشبهُ المادةَ الموجودةَ في صيوانِ أذانِ الإنسانِ ومقدِّمةِ أنفِهِ. ومنها سمكُ القرشِ. (ص ٦٩)'],
+           bon:['الأسماكُ العظميَّةُ','متغيِّرةُ درجةِ الحرارةِ','هيَ الأكثرُ تنوُّعًا بينَ مجموعاتِ الفقارياتِ، وتتكوَّنُ هياكلُها منَ العظامِ، وتغطِّي أجسامَها القشورُ. ومنها الكنعدُ والهامورُ. (ص ٦٩)'],
+           amp:['البرمائيَّاتُ','متغيِّرةُ درجةِ الحرارةِ','ومنها الضفادعُ والسلمندراتُ. تقضي جزءًا منْ دورةِ حياتِها في الماءِ والجزءَ الآخرَ على اليابسةِ. ولها رئاتٌ ولكنَّها تتنفَّسُ عنْ طريقِ الجلدِ أيضًا؛ لذا يجبُ أنْ يكونَ جلدُها رطبًا. (ص ٧٠)'],
+           rep:['الزواحفُ','متغيِّرةُ درجةِ الحرارةِ','تعيشُ على اليابسةِ، وجلدُها مغطًّى بحراشفَ أوْ صفائحَ تحميها منْ فقدانِ الماءِ، وتعتمدُ على رئتيها في التنفُّسِ. ومنها السحالي والثعابينُ والسلاحفُ والحرابيُّ. (ص ٧١)'],
+           bir:['الطيورُ','ثابتةُ درجةِ الحرارةِ','لها ريشٌ خفيفٌ يُبقيها دافئةً وجافَّةً، ولها مناقيرُ ورجلانِ تنتهيانِ بقدمينِ لهما مخالبُ، وعلى أقدامِها حراشفُ. وهيَ الحيواناتُ الوحيدةُ التي يغطِّي جسمَها الريشُ. (ص ٧٢)'],
+           mam:['الثدييَّاتُ','ثابتةُ درجةِ الحرارةِ','لها شعرٌ أوْ فروٌ يكسو جسمَها، وتعيشُ في معظمِ البيئاتِ، وترعى صغارَها. وإناثُها تنتجُ الحليبَ لإرضاعِ صغارِها. (ص ٧٣)']};
+    function show(k){
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===k); });
+      for(var j in EL){ document.getElementById(EL[j]).style.opacity=(j===k)?1:0; }
+      tag.textContent=D[k][0];
+      var warm = (D[k][1].indexOf('ثابتةُ')===0);
+      tmp.textContent=D[k][1];
+      tmp.style.background = warm ? '#C4483E' : '#3E7BC4';
+      tmp.style.color='#FFFFFF';
+      msg.className='simMsg good'; msg.textContent=D[k][2];
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('jaw');
+  })();
+
+  (function(){
+    var go=document.getElementById('bGo'); if(!go) return;
+    var re=document.getElementById('bRe'), tag=document.getElementById('bTag'), msg=document.getElementById('bMsg');
+    var AR=['١','٢','٣','٤'], i=0, t=null;
+    var D=['تبدأُ دورةُ حياةِ الضفدعِ في الماءِ مثلَ جميعِ البرمائيَّاتِ؛ حيثُ تضعُ الأنثى بيضًا. (ص ٧٠)',
+           'يخرجُ منَ البيضِ أبو ذُنَيْبَةَ، ولهُ خياشيمُ تساعدُهُ على العيشِ في الماءِ، ويسبحُ ويتنفَّسُ بالخياشيمِ. (ص ٧٠)',
+           'وعندَما ينمو تنمو لهُ الأرجلُ وتتحوَّلُ الخياشيمُ إلى رئاتٍ. (ص ٧٠)',
+           'ليتمكَّنَ منَ العيشِ على اليابسةِ. ومعَ ذلكَ يتنفَّسُ عنْ طريقِ الجلدِ أيضًا؛ لذا يجبُ أنْ يبقى جلدُهُ رطبًا، ويعيشُ قربَ الماءِ باستمرارٍ. (ص ٧٠)'];
+    function draw(){
+      for(var j=0;j<4;j++){ document.getElementById('s'+j).style.opacity=(j===i)?1:0; }
+      document.getElementById('fLand').style.opacity=(i>=3)?1:0;
+      tag.textContent=AR[i]+' منْ ٤'; msg.className='simMsg good'; msg.textContent=D[i];
+    }
+    function stop(){ if(t){ clearInterval(t); t=null; } go.textContent='أُشغِّلُ دورةَ الحياةِ'; }
+    go.addEventListener('click',function(){
+      if(t){ stop(); return; } go.textContent='إيقافٌ';
+      t=setInterval(function(){ if(i<3){ i++; draw(); } else { stop(); } },1900); });
+    re.addEventListener('click',function(){ stop(); i=0; draw(); });
+    draw();
+  })();
+
+  (function(){
+    var nm=document.getElementById('cNm'); if(!nm) return;
+    var msg=document.getElementById('cMsg'), cnt=document.getElementById('cN'), sc=document.getElementById('cSc');
+    var AR=['٠','١','٢','٣','٤','٥','٦'];
+    var Q=[{t:'الطيورُ',k:true,r:'فقارياتٌ ثابتةُ درجةِ الحرارةِ، لها ريشٌ خفيفٌ يُبقيها دافئةً. (ص ٦٨ و ٧٢)'},
+           {t:'الضفدعُ',k:false,r:'منَ البرمائيَّاتِ، وهيَ منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ. (ص ٧٠)'},
+           {t:'الخروفُ',k:true,r:'منَ الثدييَّاتِ، وهيَ فقارياتٌ ثابتةُ درجةِ الحرارةِ. (ص ٧٣)'},
+           {t:'سمكُ القرشِ',k:false,r:'منَ الأسماكِ الغضروفيَّةِ، والأسماكُ متغيِّرةُ درجةِ الحرارةِ. (ص ٦٨ – ٦٩)'},
+           {t:'السحليةُ',k:false,r:'منَ الزواحفِ، وهيَ منَ الحيواناتِ المتغيِّرةِ درجةِ الحرارةِ. (ص ٧١)'},
+           {t:'الخفاشُ',k:true,r:'منَ الثدييَّاتِ لكنَّهُ يطيرُ، والثدييَّاتُ ثابتةُ درجةِ الحرارةِ. (ص ٧٣)'}];
+    var i=0, score=0, lock=false;
+    function show(){ nm.textContent=Q[i].t; cnt.textContent=AR[i+1]+' منْ ٦';
+      sc.textContent='الإجاباتُ الصحيحةُ: '+AR[score];
+      msg.className='simMsg neutral'; msg.textContent='أختارُ، ثمَّ أعرفُ السببَ.'; lock=false; }
+    function pick(v){
+      if(lock) return; lock=true;
+      if(Q[i].k===v){ score++; msg.className='simMsg good'; msg.textContent='✔ صحيحٌ. '+Q[i].r; }
+      else { msg.className='simMsg bad'; msg.textContent='✖ الصحيحُ: '+(Q[i].k?'ثابتةُ درجةِ الحرارةِ':'متغيِّرةُ درجةِ الحرارةِ')+'. '+Q[i].r; }
+      sc.textContent='الإجاباتُ الصحيحةُ: '+AR[score];
+      setTimeout(function(){ i++;
+        if(i<Q.length) show();
+        else { msg.className='simMsg good'; msg.textContent='انتهى التدريبُ. نتيجتي: '+AR[score]+' منْ ٦.';
+               i=0; score=0; setTimeout(show,2600); } }, 2600);
+    }
+    document.getElementById('cA').addEventListener('click',function(){pick(true);});
+    document.getElementById('cB').addEventListener('click',function(){pick(false);});
+    show();
+  })();
+
+  (function(){
+    var box=document.getElementById('simD'); if(!box) return;
+    var tag=document.getElementById('dTag'), msg=document.getElementById('dMsg');
+    var EL={egg:'gEgg',pou:'gPou',pla:'gPla'};
+    var D={egg:['ثدييَّاتٌ تضعُ بيضًا','آكلُ النملِ الشوكيُّ ومنقارُ البطِّ الثدييَّانِ الوحيدانِ اللذانِ يضعانِ البيضَ. (ص ٧٣)'],
+           pou:['ثدييَّاتٌ لها كيسٌ','الكنغرُ والكوالا يحملانِ الصغارَ داخلَ كيسٍ حتى يكتملَ نموُّها. (ص ٧٣)'],
+           pla:['ثدييَّاتٌ تنمو داخلَ الأجسامِ','الخرافُ والخفاشُ والقرودُ وثدييَّاتٌ أخرى تنمو داخلَ أجسامِ أمَّهاتِها. (ص ٧٣)']};
+    function show(k){
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===k); });
+      for(var j in EL){ document.getElementById(EL[j]).style.opacity=(j===k)?1:0; }
+      tag.textContent=D[k][0]; msg.className='simMsg good'; msg.textContent=D[k][1];
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('egg');
+  })();
+
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g4l4SvgHost','g4l4Info',{'warm':'<span><b>ثابتة درجة الحرارة</b> — تبقى حرارة أجسامها ثابتةً مهما تغيَّر الوسط، كالطيور والثدييات.</span>','cold':'<span><b>متغيِّرة درجة الحرارة</b> — تتغيَّر حرارة أجسامها تبعًا للوسط المحيط، كالأسماك والزواحف.</span>'},'');
+ERT.stepper({pills:'g4l4Pills', info:'g4l4Info', svg:'g4l4SvgHost', next:'g4l4Next', prev:'g4l4Prev', stages:[['warm','ثابتة درجة الحرارة','تبقى حرارة أجسامها ثابتةً مهما تغيَّر الوسط، كالطيور والثدييات.'],['cold','متغيِّرة درجة الحرارة','تتغيَّر حرارة أجسامها تبعًا للوسط المحيط، كالأسماك والزواحف.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s4d1');
+EG.tf({q:'s4d2Q', fb:'s4d2Fb', score:'s4d2Sc', btnT:'s4d2T', btnF:'s4d2F', reset:'s4d2R', data:[['الطيور من الحيوانات ثابتة درجة الحرارة.','T','وكذلك الثدييات.'],['الأسماك تتنفَّس بالرئتين.','F','الأسماك تتنفَّس <b>بالخياشيم</b>.'],['البرمائيات تعيش صغارها في الماء وبالغوها على اليابسة.','T','كالضفدع الذي يبدأ أبا ذنيبة.'],['جلد الزواحف مغطًّى بالحراشف.','T','وهو يقلِّل فقد الماء من أجسامها.']]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"04_الصف_الرابع_الابتدائي/01_المخلوقات_الحية/02_المملكة_الحيوانية/02_الحيوانات_الفقارية/علوم_رابع_ابتدائي_ف1_الدرس_الثاني_الحيوانات_الفقارية.html","title":"الحيوانات الفقارية","grade":4,"emoji":"🦴","photoTopic":"animals","observeQuestion":"إلى أي مجموعة ينتمي الأرنب ذو الشعر، وما التركيب الداخلي الذي يجعله فقاريًا؟","facts":["تمتلك الفقاريات هيكلًا داخليًا وعمودًا فقريًا يدعم الجسم ويحمي الحبل الشوكي.","الريش صفة مميزة للطيور، والشعر والغدد المنتجة للحليب من الصفات المميزة للثدييات.","لا يكفي مكان المعيشة وحده للتصنيف؛ فالحوت ثديي يتنفس الهواء رغم معيشته في الماء."],"diagram":{"title":"مجموعات فقارية مألوفة","relation":"comparison","nodes":[{"emoji":"🐟","label":"أسماك","detail":"تتنفس معظمها بالخياشيم"},{"emoji":"🐸","label":"برمائيات","detail":"جلد كثير منها رطب"},{"emoji":"🦎","label":"زواحف","detail":"جلدها مغطى بحراشف"},{"emoji":"🐦","label":"طيور","detail":"لها ريش"},{"emoji":"🐈","label":"ثدييات","detail":"ترضع صغارها"}],"caption":"مجموعات عامة للمقارنة؛ يفصل الدرس الأسماك إلى طوائف متعددة، وتوجد اختلافات داخل كل مجموعة."},"lab":{"title":"قائمة صفات ثابتة","question":"كم صفة نجد من هذه الثلاث: عمود فقري، رئتان، شعر؟","controlLabel":"العينة التي نفحصها","options":["سمكة ذهبية","عصفور","قطة"],"states":[{"label":"صفة واحدة من القائمة","emoji":"✅","amount":1,"explanation":"للسمكة الذهبية عمود فقري؛ وهي تتنفس بالخياشيم ولا تمتلك شعرًا، فلا تنطبق الصفتان الأخريان.","observation":"تنطبق صفة العمود الفقري."},{"label":"صفتان من القائمة","emoji":"✅","amount":2,"explanation":"للعصفور عمود فقري ورئتان؛ يغطي الريش جسمه، ولا يعد الريش شعرًا.","observation":"تنطبق صفتا العمود الفقري والرئتين."},{"label":"ثلاث صفات من القائمة","emoji":"✅","amount":3,"explanation":"للقطة عمود فقري ورئتان وشعر؛ توافق الصفات الثلاث المختارة لهذه المقارنة.","observation":"تنطبق الصفات الثلاث."}],"quantityLabel":"عدد الصفات المنطبقة من قائمة محددة من ثلاث صفات","modelNote":"العدد يصف القائمة المختارة فقط؛ لا يقيس قيمة الحيوان أو نجاحه أو تعقيد جسمه.","tryPrompt":"هل سيتغير ترتيب الأعداد لو اخترنا صفات تخص الأسماك بدل الشعر والرئتين؟"},"sources":[{"title":"OpenStax: الفقاريات وخصائص مجموعاتها","url":"https://openstax.org/books/concepts-biology/pages/15-6-vertebrates"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

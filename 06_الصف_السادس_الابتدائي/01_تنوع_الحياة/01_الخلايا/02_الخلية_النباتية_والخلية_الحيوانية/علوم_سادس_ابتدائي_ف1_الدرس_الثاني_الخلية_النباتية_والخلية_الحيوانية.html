@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – الخلية النباتية والخلية الحيوانية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>الخلية النباتية والخلية الحيوانية</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الأولى: تنوع الحياة<br>الفصل الأول: الخلايا — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ٣٢</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الأولى</h3><p>تنوع الحياة</p></div><div class="card"><h3>الفصل الأول</h3><p>الخلايا</p></div><div class="card"><h3>الدرس الثاني</h3><p>الخلية النباتية والخلية الحيوانية</p></div></div><div class="box idea" style="font-size:32px;">السؤال الأساسي: كيف تقوم الخلايا بالعمليات الحيوية؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:25px"><li>أُقارن بين الخلية النباتية والخلية الحيوانية.</li><li>أذكر أجزاء الخلية ووظيفة كلٍّ منها.</li><li>أُميِّز تراكيب الخلية النباتية التي لا توجد في الحيوانية.</li><li>أُعرِّف النقل السلبيَّ وأُفرِّق بين الانتشار والخاصية الأسموزية.</li><li>أُوضِّح حالة الاتِّزان وأثر فقد الماء في النبات.</li><li>أَصِف البناء الضوئيَّ والتنفُّس الخلويَّ وأكتب معادلتيهما.</li><li>أُفرِّق بين التنفُّس الهوائيِّ واللاهوائيِّ (التخمُّر).</li><li>أُعرِّف النقل النشط والبلعمة.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:31px;">الدم لا يدخل إلى الخلايا! فكيف تصل المواد التي تحتاج إليها خلايا جسمي؟</div><p class="c">عبر <b>الغشاء البلازميِّ</b> بطرق مختلفة: انتشار وخاصية أسموزية ونقل نشط. لنتعرَّفها.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>الخلية</h3><p>الوحدة الأساسية للمخلوق الحيِّ وأصغر جزء قادر على الحياة.</p></div><div class="card center" style="text-align:center;"><h3>النواة</h3><p>اكتشفها روبرت براون في الخلية النباتية.</p></div><div class="card center" style="text-align:center;"><h3>البناء الضوئي</h3><p>النبات يصنع غذاءه من ضوء الشمس والماء وثاني أكسيد الكربون.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ٣٤</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(3,1fr)"><div class="card"><h3>النقل السلبيُّ</h3><p style="font-size:25px">حركة المواد عبر أغشية من دون أن تستخدم طاقة الخلية.</p></div><div class="card"><h3>الانتشار</h3><p style="font-size:25px">انتقال المواد عبر الغشاء البلازميِّ من منطقة التركيز المرتفع إلى منطقة التركيز المنخفض من دون الحاجة إلى طاقة.</p></div><div class="card"><h3>الخاصية الأسموزية</h3><p style="font-size:25px">انتقال جزيئات الماء عبر الغشاء البلازميِّ.</p></div><div class="card"><h3>البناء الضوئيُّ</h3><p style="font-size:25px">عملية تستخدم فيها النباتات طاقة الشمس لإنتاج غذاء على شكل سكر الجلوكوز.</p></div><div class="card"><h3>التنفُّس الخلويُّ</h3><p style="font-size:25px">عملية تستخلص بها النباتات والحيوانات الطاقة من سكر الجلوكوز.</p></div><div class="card"><h3>النقل النشط</h3><p style="font-size:25px">انتقال المواد عبر الأغشية باستخدام طاقة.</p></div></div><div class="box note" style="font-size:29px;">مهارة القراءة في هذا الدرس: <b>التلخيص</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>فيمَ تختلف الخلايا النباتية عن الخلايا الحيوانية؟</h2><span class="src">ص ٣٣ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:24px;"><b>الهدف:</b> الخلايا هي الوحدات البنائية الأساسية في المخلوقات الحية جميعها. كيف أقارن بين الخلايا النباتية والخلايا الحيوانية؟ أفحص خلايا من حيوانات ونباتات، وأحدِّد أوجه التشابه وأوجه الاختلاف بين النوعين.</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:0 0 250px"><p class="c"><b>أحتاج إلى:</b></p><ul class="list" style="font-size:23px"><li>شريحة مجهرية</li><li>قطارة</li><li>ملقط</li><li>ورقة نبات كالإلوديا أو البصل</li><li>غطاء شريحة</li><li>ماء</li><li>مجهر مركب</li><li>شريحة محضرة لخلايا باطن خدِّ الإنسان</li></ul></div><div style="flex:1 1 0"><p class="c"><b>الخطوات:</b></p><ul class="list num" style="font-size:22px"><li>أحضِّر شريحةً رطبةً لورقة نبات الإلوديا (نبات مائيٍّ) مأخوذةً من قمة النبات، وذلك بوضع قطرة ماء على شريحة زجاجية، ثم أستخدم الملقط لنزع ورقة من نبات الإلوديا، وأضعها فوق قطرة الماء، وأضع فوقها غطاء الشريحة.</li><li><b>ألاحظ</b> أفحص الورقة باستخدام القوة الصغرى للمجهر مركِّزًا على أطراف الخلايا، وأدوِّن ملاحظاتي حول خلية واحدة. ثم أستخدم القوة الكبرى للمجهر لأفحص مركز الخلية، وأرسم ما أشاهد. ثم أعيد العدسة الشيئية الصغرى إلى مكانها فوق الشريحة، وأنزع الشريحة عن منضدة المجهر.</li><li><b>ألاحظ</b> أعيد الخطوة الثانية مستخدمًا شريحةً محضَّرةً لخلايا باطن الخدِّ بدلًا من ورقة الإلوديا.</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ٣٣ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أقارن</b> أصف أوجه التشابه وأوجه الاختلاف بين خلايا الإلوديا وخلايا باطن الخدِّ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٣</span><b>التشابه:</b> لكلٍّ منهما غشاء بلازميٌّ ونواة وسيتوبلازم وميتوكندريا ورايبوسومات وأجسام جولجي وشبكة إندوبلازمية وأجسام محلِّلة وفجوات.<br><b>الاختلاف:</b> خلايا الإلوديا (نباتية) لها <b>جدار خلويٌّ</b> صلب يعطيها شكلًا منتظمًا، وفيها <b>بلاستيدات خضراء</b>، وفجوتها كبيرة. أمَّا خلايا باطن الخدِّ (حيوانية) فليس لها جدار خلويٌّ ولا بلاستيدات، وشكلها غير منتظم، وفجواتها أصغر.</div></div><div class="qa"><p class="q">٥. <b>أفسِّر البيانات.</b> كيف أفسِّر بعض أوجه التشابه والاختلاف بين هذه الخلايا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٣</span>التشابه لأن كلتيهما خلية حيَّة تحتاج إلى الأجزاء نفسها للقيام بوظائف الحياة: النواة للتحكُّم، والميتوكندريا للطاقة، والغشاء لتنظيم الدخول والخروج.<br>والاختلاف بسبب <b>اختلاف الوظيفة</b>؛ فالنبات يصنع غذاءه بنفسه فيحتاج إلى بلاستيدات خضراء، ولا يتحرَّك فيحتاج إلى جدار خلويٍّ يدعمه ويعطيه شكله ويحميه من الظروف البيئية.</div></div><div class="box ask" style="font-size:25px;"><b>أستكشف أكثر:</b> أفحص شرائح محضَّرة لعينات خلايا أخرى. هل تتشابه الخلايا الجديدة مع خلايا نبات الإلوديا أو مع خلايا باطن الخدِّ عند الإنسان؟ ولماذا؟</div><div class="box safe" style="font-size:24px;">أتعامل مع الشرائح الزجاجية والمجهر بحذر بإشراف معلِّمي، وأغسل يديَّ بعد النشاط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف أقارن بين الخلايا النباتية والحيوانية؟</h2><span class="src">ص ٣٤</span></div>
+<div class="body"><p class="c">تتكوَّن كلُّ خلية من مجموعة من الأجزاء تعمل معًا بوصفها وحدةً واحدةً. وعلى الرغم من أن الخلايا النباتية والخلايا الحيوانية لهما أجزاء مشتركة إلا أن هناك بعض الاختلافات بينهما.</p><div class="cards"><div class="card"><h3>الغشاء البلازميُّ</h3><p style="font-size:26px">لكلِّ خلية غشاء بلازميٌّ يحيط بها، ويعطيها شكلها المميَّز، ويسمح بدخول المواد وخروجها من الخلية. وهذا الغشاء يشبه الجدار الذي يحيط بمصنع ليحميه.</p></div><div class="card"><h3>النواة</h3><p style="font-size:26px">معظم الخلايا لها نواة تعمل بوصفها مركز تحكُّم في الخلية، حيث تنظِّم التفاعلات الكيميائية فيها، وتخزن المعلومات الضرورية لانقسام الخلية. ويَسهُل رؤيتها بمجهر بسيط؛ لأنها كبيرة ولونها داكن.</p></div></div><div class="box note" style="font-size:23px;">وتحتوي النواة على معظم المعلومات الوراثية للخلية، التي تحدِّد كيف تقوم الخلية بنَسْخ نفسها. ويوجد في النواة أشرطة طويلة من الأحماض النووية تُسمَّى <b>الكروموسومات</b>، تخزن المعلومات اللازمة لتنفيذ كافة الأنشطة وتحفظها؛ لنقلها إلى خلايا النسل الجديد.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>السيتوبلازم والميتوكندريا والفجوات</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>السيتوبلازم</h3><p style="font-size:24px">يوجد بين النواة والغشاء البلازميِّ مادة تشبه الهلام تسمَّى السيتوبلازم، ويحتوي على كمية كبيرة من الماء. ويوجد فيه أيضًا أجزاء الخلية الداخلية والمواد الكيميائية، ولكلٍّ منها وظائف محدَّدة. ويمتدُّ فيه أيضًا نظام النقل في الخلية.</p></div><div class="card"><h3>الميتوكندريا</h3><p style="font-size:24px">مصدر طاقة الخلية. وهي أجسام على شكل عصيٍّ تقوم بعملية التنفُّس الهوائيِّ، ويتمُّ فيها تحوُّل المواد الكيميائية في الغذاء إلى طاقة تستعملها الخلية. والخلايا التي تحتاج إلى الطاقة باستمرار — ومنها خلايا عضلات القلب — تحتوي على ألوف من الميتوكندريا.</p></div><div class="card"><h3>الفجوات</h3><p style="font-size:24px">تراكيب تشبه الكيس، تخزن الماء والغذاء، كما تقوم بخزن بعض الفضلات قبل أن تتخلَّص منها. والفجوات في الخلية النباتية أكبر منها في الخلية الحيوانية.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="qa"><p class="q">ما التراكيب التي توجد خارج النواة في الخلية النباتية؟ <br><span class="muted" style="font-size:24px">إرشاد: أحدِّد موقع النواة، وأتفحَّص التراكيب من حولها.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٥</span>من الشكل: <b>الغشاء البلازميُّ · الجدار الخلويُّ · السيتوبلازم · الفجوة · البلاستيدة الخضراء · الميتوكندريا · الرايبوسومات · الشبكة الإندوبلازمية · أجسام جولجي · الأجسام المحلِّلة</b>. أمَّا داخل النواة فتوجد <b>الكروموسومات</b>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تركيب الخلية النباتية</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="box idea" style="font-size:27px;">ويوجد في الخلايا النباتية تراكيبُ وموادُّ كيميائية لا توجد في الخلايا الحيوانية، ومنها: <b>الجدار الخلويُّ، والبلاستيدات الخضراء، والكلوروفيل</b>.</div><div class="cards"><div class="card"><h3>الجدار الخلويُّ</h3><p style="font-size:26px">طبقة صلبة تحيط بالغشاء البلازميِّ. يدعم هذا الجدار الخلية النباتية، ويعطيها شكلها، ويحميها من الظروف البيئية.</p></div><div class="card"><h3>البلاستيدات الخضراء</h3><p style="font-size:26px">توجد في أوراق العديد من النباتات وسيقانها، وتقوم بصنع الغذاء؛ إذ تمتصُّ طاقة الضوء عن طريق صبغة خضراء فيها تُسمَّى <b>الكلوروفيل</b>، وهذه الصبغة هي التي تُكسب النباتات لونها الأخضر.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>نباتية أم حيوانية؟</h2><span class="src">ص ٣٤ — ٣٥</span></div>
+<div class="body center"><p class="t' style='font-size:28px">أقرأ التركيب، ثم أختار: هل يوجد في الخليتين معًا أم في النباتية فقط؟</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="both">في الخليتين معًا</button><button class="simBtn ghost" type="button" data-k="plant">في النباتية فقط</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>ألخِّص.</b> ما وظيفة الفجوات في الخلية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٥</span>الفجوات تراكيب تشبه الكيس، وظيفتها <b>خزن الماء والغذاء</b>، كما تقوم بـ<b>خزن بعض الفضلات</b> قبل أن تتخلَّص منها. والفجوات في الخلية النباتية أكبر منها في الخلية الحيوانية.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> أقارن بين وظائف الغشاء البلازميِّ والجدار الخلويِّ في الخلية النباتية.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٥</span><b>الغشاء البلازميُّ:</b> يحيط بالخلية ويعطيها شكلها المميَّز، ويسمح بدخول المواد وخروجها من الخلية — أي ينظِّم المرور.<br><b>الجدار الخلويُّ:</b> طبقة صلبة تحيط بالغشاء البلازميِّ، تدعم الخلية النباتية وتعطيها شكلها وتحميها من الظروف البيئية — أي يدعم ويحمي.<br>فكلاهما يحيط بالخلية، لكن الغشاء ينظِّم النقل والجدار يدعم ويحمي، والجدار لا يوجد في الخلية الحيوانية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما النقل السلبيُّ؟</h2><span class="src">ص ٣٦</span></div>
+<div class="body"><p class="c">تقوم خلايا الدم باستمرار بتزويد خلايا الجسم بالغذاء والأكسجين وموادَّ أخرى للقيام بنشاطاتها الحيوية، وفي الوقت نفسه يقوم الدم بنقل الفضلات الناتجة — ومنها ثاني أكسيد الكربون — بعيدًا عن الخلية. ومع ذلك <b>لا يدخل الدم إلى الخلايا</b>! فكيف تنتقل المواد التي تحتاج إليها خلايا جسمي؟</p><div class="box idea" style="font-size:24px;"><b>النقل السلبيُّ</b> هو حركة المواد عبر أغشية من دون أن تستخدم طاقة الخلية. وهناك نوعان منه اعتمادًا على نوع المادة التي تنتقل عبر الغشاء البلازميِّ، هما: <b>الانتشار، والخاصية الأسموزية</b>. وكلاهما ضروريٌّ وأساسيٌّ للخلايا الحية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الانتشار والخاصية الأسموزية</h2><span class="src">ص ٣٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الانتشار</h3><p style="font-size:24px">عملية انتقال المواد — ومنها السكر والأكسجين وثاني أكسيد الكربون — عبر الغشاء البلازميِّ من منطقة التركيز المرتفع إلى منطقة التركيز المنخفض من دون الحاجة إلى طاقة. وهذه العملية تشبه وضع نقطة حبر في كأس فيها ماء؛ إذ تنتشر جسيمات الحبر من المناطق الأكثر تركيزًا إلى المناطق الأقلِّ تركيزًا من دون أن تحتاج إلى طاقة.</p></div><div class="card"><h3>الخاصية الأسموزية</h3><p style="font-size:24px">هي انتقال جزيئات الماء عبر الغشاء البلازميِّ، وينتقل الماء مثل باقي المواد من المناطق التي يكون تركيزه فيها أكبر إلى المناطق التي يكون تركيزه فيها أقلَّ. وبذلك يمكن القول إن الخاصية الأسموزية عملية انتشار <b>للماء فقط</b>.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الاتِّزان وذبول النبات</h2><span class="src">ص ٣٧</span></div>
+<div class="body"><p class="c">افترض أنَّ ماءً وجليسرولًا قد فُصل أحدُهما عن الآخر بغشاء رقيق؛ فإنَّ جسيمات الماء تنتقل بفعل الخاصية الأسموزية من جانب الغشاء الذي فيه تركيز الماء مرتفع إلى الجانب الآخر الذي يكون فيه تركيز الماء منخفضًا. وهذه العملية لا تستهلك طاقةً.</p><div class="box idea" style="font-size:26px;">وتستمرُّ عمليتا الانتشار والخاصية الأسموزية إلى أن يتساوى تركيز المواد على جانبَي الغشاء، وعندها تتوقَّف العمليتان، ويحدث <b>الاتِّزان</b>.</div><div class="box note" style="font-size:23px;">ويكون النبات سليمًا إذا كان في حالة اتِّزان، وذلك عندما يكون دخول الماء إلى خلاياه وخروجه منها بكميات متساوية. أمَّا إذا كان خروج الماء من خلاياه أكثر من دخوله إليها فإن أجزاء الخلية الداخلية تنكمش، وينكمش الغشاء البلازميُّ مبتعدًا عن الجدار الخلويِّ، <b>فيذبل النبات</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>الانتشار والخاصية الأسموزية</h2><span class="src">ص ٣٧ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:23px"><li><b>أجرِّب</b> أملأ كأسًا بماء دافئ، وأضع فيه كيس شاي صغيرًا، وأضيف إليه ملعقة من الرمل.</li><li><b>ألاحظ.</b> أحرِّك الكأس عدة ثوانٍ، ثم أتركه من دون تحريك مدة ١٥ دقيقة. ما لون الماء؟ وهل توزَّع اللون في الكأس بالتساوي؟</li><li><b>أدوِّن البيانات.</b> أرفع كيس الشاي من الكأس، وأضعه على منشفة ورقية. وأنظر بدقة إلى الماء الذي في الكأس. هل هناك أوراق شاي طافية في الماء؟ أفتح كيس الشاي بالمقصِّ. هل يوجد رمل في الكيس؟</li><li><b>أفسِّر البيانات.</b> ما الذي انتقل من كيس الشاي وإليه؟ كيف تعرف أن هذا قد حدث؟</li><li><b>أستنتج.</b> ما الذي حدَّد حركة الجزيئات إلى داخل الكيس وإلى خارجه؟ ماذا أتوقَّع أن يحدث للماء لو بقي كيس الشاي داخله مدة طويلة؟</li></ul><div class="box safe" style="font-size:24px;">أستعمل المقصَّ بحذر، وأنتبه من الماء الدافئ، وأغسل يديَّ بعد النشاط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>إجابات أسئلة النشاط</h2><span class="src">ص ٣٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أفسِّر البيانات.</b> ما الذي انتقل من كيس الشاي وإليه؟ كيف تعرف أن هذا قد حدث؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٧</span>انتقلت <b>جزيئات الشاي</b> (المواد الملوِّنة) من داخل الكيس إلى الماء؛ والدليل تلوُّن الماء. وانتقل <b>الماء</b> إلى داخل الكيس؛ والدليل ابتلال أوراق الشاي. ولم ينتقل <b>الرمل</b> ولا <b>أوراق الشاي</b>؛ لأن حبيباتها كبيرة لا تمرُّ عبر مسامِّ الكيس — والدليل بقاء الرمل داخل الكيس وعدم وجود أوراق طافية في الماء.</div></div><div class="qa"><p class="q">٥. <b>أستنتج.</b> ما الذي حدَّد حركة الجزيئات إلى داخل الكيس وإلى خارجه؟ ماذا أتوقَّع أن يحدث للماء لو بقي كيس الشاي داخله مدة طويلة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٧</span>حدَّدها <b>حجم الجزيئات</b> مقارنةً بمسامِّ الكيس، و<b>فرق التركيز</b> بين داخل الكيس وخارجه؛ فتنتقل المواد من التركيز المرتفع إلى المنخفض بالانتشار.<br>ولو بقي الكيس مدةً طويلةً لاستمرَّ الانتشار حتى <b>يتساوى التركيز</b> داخل الكيس وخارجه فيحدث <b>الاتِّزان</b> ويصبح لون الماء موزَّعًا بالتساوي وتتوقَّف الحركة الصافية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٣٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>ألخِّص.</b> ماذا يحدث خلال الخاصية الأسموزية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٧</span>تنتقل <b>جزيئات الماء</b> عبر الغشاء البلازميِّ من المناطق التي يكون تركيز الماء فيها أكبر إلى المناطق التي يكون تركيزه فيها أقلَّ، من دون أن تستهلك طاقةً. وتستمرُّ حتى يتساوى التركيز على جانبَي الغشاء فيحدث الاتِّزان. فهي عملية انتشار للماء فقط.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> كيف يوضِّح العنب والزبيب حالة الاتِّزان؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٧</span>إجابة نموذجية مقترحة: <b>العنب</b> ممتلئ بالماء وخلاياه في حالة <b>اتِّزان</b>؛ فدخول الماء إلى خلاياه وخروجه منها متساويان، فيبدو منتفخًا مشدودًا. أمَّا <b>الزبيب</b> فقد خرج الماء من خلاياه أكثر ممَّا دخل، فانكمشت أجزاء الخلية الداخلية وانكمش الغشاء البلازميُّ فتجعَّد وذبل — تمامًا كما يذبل النبات عند فقد الماء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما البناء الضوئيُّ؟</h2><span class="src">ص ٣٨</span></div>
+<div class="body"><p class="c">عند إعداد الكعك تُخلط مكوِّناته — ومنها الدقيق ومسحوق الخَبْز (مسحوق الخميرة) والسكر والبيض — معًا. وعند وضعها في الفرن تسبِّب الحرارة حدوث تفاعلات تحوِّل هذه المكوِّنات إلى كعك. وبطريقة مشابهة تحدث عملية البناء الضوئيِّ.</p><div class="box idea" style="font-size:23px;"><b>البناء الضوئيُّ</b> عملية تحدث في النباتات وبعض المخلوقات الحية الأخرى تستخدم طاقة الشمس لإنتاج غذاء على شكل سكر الجلوكوز. والمواد المتفاعلة في هذه العملية هي <b>ثاني أكسيد الكربون والماء</b>. أمَّا المواد الناتجة عن العملية فهي <b>سكر الجلوكوز والأكسجين</b>. وتتحكَّم الطاقة الشمسية في سير عملية البناء الضوئيِّ كلِّها.</div><div class="box note" style="font-size:30px;">ثاني أكسيد الكربون + ماء &nbsp;<span style="color:#634C2E">— ضوء ←</span>&nbsp; سكر الجلوكوز + الأكسجين</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>أين يحدث البناء الضوئيُّ؟</h2><span class="src">ص ٣٨</span></div>
+<div class="body"><p class="c">وتتمُّ عملية البناء الضوئيِّ داخل <b>البلاستيدات الخضراء</b>. وهي تراكيب مميزة تحتوي على صبغة الكلوروفيل الخضراء، وتقوم بالتقاط الطاقة الشمسية التي تُستعمَل في عملية البناء الضوئيِّ.</p><div class="box idea" style="font-size:26px;">ويُخزن سكر الجلوكوز الناتج عن هذه العملية داخل المخلوق الحيِّ، ويُطرد الأكسجين بوصفه فضلات ناتجةً عن عملية البناء الضوئيِّ إلى الغلاف الجويِّ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ٣٨</span></div>
+<div class="body"><div class="qa"><p class="q">ما المواد التي يحتاج إليها النبات للقيام بعملية البناء الضوئيِّ؟ <br><span class="muted" style="font-size:24px">إرشاد: أشعة الشمس ليست مادةً.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٨</span><b>ثاني أكسيد الكربون والماء</b>؛ فهما المادتان المتفاعلتان في العملية. أمَّا <b>طاقة الشمس</b> فهي التي تتحكَّم في سير العملية لكنها ليست مادةً.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التنفُّس الخلويُّ</h2><span class="src">ص ٣٩</span></div>
+<div class="body"><p class="c">تستخلص النباتات والحيوانات الطاقة من سكر الجلوكوز بعملية تُسمَّى <b>التنفُّس الخلويَّ</b>، وخلال هذه العملية تقوم الخلايا بتحليل السكر وإطلاق الطاقة.</p><div class="box idea" style="font-size:23px;">ويتطلَّب حدوث التنفُّس الخلويِّ في النباتات والحيوانات وجودَ <b>الأكسجين</b>. لذا يُسمَّى هذا التنفُّس <b>التنفُّس الهوائيَّ</b>. وينتج عن هذه العملية <b>الماء وثاني أكسيد الكربون</b> بوصفهما فضلات، وتستخدم النباتات هذه الفضلات مرةً أخرى في عملية البناء الضوئيِّ.</div><div class="box note" style="font-size:30px;">جلوكوز + أكسجين &nbsp;<span style="color:#634C2E">←</span>&nbsp; ثاني أكسيد الكربون + ماء + طاقة</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التنفُّس اللاهوائيُّ والتخمُّر</h2><span class="src">ص ٣٩</span></div>
+<div class="body"><p class="c">هناك نوع آخر من التنفُّس الخلويِّ لا يَستعمل الأكسجين، يُسمَّى <b>التنفُّس اللاهوائيَّ</b>. وأكثر عمليات التنفُّس اللاهوائيِّ شيوعًا هي <b>التخمُّر</b>. وهي عملية مرتبطة مع إنتاج الغذاء وحفظه، ومن ذلك إنتاج اللبن الرائب.</p><div class="box note" style="font-size:22px;">تحدث عملية التنفُّس اللاهوائيِّ في جميع الخلايا، عندما لا تستطيع الخلية القيام بعملية التنفُّس الخلويِّ. ويحدث هذا عند ممارسة التمارين الرياضية المجهدة. ورغم أن الشخص يتنفَّس (شهيقًا وزفيرًا) بسرعة في أثناء هذه التمارين إلا أن الأكسجين لا يصل إلى جميع الخلايا. ويتمُّ إطلاق الطاقة عن طريق عملية التخمُّر. وتُنتج عملية التخمُّر فضلات تُسمَّى <b>حمض اللاكتيك</b>، الذي يسبِّب ارتفاعُ تركيزه في العضلات الإحساسَ بألم في العضلات أو الإعياء.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>مقارنة: البناء الضوئيُّ والتنفُّس</h2><span class="src">ص ٣٩</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:20%">وجه المقارنة</th><th>البناء الضوئيُّ</th><th>عملية التنفُّس</th></tr><tr><td>المعادلة</td><td>ثاني أكسيد الكربون + ماء ← سكر الجلوكوز + الأكسجين (بالضوء)</td><td>جلوكوز + أكسجين ← ثاني أكسيد الكربون + ماء + طاقة</td></tr><tr><td>أين يحدث؟</td><td>يحدث فقط في الخلايا التي فيها بلاستيدات خضراء</td><td>تحدث في معظم الخلايا</td></tr><tr><td>الضوء</td><td>يحتاج إلى الضوء</td><td>تحدث في الضوء أو في الظلام</td></tr><tr><td>الطاقة</td><td>يُخزَّن الطاقة في صورة جلوكوز</td><td>تحرَّر الطاقة من الغذاء ومن الجلوكوز</td></tr><tr><td>الأكسجين</td><td>ينتج الأكسجين</td><td>تستهلك الأكسجين</td></tr><tr><td>الماء وثاني أكسيد الكربون</td><td>يستعمل الماء لإنتاج الغذاء ويستعمل ثاني أكسيد الكربون</td><td>ينتج عنها الماء وينتج عنها ثاني أكسيد الكربون</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٣٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>ألخِّص.</b> فيمَ يختلف النقل النشط عن النقل السلبيِّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٩</span><b>النقل السلبيُّ</b> حركة المواد عبر الأغشية <b>من دون أن تستخدم طاقة الخلية</b>، وينقل المواد من منطقة التركيز المرتفع إلى منطقة التركيز المنخفض — ويشمل الانتشار والخاصية الأسموزية.<br><b>النقل النشط</b> انتقال المواد عبر الأغشية <b>باستخدام طاقة</b>، وينقل المواد من منطقة التركيز المنخفض إلى منطقة التركيز المرتفع.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما أثر التمارين الرياضية المجهدة في الجسم؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٣٩</span>في التمارين المجهدة لا يصل الأكسجين إلى جميع الخلايا رغم سرعة التنفُّس، فتلجأ الخلايا إلى <b>التنفُّس اللاهوائيِّ (التخمُّر)</b> لإطلاق الطاقة. وينتج عن التخمُّر فضلات تُسمَّى <b>حمض اللاكتيك</b>، الذي يسبِّب ارتفاعُ تركيزه في العضلات الإحساسَ بألم في العضلات أو الإعياء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما النقل النشط؟</h2><span class="src">ص ٤٠</span></div>
+<div class="body"><p class="c">تشمل عمليتا الانتشار والخاصية الأسموزية نقلَ موادَّ من منطقة تركيز مرتفع إلى منطقة تركيز منخفض، ولا يتطلَّب هذا أن تَستخدم الخليةُ طاقةً. ومع ذلك هناك بعض المواد تنتقل أحيانًا من منطقة التركيز المنخفض إلى منطقة التركيز المرتفع.</p><div class="box idea" style="font-size:23px;">وعندما يحتاج انتقال المواد عبر الأغشية إلى طاقة يحدث <b>نقل نشط</b>. ومن ذلك حاجة الخلية إلى الطاقة؛ لنقل الأملاح المعدنية والمواد الغذائية إلى داخل الخلية وخارجها. فالخلية العصبية تحتاج إلى النقل النشط لضخِّ <b>البوتاسيوم</b> داخل الخلية، كما أنها تحتاج إلى النقل النشط لضخِّ <b>الصوديوم</b> خارجها.</div><div class="box note" style="font-size:29px;"><b>حقيقة:</b> يحدث النقل النشط عبر أغشية متلاصقة سليمة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>البلعمة</h2><span class="src">ص ٤٠</span></div>
+<div class="body"><p class="c">ولكنْ هناك بعض المواد حجمها كبير جدًّا، لذا لا تستطيع أن تمرَّ في خلال الغشاء البلازميِّ للخلية عن طريق النقل النشط أو النقل السلبيِّ؛ ولذلك تقوم هذه الخلايا بهضم المواد الكبيرة مثل البروتينات والبكتيريا بإحاطتها بغشاء بلازميٍّ، وتكوين جيب حولها.</p><div class="box idea" style="font-size:29px;">وتُسمَّى العملية <b>البلعمة</b>، كما في طريقة ابتلاع الأميبا لغذائها ومخلوقات حية أخرى وحيدة الخلية كذلك.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٤٠</span></div>
+<div class="body"><div class="qa"><p class="q"><b>ألخِّص:</b> كيف تتخلَّص الخلية من الفضلات؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤٠</span>تتخلَّص منها بأكثر من طريق: بـ<b>الانتشار</b> تخرج المواد الصغيرة — كثاني أكسيد الكربون — من منطقة تركيزها المرتفع داخل الخلية إلى الخارج من دون طاقة. وبـ<b>الخاصية الأسموزية</b> يخرج الماء الزائد. وبـ<b>النقل النشط</b> تُضخُّ بعض المواد خارج الخلية باستخدام طاقة — كضخِّ الصوديوم خارج الخلية العصبية. كما تخزن <b>الفجوات</b> بعض الفضلات قبل أن تتخلَّص منها.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> لماذا قد يكون النقل النشط مهمًّا للخلية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤٠</span>لأن الخلية تحتاج أحيانًا إلى مواد يكون تركيزها داخلها <b>أعلى</b> من الخارج، فلا يكفي النقل السلبيُّ لجلبها. فالنقل النشط يمكِّنها من نقل الأملاح المعدنية والمواد الغذائية إلى داخلها وخارجها ضدَّ اتجاه فرق التركيز — كضخِّ البوتاسيوم داخل الخلية العصبية والصوديوم خارجها — وهذا ضروريٌّ لقيامها بوظائفها.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ٤١</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">تتكوَّن <b>الخلايا</b> من أجزاء عديدة، لكلٍّ منها دوره ووظيفته في النشاطات التي تحافظ على الحياة.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px">تنتقل المواد من الخلية وإليها عن طريق <b>الانتشار</b>. وتنتقل جزيئات الماء عبر الأغشية البلازمية عن طريق <b>الخاصية الأسموزية</b>.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px"><b>البناء الضوئيُّ</b> عملية تقوم فيها النباتات بصنع الغذاء. و<b>التنفُّس الخلويُّ</b> عملية تستعمل فيها الخلية الطاقة.</p></div></div><div class="box note" style="font-size:23px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطويةً كالمبيَّنة في الشكل ألخِّص فيها ما تعلَّمته عن الخلايا، وانتقال المواد منها وإليها، والبناء الضوئيِّ، عن طريق إكمال العبارات: (تتكوَّن الخلايا من ……) — (انتقال المواد من وإلى ……) — (البناء الضوئيُّ عملية ……).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">الخلية النباتية والحيوانية</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">أجزاء مشتركة</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">غشاء بلازميٌّ · نواة</span><span class="node leaf">سيتوبلازم · ميتوكندريا</span><span class="node leaf">فجوات · رايبوسومات</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#9C7B4A;color:#9C7B4A">في النباتية فقط</div><div class="line" style="background:#9C7B4A"></div><div class="leaves"><span class="node leaf">جدار خلويٌّ</span><span class="node leaf">بلاستيدات خضراء</span><span class="node leaf">كلوروفيل</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">النقل عبر الغشاء</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">سلبيٌّ: انتشار وأسموزية</span><span class="node leaf">نشط: بطاقة</span><span class="node leaf">البلعمة</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#9C7B4A;color:#9C7B4A">عمليات الطاقة</div><div class="line" style="background:#9C7B4A"></div><div class="leaves"><span class="node leaf">البناء الضوئيُّ</span><span class="node leaf">التنفُّس الهوائيُّ</span><span class="node leaf">التنفُّس اللاهوائيُّ (التخمُّر)</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكِّر وأتحدَّث وأكتب</h2><span class="src">ص ٤١ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> العملية التي تسبِّب انتقال المواد من منطقة التركيز المنخفض إلى منطقة التركيز العالي، ولكي تحدث تحتاج إلى طاقة تسمَّى …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span><b>النقل النشط</b>.</div></div><div class="qa"><p class="q">٢. <b>ألخِّص.</b> أصف كيف تقوم الخلايا النباتية بصنع الغذاء؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span>بعملية <b>البناء الضوئيِّ</b>: تلتقط <b>البلاستيدات الخضراء</b> — بما فيها من صبغة الكلوروفيل — الطاقة الشمسية، ثم يتفاعل <b>ثاني أكسيد الكربون</b> مع <b>الماء</b> بهذه الطاقة فينتج <b>سكر الجلوكوز</b> و<b>الأكسجين</b>. ويُخزن الجلوكوز داخل المخلوق الحيِّ، ويُطرد الأكسجين بوصفه فضلات إلى الغلاف الجويِّ.</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> لماذا يعاني شخص ما من ألم في عضلات الساق بعد أن يركض مدَّة طويلة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span>لأن الأكسجين لم يصل إلى جميع خلايا العضلات رغم سرعة تنفُّسه، فلجأت الخلايا إلى <b>التنفُّس اللاهوائيِّ (التخمُّر)</b> لإطلاق الطاقة. وأنتج التخمُّر فضلات تُسمَّى <b>حمض اللاكتيك</b>، وارتفاع تركيزه في العضلات يسبِّب الإحساس بالألم أو الإعياء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ٤١ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> عندما يكون تركيز المادة متساويًا على جانبَي الغشاء البلازميِّ فإن المادة تكون في حالة:<br>أ. تخمُّر &nbsp;&nbsp; ب. أسموزية &nbsp;&nbsp; جـ. انتشار &nbsp;&nbsp; د. اتِّزان</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span><b>د - اتِّزان</b>؛ فالكتاب ينصُّ على أن عمليتَي الانتشار والخاصية الأسموزية تستمرَّان إلى أن يتساوى تركيز المواد على جانبَي الغشاء، وعندها تتوقَّفان ويحدث الاتِّزان.</div></div><div class="qa"><p class="q">٥. <b>أختار الإجابة الصحيحة.</b> أيُّ ممَّا يلي يُعدُّ مركز الطاقة في الخلية؟<br>أ. الميتوكندريا &nbsp;&nbsp; ب. نظام النقل &nbsp;&nbsp; جـ. جدار الخلية &nbsp;&nbsp; د. الفجوات</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span><b>أ - الميتوكندريا</b>؛ فهي مصدر طاقة الخلية، تقوم بعملية التنفُّس الهوائيِّ ويتمُّ فيها تحوُّل المواد الكيميائية في الغذاء إلى طاقة تستعملها الخلية.</div></div><div class="qa"><p class="q">٦. <b>السؤال الأساسي.</b> كيف تقوم الخلايا بالعمليات الحيوية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span>تقوم بها بتعاون أجزائها؛ فالنواة مركز التحكُّم، والميتوكندريا مصدر الطاقة، والبلاستيدات الخضراء تصنع الغذاء في النبات، والفجوات تخزن. وتنتقل المواد عبر الغشاء البلازميِّ بـ<b>النقل السلبيِّ</b> (الانتشار والخاصية الأسموزية) بلا طاقة، أو بـ<b>النقل النشط</b> بطاقة، أو بـ<b>البلعمة</b> للمواد الكبيرة. وتحصل على الطاقة بـ<b>البناء الضوئيِّ</b> لصنع الجلوكوز، وبـ<b>التنفُّس الخلويِّ</b> لتحليله وإطلاق الطاقة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والكتابة · العلوم والفن</h2><span class="src">ص ٤١ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والكتابة — الخيال العلميُّ.</b> لو طُلب إليَّ أن أكون مديرًا لعمليات خلية حيوانية أو خلية نباتية مدَّة يوم، فكيف أنظِّم دخول المواد إلى الخلية والتخلُّص من الفضلات؟ أكتب وصفًا مختصرًا لعملي في هذا اليوم.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span>إجابة نموذجية مقترحة: أبدأ يومي بمتابعة <b>الغشاء البلازميِّ</b> الذي يسمح بدخول المواد وخروجها. أترك الأكسجين والسكر يدخلان بـ<b>الانتشار</b> من التركيز المرتفع إلى المنخفض بلا طاقة، وأنظِّم دخول الماء بـ<b>الخاصية الأسموزية</b> حتى يبقى الاتِّزان فلا تنكمش الخلية. وأُشغِّل <b>النقل النشط</b> لضخِّ الأملاح المعدنية التي تركيزها بالداخل أعلى، مستعينًا بطاقة <b>الميتوكندريا</b>. وأتخلَّص من ثاني أكسيد الكربون بالانتشار، وأخزن الفضلات في <b>الفجوات</b> حتى أطرحها. وللمواد الكبيرة كالبكتيريا أستعمل <b>البلعمة</b>.</div></div><div class="qa"><p class="q"><b>العلوم والفن — رسم الخلية.</b> أرسم مخطَّطًا للخلية الحيوانية بثلاثة أبعاد أظهر فيه التراكيب التي تعلَّمتُها، وأكتب أسماءها ووصفًا مختصرًا لدورها في الخلية.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٤١</span>إجابة نموذجية مقترحة: أرسم الخلية دائريةً بثلاثة أبعاد وأكتب عليها: <b>الغشاء البلازميُّ</b> (يحيط بها ويسمح بدخول المواد وخروجها) · <b>النواة</b> (مركز التحكُّم وتخزين المعلومات) و<b>الكروموسومات</b> بداخلها · <b>السيتوبلازم</b> (مادة تشبه الهلام) · <b>الميتوكندريا</b> (مصدر الطاقة) · <b>الفجوة</b> (تخزن الماء والغذاء والفضلات) · <b>الرايبوسوم</b> · <b>الشبكة الإندوبلازمية</b> · <b>أجسام جولجي</b> · <b>الأجسام المحلِّلة</b>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">التركيب الذي يوجد في الخلية النباتية ولا يوجد في الحيوانية:</p><div class="opts"><button class="opt" type="button">النواة</button><button class="opt" type="button">الجدار الخلويُّ</button><button class="opt" type="button">الميتوكندريا</button><button class="opt" type="button">الغشاء البلازميُّ</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">انتقال جزيئات الماء عبر الغشاء البلازميِّ يسمَّى:</p><div class="opts"><button class="opt" type="button">الانتشار</button><button class="opt" type="button">الخاصية الأسموزية</button><button class="opt" type="button">النقل النشط</button><button class="opt" type="button">البلعمة</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الصبغة الخضراء في البلاستيدات التي تمتصُّ طاقة الضوء:</p><div class="opts"><button class="opt" type="button">الجلوكوز</button><button class="opt" type="button">الكلوروفيل</button><button class="opt" type="button">اللاكتيك</button><button class="opt" type="button">الكروموسوم</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">نواتج عملية البناء الضوئيِّ هي:</p><div class="opts"><button class="opt" type="button">ثاني أكسيد الكربون والماء</button><button class="opt" type="button">سكر الجلوكوز والأكسجين</button><button class="opt" type="button">الطاقة وحمض اللاكتيك</button><button class="opt" type="button">الأملاح المعدنية</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">عملية التنفُّس اللاهوائيِّ الأكثر شيوعًا هي:</p><div class="opts"><button class="opt" type="button">البلعمة</button><button class="opt" type="button">التخمُّر</button><button class="opt" type="button">الانتشار</button><button class="opt" type="button">الاتِّزان</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">ابتلاع الأميبا لغذائها بإحاطته بجيب من الغشاء البلازميِّ يسمَّى:</p><div class="opts"><button class="opt" type="button">البلعمة</button><button class="opt" type="button">الانتشار</button><button class="opt" type="button">الخاصية الأسموزية</button><button class="opt" type="button">الاتِّزان</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:30px"><li>أذكر ثلاثة تراكيب توجد في الخلية النباتية ولا توجد في الحيوانية.</li><li>أُفرِّق بجملة واحدة بين الانتشار والخاصية الأسموزية.</li><li>أكتب معادلتَي البناء الضوئيِّ والتنفُّس الخلويِّ بكلماتي.</li></ul><div class="box idea" style="font-size:26px;">الفكرة الرئيسة: لكلِّ جزء في الخلية وظيفة، وتنتقل المواد عبر الغشاء بالنقل السلبيِّ أو النشط، وتحصل الخلية على الطاقة بالبناء الضوئيِّ والتنفُّس.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: مقارنة الخليتين</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1420" height="580" viewBox="0 0 1420 580" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l2SvgHost"><rect x="0" y="0" width="1420" height="580" fill="#FBFCFD"/><rect x="760" y="100" width="400" height="300" rx="24" fill="#3F8E2E"/><rect x="774" y="114" width="372" height="272" rx="18" fill="#EAF7E2" stroke="#4E9A34" stroke-width="5"/><rect x="836" y="178" width="230" height="146" rx="18" fill="#CFE9F7" stroke="#2C7FB8" stroke-width="4"/><circle cx="838" cy="152" r="30" fill="#9C7BC4"/><circle cx="838" cy="152" r="13" fill="#6B4A92"/><ellipse cx="1088" cy="150" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="1092" cy="232" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="812" cy="354" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="1046" cy="356" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="912" cy="354" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="998" cy="140" rx="19" ry="10" fill="#E4718E" transform="rotate(18 998 140)"/><g><text x="960" y="452" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الخلية النباتية</text><text x="960" y="452" font-size="30" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الخلية النباتية</text></g><ellipse cx="470" cy="250" rx="200" ry="150" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="9"/><circle cx="440" cy="224" r="48" fill="#9C7BC4"/><circle cx="440" cy="224" r="21" fill="#6B4A92"/><ellipse cx="596" cy="292" rx="26" ry="13" fill="#E4718E" transform="rotate(24 596 292)"/><ellipse cx="352" cy="330" rx="26" ry="13" fill="#E4718E" transform="rotate(24 352 330)"/><ellipse cx="566" cy="178" rx="26" ry="13" fill="#E4718E" transform="rotate(24 566 178)"/><g><text x="470" y="452" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الخلية الحيوانية</text><text x="470" y="452" font-size="30" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الخلية الحيوانية</text></g><g class="eHot" data-k="nuc"><path d="M150 130 L400 210" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="400" cy="210" r="6.5" fill="#8A97A0"/><g><text x="150" y="138" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">النواة</text><text x="150" y="138" font-size="26" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">النواة</text></g><rect class="hitBox" x="30" y="104" width="240" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="150" y="172" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مركز التحكُّم</text><text x="150" y="172" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مركز التحكُّم</text></g><g class="eHot" data-k="memb"><path d="M150 254 L274 244" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="274" cy="244" r="6.5" fill="#8A97A0"/><g><text x="150" y="262" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الغشاء</text><text x="150" y="262" font-size="26" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الغشاء</text></g><rect class="hitBox" x="30" y="228" width="240" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="150" y="296" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ينظِّم دخول المواد</text><text x="150" y="296" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ينظِّم دخول المواد</text></g><g class="eHot" data-k="cyto"><path d="M150 380 L330 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="330" cy="300" r="6.5" fill="#8A97A0"/><g><text x="150" y="388" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">السيتوبلازم</text><text x="150" y="388" font-size="26" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">السيتوبلازم</text></g><rect class="hitBox" x="20" y="354" width="260" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="150" y="422" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مادةٌ تملأ الخلية</text><text x="150" y="422" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مادةٌ تملأ الخلية</text></g><g class="eHot" data-k="wall"><path d="M1276 92 L768 118" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="768" cy="118" r="6.5" fill="#8A97A0"/><g><text x="1276" y="100" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الجدار الخلوي</text><text x="1276" y="100" font-size="26" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الجدار الخلوي</text></g><rect class="hitBox" x="1136" y="66" width="280" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1276" y="134" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">في النبات فقط</text><text x="1276" y="134" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">في النبات فقط</text></g><g class="eHot" data-k="chloro"><path d="M1276 216 L1108 190" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1108" cy="190" r="6.5" fill="#8A97A0"/><g><text x="1276" y="224" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">البلاستيدات</text><text x="1276" y="224" font-size="26" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">البلاستيدات</text></g><rect class="hitBox" x="1146" y="190" width="260" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1276" y="258" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">فيها البناء الضوئي</text><text x="1276" y="258" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">فيها البناء الضوئي</text></g><g class="eHot" data-k="vac"><path d="M1276 342 L1070 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1070" cy="300" r="6.5" fill="#8A97A0"/><g><text x="1276" y="350" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الفجوة الكبيرة</text><text x="1276" y="350" font-size="26" fill="#0E4B67" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الفجوة الكبيرة</text></g><rect class="hitBox" x="1131" y="316" width="290" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1276" y="384" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تخزن الماء والغذاء</text><text x="1276" y="384" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تخزن الماء والغذاء</text></g><g class="eHot" data-k="mito"><path d="M700 514 L600 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="600" cy="300" r="6.5" fill="#8A97A0"/><g><text x="700" y="522" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الميتوكوندريا</text><text x="700" y="522" font-size="26" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الميتوكوندريا</text></g><rect class="hitBox" x="560" y="488" width="280" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="700" y="556" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تُطلِق الطاقة — في الخليتين</text><text x="700" y="556" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تُطلِق الطاقة — في الخليتين</text></g></svg><div class="eCap">مقارنةٌ مصوَّرة: ما يوجد في الخليتين، وما ينفرد به النبات.</div></div><div class="eSteps" id="g6l2Pills"><span class="eStepPill" data-s="0">الجدار الخلوي</span><span class="eStepPill" data-s="1">البلاستيدات الخضراء</span><span class="eStepPill" data-s="2">الفجوة</span><span class="eStepPill" data-s="3">النواة</span><span class="eStepPill" data-s="4">الغشاء البلازمي</span><span class="eStepPill" data-s="5">الميتوكوندريا</span><span class="eStepPill" data-s="6">السيتوبلازم</span></div><div class="eInfo" id="g6l2Info">اضغط على أيِّ عُضيٍّ في الرسم لتعرف وظيفته.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l2Prev">◀ السابق</button><button class="simBtn" type="button" id="g6l2Next">التالي ▶</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — فروقٌ لها أثر</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p><b>الجدار الخلويُّ</b> هو سرُّ صلابة الخشب وانتصاب سِيقان النبات؛ ولولاه لَما وقفت الشجرة.</p></div><div class="fFact"><div class="n">٢</div><p>حين تنقص الفجوةُ ماءَها <b>تذبل</b> النبتة وتتدلَّى أوراقها؛ فإذا سُقيت امتلأت الفجوات فعادت منتصبة.</p></div><div class="fFact"><div class="n">٣</div><p>لون النبات الأخضر ليس صبغة زينة، بل هو لون <b>البلاستيدات الخضراء</b> التي تصنع الغذاء.</p></div></div><div class="fCap">لماذا يذبل النبات ثم ينتعش؟ الإجابة داخل الخلية.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6b1"><div class="fCard"><div class="fIn"><div class="fF"><span>النقل السلبيُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حركة المواد عبر أغشية من دون أن تستخدم طاقة الخلية.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الانتشار</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>انتقال المواد عبر الغشاء البلازميِّ من منطقة التركيز المرتفع إلى منطقة التركيز المنخفض من دون الحاجة إلى طاقة.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الخاصية الأسموزية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>انتقال جزيئات الماء عبر الغشاء البلازميِّ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>البناء الضوئيُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عملية تستخدم فيها النباتات طاقة الشمس لإنتاج غذاء على شكل سكر الجلوكوز.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التنفُّس الخلويُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عملية تستخلص بها النباتات والحيوانات الطاقة من سكر الجلوكوز.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>النقل النشط</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>انتقال المواد عبر الأغشية باستخدام طاقة.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6b1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: صواب أم خطأ</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fQ" id="s6b2Q">—</div><div class="fOpts" style="max-width:760px"><button class="fOpt" type="button" id="s6b2T">صواب ✔</button><button class="fOpt" type="button" id="s6b2F">خطأ ✖</button></div><div class="fFb" id="s6b2Fb"></div><div class="fBar"><span class="fPill" id="s6b2Sc">النتيجة</span><button class="fBtn ghost" type="button" id="s6b2R">↻ إعادة</button></div></div><div class="fCap">اقرأ العبارة ثم اختر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>تجربةٌ منزليةٌ آمنة</h4><p>ضع ساق كرفسٍ في كأس ماءٍ ملوَّنٍ عدة ساعات، ثم اقطعها عرضيًّا وتأمَّل النقاط الملوَّنة: إنها أنابيب النقل.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا يحتاج النبات إلى جدارٍ خلويٍّ بينما لا يحتاج إليه الحيوان؟</p></div><div class="fBox safe"><h4>تنبيه سلامة</h4><p>أستعمل السكين بإشراف شخصٍ بالغ، وأغسل يديَّ بعد التجربة.</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: الخلية النباتية والخلية الحيوانية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">أي تراكيب مشتركة بين الخليتين، وأيها يساعد خلايا الأوراق على صنع السكر؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/cells.jpg" alt="صورة مجهرية لخلايا بشرة البصل المتجاورة" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>خلايا من بشرة البصل كما تظهر بالمجهر الضوئي؛ يمكن ملاحظة الجدران التي تحدد شكل الخلايا.</figcaption><p class="se-credit">الصورة: Mccloughlin · <a href="https://commons.wikimedia.org/wiki/File:Onion_epidermis_high_power.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>للخلايا النباتية والحيوانية غشاء وسيتوبلازم وميتوكندريا، وتحتوي معظم خلاياهما على نواة تحمل المادة الوراثية.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>يحيط بالخلية النباتية جدار داعم؛ وتوجد البلاستيدات الخضراء في الأجزاء التي تقوم بالبناء الضوئي.</span></p>
+<p class="se-fact"><span aria-hidden="true">🧫</span><span>تعبر جزيئات الماء الغشاء في الاتجاهين؛ ويتحدد صافي حركتها باختلاف تركيز المواد المذابة على جانبيه.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/biology-2e/pages/4-3-eukaryotic-cells" target="_blank" rel="noopener noreferrer">OpenStax: الخلايا حقيقية النواة</a></li><li><a href="https://openstax.org/books/biology-2e/pages/5-2-passive-transport" target="_blank" rel="noopener noreferrer">OpenStax: النقل السلبي والأسموزية</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: تراكيب مشتركة وخصائص تميز خلايا النباتات">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>تراكيب مشتركة وخصائص تميز خلايا النباتات</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="تراكيب مشتركة وخصائص تميز خلايا النباتات"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🧫</span><span class="se-node-label">في الخليتين</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🧬</span><span class="se-node-label">النواة</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🧱</span><span class="se-node-label">الجدار الخلوي</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🌿</span><span class="se-node-label">البلاستيدات الخضراء</span></button></div>
+
+<p class="se-diagram-caption">لا تحتوي جميع خلايا النبات على بلاستيدات خضراء؛ خلايا الجذور مثال شائع.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🧫</span><div><strong data-detail-title>في الخليتين</strong><p data-detail-text>غشاء وسيتوبلازم وميتوكندريا.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: راقب الماء وهو يعبر غشاء الخلية">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>راقب الماء وهو يعبر غشاء الخلية</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير امتلاء خلية نباتية عند تغيير تركيز المحلول خارجها فقط؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">المذاب خارج الخلية</p><div class="se-options" role="group" aria-label="المذاب خارج الخلية"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">أقل من الداخل</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">مساوٍ للداخل</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">أكثر من الداخل</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">نموذج أسموزي مبسط يفترض مذابًا لا يعبر الغشاء؛ الأيقونات ليست أعداد جزيئات أو أحجامًا حقيقية.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي لامتلاء الخلية بالماء</p><div class="se-model" role="img" data-model aria-label="صافي دخول الماء"><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol" aria-hidden="true">💧</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>صافي دخول الماء</p><p class="se-observation" data-observation>الفجوة أكثر امتلاءً.</p></div><p class="se-explanation" data-explanation>ندرس خلية نباتية واحدة ونثبت الحرارة والزمن. عندما يكون المحلول الخارجي أقل تركيزًا بالمواد المذابة، يدخل الماء صافيًا فتزداد قوة امتلائها.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 هل توقف الماء تمامًا عند حالة الاتزان، أم استمرت حركته في الاتجاهين؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الأولى: تنوع الحياة · الفصل الأول: الخلايا · الخلية النباتية والخلية الحيوانية<br>المصدر: كتاب الطالب، صفحات الكتاب: ٣٢ – ٤١ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['الجدار الخلويُّ','plant','طبقة صلبة تحيط بالغشاء البلازميِّ وتدعم الخلية النباتية.'],
+           ['النواة','both','مركز التحكُّم في الخلية، وتوجد في معظم الخلايا.'],
+           ['البلاستيدات الخضراء','plant','تقوم بصنع الغذاء وتحتوي على الكلوروفيل.'],
+           ['الميتوكندريا','both','مصدر طاقة الخلية في النباتية والحيوانية.'],
+           ['الكلوروفيل','plant','صبغة خضراء تُكسب النباتات لونها الأخضر.'],
+           ['الغشاء البلازميُّ','both','يحيط بكلِّ خلية ويسمح بدخول المواد وخروجها.'],
+           ['السيتوبلازم','both','مادة تشبه الهلام بين النواة والغشاء البلازميِّ.'],
+           ['الفجوات','both','تخزن الماء والغذاء والفضلات — وهي في النباتية أكبر.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع التراكيب.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='تركيب '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g6l2SvgHost','g6l2Info',{'wall':'<span><b>الجدار الخلوي</b> — يوجد في <b>الخلية النباتية فقط</b>؛ يعطي الخلية شكلها ويحميها ويدعمها.</span>','chloro':'<span><b>البلاستيدات الخضراء</b> — في <b>الخلية النباتية فقط</b>؛ فيها يتم <b>البناء الضوئي</b> وتُعطي اللون الأخضر.</span>','vac':'<span><b>الفجوة</b> — كبيرةٌ في الخلية النباتية وتخزن الماء والغذاء؛ وصغيرةٌ في الخلية الحيوانية.</span>','nuc':'<span><b>النواة</b> — توجد في الخليتين؛ وهي <b>مركز التحكُّم</b> وتحوي المادة الوراثية.</span>','memb':'<span><b>الغشاء البلازمي</b> — يوجد في الخليتين؛ ينظِّم دخول المواد إلى الخلية وخروجها منها.</span>','mito':'<span><b>الميتوكوندريا</b> — توجد في الخليتين؛ وفيها تُطلَق <b>الطاقة</b> من الغذاء.</span>','cyto':'<span><b>السيتوبلازم</b> — مادةٌ هلاميةٌ تملأ الخلية وتسبح فيها العُضيَّات.</span>'},'');
+ERT.stepper({pills:'g6l2Pills', info:'g6l2Info', svg:'g6l2SvgHost', next:'g6l2Next', prev:'g6l2Prev', stages:[['wall','الجدار الخلوي','يوجد في <b>الخلية النباتية فقط</b>؛ يعطي الخلية شكلها ويحميها ويدعمها.'],['chloro','البلاستيدات الخضراء','في <b>الخلية النباتية فقط</b>؛ فيها يتم <b>البناء الضوئي</b> وتُعطي اللون الأخضر.'],['vac','الفجوة','كبيرةٌ في الخلية النباتية وتخزن الماء والغذاء؛ وصغيرةٌ في الخلية الحيوانية.'],['nuc','النواة','توجد في الخليتين؛ وهي <b>مركز التحكُّم</b> وتحوي المادة الوراثية.'],['memb','الغشاء البلازمي','يوجد في الخليتين؛ ينظِّم دخول المواد إلى الخلية وخروجها منها.'],['mito','الميتوكوندريا','توجد في الخليتين؛ وفيها تُطلَق <b>الطاقة</b> من الغذاء.'],['cyto','السيتوبلازم','مادةٌ هلاميةٌ تملأ الخلية وتسبح فيها العُضيَّات.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6b1');
+EG.tf({q:'s6b2Q', fb:'s6b2Fb', score:'s6b2Sc', btnT:'s6b2T', btnF:'s6b2F', reset:'s6b2R', data:[['الجدار الخلويُّ يوجد في الخلية النباتية والحيوانية معًا.','F','الجدار الخلويُّ في <b>النباتية فقط</b>؛ أما الحيوانية فلها غشاءٌ بلازميٌّ فقط.'],['البلاستيدات الخضراء هي موضع صنع الغذاء في النبات.','T','فيها تتمُّ عملية <b>البناء الضوئي</b>.'],['النواة توجد في الخلية النباتية والحيوانية.','T','النواة مركز التحكُّم في الخليتين معًا.'],['الفجوة في الخلية النباتية أصغرُ منها في الحيوانية.','F','بالعكس؛ فجوة الخلية النباتية <b>كبيرةٌ</b> وتخزن الماء والغذاء.'],['الميتوكوندريا تُطلِق الطاقة من الغذاء.','T','توجد في الخليتين، وفيها تتحرَّر الطاقة.']]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/01_تنوع_الحياة/01_الخلايا/02_الخلية_النباتية_والخلية_الحيوانية/علوم_سادس_ابتدائي_ف1_الدرس_الثاني_الخلية_النباتية_والخلية_الحيوانية.html","title":"الخلية النباتية والخلية الحيوانية","grade":6,"emoji":"🧫","photoTopic":"cells","observeQuestion":"أي تراكيب مشتركة بين الخليتين، وأيها يساعد خلايا الأوراق على صنع السكر؟","facts":["للخلايا النباتية والحيوانية غشاء وسيتوبلازم وميتوكندريا، وتحتوي معظم خلاياهما على نواة تحمل المادة الوراثية.","يحيط بالخلية النباتية جدار داعم؛ وتوجد البلاستيدات الخضراء في الأجزاء التي تقوم بالبناء الضوئي.","تعبر جزيئات الماء الغشاء في الاتجاهين؛ ويتحدد صافي حركتها باختلاف تركيز المواد المذابة على جانبيه."],"diagram":{"title":"تراكيب مشتركة وخصائص تميز خلايا النباتات","relation":"comparison","nodes":[{"emoji":"🧫","label":"في الخليتين","detail":"غشاء وسيتوبلازم وميتوكندريا."},{"emoji":"🧬","label":"النواة","detail":"توجد في معظم خلايا النبات والحيوان."},{"emoji":"🧱","label":"الجدار الخلوي","detail":"يدعم خلايا النبات."},{"emoji":"🌿","label":"البلاستيدات الخضراء","detail":"تلتقط الضوء في خلايا النبات الخضراء."}],"caption":"لا تحتوي جميع خلايا النبات على بلاستيدات خضراء؛ خلايا الجذور مثال شائع."},"lab":{"title":"راقب الماء وهو يعبر غشاء الخلية","question":"كيف يتغير امتلاء خلية نباتية عند تغيير تركيز المحلول خارجها فقط؟","controlLabel":"المذاب خارج الخلية","options":["أقل من الداخل","مساوٍ للداخل","أكثر من الداخل"],"states":[{"label":"صافي دخول الماء","emoji":"💧","amount":9,"explanation":"ندرس خلية نباتية واحدة ونثبت الحرارة والزمن. عندما يكون المحلول الخارجي أقل تركيزًا بالمواد المذابة، يدخل الماء صافيًا فتزداد قوة امتلائها.","observation":"الفجوة أكثر امتلاءً."},{"label":"اتزان صافي الحركة","emoji":"💧","amount":5,"explanation":"يتحرك الماء في الاتجاهين، لكن الحركة الصافية تتقارب من الصفر عندما تتساوى الظروف الأسموزية داخل الخلية وخارجها.","observation":"الامتلاء لا يتغير صافيًا."},{"label":"صافي خروج الماء","emoji":"💧","amount":2,"explanation":"إذا زاد تركيز المذاب خارج الخلية، يخرج منها الماء صافيًا؛ وقد يبتعد الغشاء عن الجدار عند فقد مقدار كافٍ.","observation":"تقل المياه داخل الخلية."}],"quantityLabel":"مؤشر وصفي لامتلاء الخلية بالماء","modelNote":"نموذج أسموزي مبسط يفترض مذابًا لا يعبر الغشاء؛ الأيقونات ليست أعداد جزيئات أو أحجامًا حقيقية.","tryPrompt":"هل توقف الماء تمامًا عند حالة الاتزان، أم استمرت حركته في الاتجاهين؟"},"sources":[{"title":"OpenStax: الخلايا حقيقية النواة","url":"https://openstax.org/books/biology-2e/pages/4-3-eukaryotic-cells"},{"title":"OpenStax: النقل السلبي والأسموزية","url":"https://openstax.org/books/biology-2e/pages/5-2-passive-transport"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

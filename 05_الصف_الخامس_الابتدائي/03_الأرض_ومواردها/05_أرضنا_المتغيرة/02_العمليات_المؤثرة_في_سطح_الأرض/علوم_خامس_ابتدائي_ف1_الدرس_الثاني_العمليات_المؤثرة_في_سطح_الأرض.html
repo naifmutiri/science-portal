@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – خامس ابتدائي – ف1 – العمليات المؤثرة في سطح الأرض</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#3E9A8A;--g-dark:#245F55;--g-light:#E9F5F2}
+.card{border-color:#B9DED6}
+.cover{background:linear-gradient(140deg,#245F55 0%,#3E9A8A 55%,#7CC2B6 100%)}
+.endS{background:linear-gradient(140deg,#245F55,#3E9A8A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>العمليات المؤثرة في سطح الأرض</h1><div class="rule"></div>
+<div class="meta">الصف الخامس الابتدائي<br>الوحدة الثالثة: الأرض ومواردها<br>الفصل الخامس: أرضنا المتغيرة — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الثالثة</h3><p>الأرض ومواردها</p></div><div class="card"><h3>الفصل الخامس</h3><p>أرضنا المتغيرة</p></div><div class="card"><h3>الدرس الثاني</h3><p>العمليات المؤثرة في سطح الأرض</p></div></div><div class="box idea" style="font-size:30px;">السؤال الأساسي: ما العمليات الطبيعية التي تؤثِّر في تشكيل الأرض؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:25px"><li>أُفرِّق بين العمليات الداخلية والخارجية.</li><li>أُعرِّف الزلازل وأُبيِّن كيف تحدث.</li><li>أُميِّز بؤرة الزلزال والمركز السطحيَّ والصَّدع.</li><li>أَصِف كيف يحدَّد المركز السطحيُّ وكيف تقاس قوة الزلزال.</li><li>أُعرِّف التسونامي وأذكر إجراءات السلامة من الزلازل.</li><li>أَصِف البراكين وأنواعها والحَرَّات في بلادي.</li><li>أُفرِّق بين التجوية الفيزيائية والكيميائية.</li><li>أُوضِّح التعرية والترسيب ودور الإنسان.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:31px;">زجاجة مملوءة بالماء وُضعت في المجمِّد فانكسرت… ما علاقة ذلك بتفتُّت الصخور؟</div><p class="c">هذا ما يحدث في <b>التجوية الفيزيائية</b>. ولنتعرَّف أيضًا الزلازل والبراكين والتعرية والترسيب.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>الصفائح الأرضية</h3><p>ألواح ضخمة تطفو فوق الغلاف المائع.</p></div><div class="card center" style="text-align:center;"><h3>الصَّدع</h3><p>الحدُّ الذي يفصل الصفيحتين إحداهما عن الأخرى.</p></div><div class="card center" style="text-align:center;"><h3>الصهارة</h3><p>مواد منصهرة في الغلاف المائع.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(4,1fr)"><div class="card"><h3>الزَّلازل</h3><p style="font-size:25px">اهتزاز قشرة الأرض.</p></div><div class="card"><h3>بؤرة الزلزال</h3><p style="font-size:25px">موقع حدوث الزلزال تحت سطح الأرض.</p></div><div class="card"><h3>المركز السطحيُّ</h3><p style="font-size:25px">نقطة تقع أعلى البؤرة مباشرةً، تنتشر منها الأمواج عند وصولها إلى السطح.</p></div><div class="card"><h3>قوة الزلزال</h3><p style="font-size:25px">تقدَّر بمقدار الطاقة التي تتحرَّر إثر حدوثه.</p></div><div class="card"><h3>التسونامي</h3><p style="font-size:25px">أمواج عملاقة تصطدم بالشاطئ وتسبِّب الدمار.</p></div><div class="card"><h3>البركان</h3><p style="font-size:25px">فتحة في القشرة الأرضية تخرج منها الصهارة والغازات والرماد البركانيُّ.</p></div><div class="card"><h3>اللابة</h3><p style="font-size:25px">الصهارة عندما تصل إلى سطح الأرض.</p></div><div class="card"><h3>التجوية</h3><p style="font-size:25px">العملية التي تسبِّب تفتُّت الصخور أو موادَّ أخرى.</p></div><div class="card"><h3>التعرية</h3><p style="font-size:25px">عملية نقل التربة وفتات الصخور من مكان إلى آخر على سطح الأرض.</p></div><div class="card"><h3>الترسيب</h3><p style="font-size:25px">عملية تراكم الفتات في مكان ما.</p></div></div><div class="box note" style="font-size:28px;">مهارة القراءة في هذا الدرس: <b>الاستنتاج</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>كيف تتحرَّك الأرض في أثناء حدوث الزَّلزال؟</h2><span class="src">ص ١٥٥ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:29px;"><b>الهدف:</b> أعمل نموذجًا يوضِّح حركة الأرض في أثناء حدوث الزلزال.</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:0 0 250px"><p class="c"><b>أحتاج إلى:</b></p><ul class="list" style="font-size:26px"><li>قطع من الفلِّين</li><li>وعاء</li><li>تربة</li><li>قطعة خشبية</li></ul></div><div style="flex:1 1 0"><p class="c"><b>الخطوات:</b></p><ul class="list num" style="font-size:24px"><li>أضع قطعتَي الفلِّين إحداهما إلى جوار الأخرى في الوعاء.</li><li>أغطِّي قطعتَي الفلِّين بالتراب.</li><li>أسحب الوعاء حوالَي ٥ سم بعيدًا عن حافة الطاولة.</li><li><b>ألاحظ</b> وأحذر. أطرق بلطف أسفل الوعاء بالقطعة الخشبية. ماذا حدث للتربة وقطعتَي الفلِّين؟</li><li>ماذا يحدث إذا واصلت طرق الوعاء؟</li></ul></div></div><div class="box safe" style="font-size:25px;"><b>أحذر:</b> أطرق بلطف، وأبعد الوعاء عن حافة الطاولة حتى لا يسقط، وأنتبه لأصابعي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ١٥٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٦. <b>أستنتج.</b> ماذا يحدث لو طرقت الوعاء طرقًا أشدَّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٥</span>كلَّما اشتدَّ الطرق زاد اهتزاز التربة وتحرَّكت قطعتا الفلِّين أكثر، فيتَّسع الشقُّ بينهما وتسقط كمية أكبر من التربة فيه. وهذا يماثل الزلزال؛ فكلَّما زادت الطاقة المتحرِّرة زادت قوة الزلزال وآثاره التدميرية.</div></div><div class="qa"><p class="q">٧. ماذا تمثِّل قطعتا الفلِّين، والشقُّ (الصدع) الذي نتج بينهما؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٥</span>قطعتا الفلِّين تمثِّلان <b>الصفيحتين الأرضيتين</b>، والشقُّ الذي نتج بينهما يمثِّل <b>الصَّدع</b>؛ وهو الحدُّ الذي يفصل الصفيحتين إحداهما عن الأخرى، وفيه تحدث الزلازل.</div></div><div class="box ask" style="font-size:24px;"><b>أستكشف أكثر:</b> للصَّدع الذي يفصل بين قطعتَي الفلِّين زاوية محدَّدة. ماذا أتوقَّع أن يحدث لو اختلفت الزاوية؟ أكوِّن فرضيةً حول الزاوية التي تسبِّب سقوط كمية أكبر من التربة في الصدع. أعمل نموذجًا، وأختبر فرضيَّتي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الزلازل؟</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><p class="c">تتشكَّل معالم سطح الأرض بفعل مجموعة من العمليات:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>العمليات الداخلية</h3><p style="font-size:27px">بعضها يحدث في باطن الأرض، ومنها <b>الزلازل والبراكين</b>.</p></div><div class="card center" style="text-align:center;"><h3>العمليات الخارجية</h3><p style="font-size:27px">وبعضها الآخر يحدث على السطح، ومنها <b>التجوية والتعرية والترسيب</b>.</p></div></div><div class="box idea" style="font-size:25px;"><b>الزلزال</b> اهتزاز قشرة الأرض. وعندما تقع الزلازل تهتزُّ الأرض، وتسقط الأشياء عن الرفوف، وتتشقَّق الطرق، وقد تسقط الأبنية والجسور والأعمدة، وتنكسر أنابيب المياه.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الزلازل في القرآن الكريم وفي بلادنا</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><div class="box note" style="font-size:26px;">قال تعالى: ﴿إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا ۝ وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا﴾ <span class="muted" style="font-size:23px">سورة الزلزلة</span><br>وقال تعالى: ﴿وَالْأَرْضِ ذَاتِ الصَّدْعِ﴾ <span class="muted" style="font-size:23px">سورة الطارق</span></div><p class="c">لعلَّك سمعت عن النشاط الزلزاليِّ الحادث بحرَّة الشاقة غرب المدينة المنوَّرة، وهي من المناطق التي تشهد نشاطات زلزالية وبعض النشاطات البركانية البسيطة.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف تحدث الزلازل؟</h2><span class="src">ص ١٥٦ — ١٥٧</span></div>
+<div class="body"><p class="c">تحدث الزلازل بقدرة الله عزَّ وجلَّ في مناطق الصدوع.</p><div class="map"><div class="node">خطوات حدوث الزلزال</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">١</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">تتحرَّك الصفائح ببطء</span><span class="node leaf">فتتوقَّف صفيحتان عن الحركة بتماسِّهما</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">٢</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">تنشأ طاقة مختزنة</span><span class="node leaf">تستمرُّ في الازدياد</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">٣</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">تصبح الطاقة أكبر من قدرة الصخور على التحمُّل</span><span class="node leaf">فتتكسَّر صخور منطقة التماسِّ</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">٤</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">تتحرَّر الصفائح فجأةً</span><span class="node leaf">وتنطلق الطاقة على شكل أمواج زلزالية</span></div></div></div></div><div class="box note" style="font-size:26px;">وقد تحدث الزلازل على أعماق تصل إلى <b>٦٤٤ كم</b>، ولكنَّ معظمها يحدث على أعماق تقلُّ عن <b>٨٠ كم</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>البؤرة والمركز السطحيُّ</h2><span class="src">ص ١٥٧</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>بؤرة الزلزال</h3><p style="font-size:26px">موقع حدوث الزلزال تحت سطح الأرض. وتنتشر الأمواج الزلزالية من البؤرة في جميع الاتجاهات.</p></div><div class="card"><h3>المركز السطحيُّ</h3><p style="font-size:26px">وعندما تصل الأمواج إلى سطح الأرض فإنَّها تنتشر من نقطة تقع أعلى البؤرة مباشرةً؛ هذه النقطة تسمَّى المركز السطحيَّ للزلزال.</p></div></div><div class="box note" style="font-size:23px;">يتمُّ في محطة الرصد تسجيل الأمواج الزلزالية التي تنتشر من بؤرة الزلزال بجهاز يسمَّى <b>السِّيزمومتر</b>. وفي المملكة عدة محطات لرصد الزلازل، منها المراصد الموجودة لدى <b>المركز الوطنيِّ للزلازل والبراكين</b> التابع لهيئة المساحة الجيولوجية السعودية، ومدينة الملك عبدالعزيز للعلوم والتقنية، وبعض الجامعات.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تحديد المركز السطحيِّ للزلزال</h2><span class="src">ص ١٥٨</span></div>
+<div class="body"><p class="c">يحدَّد المركز السَّطحيُّ للزلزال عن طريق رصد زمن وصول الأمواج الزلزالية إلى <b>ثلاث محطات رصد</b>، ممَّا يتيح حساب المسافة التي تفصل المركز السطحيَّ للزلزال عن كلِّ محطة.</p><div class="box idea" style="font-size:25px;">نرسم على الخريطة في كلٍّ من مواقع المحطات الثلاث دائرةً مركزها موقع المحطة، ونصف قطرها المسافة التي قطعتها الأمواج الزلزالية، فتكون نقطة تقاطع هذه الدوائر الثلاث المركزَ السطحيَّ للزلزال.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٥٨</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتج.</b> كم محطة رصد أحتاج لأحدِّد بُعْدَ المركز السطحيِّ للزلزال؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٨</span>أحتاج إلى <b>ثلاث محطات رصد</b>؛ فبرصد زمن وصول الأمواج الزلزالية إليها تُحسب المسافة بين كلِّ محطة والمركز السطحيِّ، ثم تُرسم ثلاث دوائر، وتكون نقطة تقاطعها هي المركز السطحيَّ للزلزال.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> لماذا تحدث معظم الزلازل على عمق أقلَّ من ١٠٠ كم؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٨</span>لأن الزلازل تحدث في مناطق <b>الصدوع</b> بين الصفائح، والصفائح جزء من <b>الغلاف الصخريِّ</b> الصلب القريب من السطح (القشرة وجزء من الستار العلويِّ). وفي الأعماق الكبيرة ترتفع الحرارة والضغط فتصبح الصخور لدنةً تنساب ولا تتكسَّر فجأةً، فلا تختزن طاقةً تتحرَّر على شكل زلزال. ولذلك ذكر الكتاب أن معظم الزلازل يحدث على أعماق تقلُّ عن ٨٠ كم.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف نقيس قوة الزلزال؟</h2><span class="src">ص ١٥٨</span></div>
+<div class="body"><p class="c">تختلف الزلازل في قوتها وآثارها التدميرية. وتقدَّر <b>قوة الزلزال</b> بمقدار الطاقة التي تتحرَّر إثر حدوثه. ويستعمل في ذلك <b>مقياس رِخْتَر</b> الذي يبدأ من القياس ١.</p><div class="box idea" style="font-size:30px;">إنَّ زيادة درجة واحدة في قوة الزلزال تدلُّ على <b>٣٠ ضعفًا</b> من الطاقة المتحرِّرة.</div><div class="box note" style="font-size:26px;">فالزلزال الذي قوته ٧ درجات على مقياس رِخْتَر يحرِّر طاقةً تزيد ٣٠ ضعفًا من الطاقة المتحرِّرة لزلزال قوته ٦، وتزيد <b>٩٠٠ (٣٠×٣٠)</b> ضعفٍ لزلزال قوته ٥ درجات على المقياس نفسه.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التسونامي</h2><span class="src">ص ١٥٨ — ١٥٩</span></div>
+<div class="body"><p class="c">عند حدوث الزَّلازل في قاع المحيط تتحرَّك الأمواج في جميع الاتجاهات بسرعة عالية جدًّا تتراوح بين <b>٥٠٠ و١٠٠٠ كيلومتر في الساعة</b>، حاملةً معها طاقةً هائلة القوة.</p><div class="box idea" style="font-size:24px;">وعند اقترابها من السَّواحل والمناطق القريبة من الشاطئ حيث المياه الضحلة، يصبح حجم المياه التي تتحرك بفعل الطاقة الزلزالية أقلَّ كثيرًا ممَّا كانت عليه في عمق المحيط، فيزداد ارتفاع الأمواج بشكل مفاجئ، وتتحوَّل إلى أمواج عملاقة تصطدم بالشاطئ وتسبِّب الدمار. وتسمَّى هذه الأمواج <b>التسونامي</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>السلامة من أخطار الزلازل</h2><span class="src">ص ١٥٩</span></div>
+<div class="body"><p class="c">لا يستطيع الإنسان منع حدوث الزلازل، لكن من الممكن أخذ الحيطة والحذر لتقليل المخاطر الناجمة عنها، وذلك:</p><ul class="list num" style="font-size:30px"><li>بتحديد مواصفات خاصَّة للأبنية.</li><li>وتوزيع النشرات التثقيفية.</li><li>وتدريب المواطنين على الإجراءات الواجب اتِّباعها عند وقوع الزلزال.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة · أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٥٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقرأ الصورة.</b> أيُّ الصورتين قبل حدوث التسونامي، وأيُّهما بعده؟ <span class="muted" style="font-size:24px">(إرشاد: أبحث عن آثار التدمير.)</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٩</span>الصورة التي تظهر فيها المنازل قائمةً والأشجار سليمةً والشاطئ نظيفًا هي <b>قبل</b> التسونامي. والصورة التي تظهر فيها الأشجار المقتلعة والحطام المتراكم على الشاطئ هي <b>بعده</b>؛ لأن الأمواج العملاقة تصطدم بالشاطئ وتسبِّب الدمار.</div></div><div class="qa"><p class="q"><b>أستنتج.</b> كم مرة تزيد الطاقة المتحرَّرة من زلزال قوته ٥ بحسب مقياس رِخْتَر، على طاقة زلزال آخر قوته ٣؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٩</span>الفرق درجتان، وكل درجة تعني ٣٠ ضعفًا: ٣٠ × ٣٠ = <b>٩٠٠ مرة</b>.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما الذي يسبِّب نموَّ موجة التسونامي عند وصولها إلى الشاطئ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٩</span>عند اقتراب الموجة من الشاطئ تقلُّ أعماق المياه (مياه ضحلة)، فيصبح حجم المياه التي تتحرَّك بفعل الطاقة الزلزالية أقلَّ كثيرًا ممَّا كان عليه في عمق المحيط. والطاقة نفسها تنتقل إلى كمية ماء أصغر، فيزداد ارتفاع الأمواج بشكل مفاجئ وتتحوَّل إلى أمواج عملاقة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما البراكين؟ وكيف تشكِّل سطح الأرض؟</h2><span class="src">ص ١٦٠</span></div>
+<div class="body"><div class="box idea" style="font-size:28px;"><b>البركان</b> فتحة في القشرة الأرضية تخرج منها الصهارة والغازات والرماد البركانيُّ إلى سطح الأرض. وتسمَّى الصهارة عندما تصل إلى سطح الأرض <b>لابةً</b>.</div><p class="c">تحدث معظم البراكين بمحاذاة حدود الصفائح الأرضية سواء على اليابسة أو في قاع المحيط.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تكوُّن المخروط والفوَّهة</h2><span class="src">ص ١٦٠</span></div>
+<div class="body"><p class="c">عند حدوث انفجار بركانيٍّ تتراكم اللابة حول فوَّهة البركان، ويتكوَّن شكل مخروطيٌّ تكون الفوَّهة في قمَّته. ومع تكرار الانفجارات البركانية يزداد تراكم الموادِّ، ويزداد ارتفاع المخروط.</p><div class="box note" style="font-size:27px;">وقد يكون للبركان أكثر من فوَّهة. وقد تحدث انهيارات أرضية حول فوَّهة البركان، وتتشكَّل نتيجة ذلك <b>الفوَّهات البركانية</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>أنواع البراكين الثلاثة</h2><span class="src">ص ١٦٠</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>البراكين النشطة</h3><p style="font-size:26px">وهي التي لا تزال الصهارة تندفع منها حتى وقتنا هذا، وتلك التي اندفعت حديثًا.</p></div><div class="card"><h3>البراكين الهامدة</h3><p style="font-size:26px">التي توقَّف اندفاع الصهارة منها، ولا يُتوقَّع أن تثور مرةً أخرى.</p></div><div class="card"><h3>البراكين الساكنة</h3><p style="font-size:26px">وهي البراكين التي توقفت عن الثوران، لكنَّها قد تعود فتثور من وقت إلى آخر. ومنها بركان أيسلندا الذي عاد للثوران عام ١٤٣١هـ بعد سكون دام ٢٠٠ عام تقريبًا.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ١٦٠</span></div>
+<div class="body"><div class="qa"><p class="q">كم فتحة في هذا البركان؟ <br><span class="muted" style="font-size:24px">إرشاد: أبحث عن كلمة (فوهة) في الشكل.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٠</span><b>ثلاث فوَّهات</b>؛ إذ تظهر في الشكل كلمة «فوهة البركان» ثلاث مرات: فوَّهة رئيسة في القمَّة، وفوَّهتان جانبيتان. وهذا يوافق ما ذكره الكتاب من أنه «قد يكون للبركان أكثر من فوَّهة».</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الحَرَّات في الجزيرة العربية</h2><span class="src">ص ١٦١</span></div>
+<div class="body"><p class="c">تنتشر البراكين في منطقة الجزيرة العربية، ويسمَّى معظمها <b>حَرَّات</b>. والحَرَّة في اللغة أرض ذات حجارة سوداء كأنَّها أُحرقت بالنار، وهي مساحة واسعة من الأرض مغطاة بالصخور البركانية.</p><div class="box idea" style="font-size:24px;">تنتشر الحَرَّات في الجزيرة العربية على هيئة <b>حزام واسع متقطِّع</b> يمتدُّ من شماليِّ اليمن جنوبًا حتى سوريا شمالًا. وقد نشأت معظم الحرات نتيجةً لنشاط البراكين الذي صاحب تكوُّن البحر الأحمر، واستمرَّ إلى زمن غير بعيد.</div><div class="box note" style="font-size:24px;">وتتميَّز معظم حَرَّات الجزيرة العربية — وخصوصًا تلك الواقعة في المملكة العربية السعودية — بتفاوت في تركيبها وشكلها. ويظهر هذا الاختلاف بوضوح في الصور التي تلتقطها الأقمار الاصطناعية (مثل صورة حَرَّة خيبر).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٦١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتج.</b> كيف تتكوَّن الفوَّهة البركانية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦١</span>عند حدوث انفجار بركانيٍّ تتراكم اللابة حول فوَّهة البركان فيتكوَّن شكل مخروطيٌّ تكون الفوَّهة في قمَّته. ومع تكرار الانفجارات يزداد تراكم الموادِّ وارتفاع المخروط. وقد تحدث <b>انهيارات أرضية</b> حول فوَّهة البركان، وتتشكَّل نتيجة ذلك الفوَّهات البركانية.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> أقارن بين البركان النَّشط، والبركان الساكن، والبركان الهامد.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦١</span><b>النشط:</b> لا تزال الصهارة تندفع منه حتى وقتنا هذا، أو اندفعت منه حديثًا.<br><b>الساكن:</b> توقَّف عن الثوران، لكنَّه قد يعود فيثور من وقت إلى آخر — كبركان أيسلندا الذي عاد للثوران عام ١٤٣١هـ بعد سكون ٢٠٠ عام تقريبًا.<br><b>الهامد:</b> توقَّف اندفاع الصهارة منه، ولا يُتوقَّع أن يثور مرةً أخرى.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما التَّجوية؟</h2><span class="src">ص ١٦٢</span></div>
+<div class="body"><p class="c">هل سبق أن وضعت زجاجةً مملوءةً تمامًا بالماء في مجمِّد الثلاجة؟ ماذا حدث لها؟ لقد تجمَّد الماء، وأدَّى إلى كسر الزجاجة. وهذا ما يحدث عندما يدخل الماء في شقوق الصخور ويتجمَّد، فيؤدِّي ذلك إلى تفتُّت الصخور إلى أجزاء أصغر.</p><div class="box idea" style="font-size:28px;">تسمَّى العملية التي تسبِّب تفتُّت الصخور أو موادَّ أخرى <b>التجوية</b>. وهناك نوعان من التجوية: التجوية الفيزيائية، والتجوية الكيميائية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التجوية الفيزيائية والكيميائية</h2><span class="src">ص ١٦٢</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>التجوية الفيزيائية</h3><p style="font-size:25px">يُقصد بها تفتُّت الصخور من دون حدوث تغيُّر في تركيبها الكيميائيِّ. وينتج هذا النوع بفعل عدة عوامل، منها: تجمُّد المياه في الشُّقوق، ونموُّ جذور النبات ومن ثمَّ الضغط الذي تحدثه، والتغيُّرات في درجات الحرارة.</p></div><div class="card"><h3>التجوية الكيميائية</h3><p style="font-size:25px">تحدث بسبب تفاعل الموادِّ الكيميائية التي في الماء أو الهواء مع المعادن المكوِّنة للصخور، ممَّا يؤدِّي إلى تكوُّن معادنَ وموادَّ جديدة، وإعادة تشكيل بعض التضاريس الأرضية. ومن ذلك ما يحدث عندما تؤثِّر المياه الجوفية المحمَّلة بالمواد الكيميائية في الصخور التي تحت الأرض فتكسرها مكوِّنةً <b>الكهوف</b>.</p></div></div><div class="box note" style="font-size:24px;"><b>الأمطار الحمضية</b> من أهمِّ عوامل التجوية الكيميائية؛ فهي تؤثِّر بشكل واضح في بعض أنواع الصخور، فتفتِّتها وتغيِّر من تركيبها الكيميائيِّ. كما تؤثِّر في المنشآت والمباني الأثرية وغيرها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٦٢</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتج.</b> ما الأضرار التي تُلحقها الأمطار الحمضية بالمباني الأثرية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٢</span>الأمطار الحمضية عامل من عوامل <b>التجوية الكيميائية</b>؛ فهي تتفاعل مع المعادن المكوِّنة لحجارة المباني فتفتِّتها وتغيِّر من تركيبها الكيميائيِّ. فتتآكل الحجارة وتتشوَّه النقوش والزخارف وتضعف الجدران، فتفقد المباني الأثرية شكلها الأصليَّ وقد تنهار مع الزمن.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> فيمَ تختلف التجوية الفيزيائية عن التجوية الكيميائية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٢</span><b>الفيزيائية:</b> تفتُّت الصخور من دون حدوث تغيُّر في تركيبها الكيميائيِّ، بعوامل مثل تجمُّد المياه في الشقوق ونموِّ جذور النبات والتغيُّرات في درجات الحرارة.<br><b>الكيميائية:</b> تحدث بسبب تفاعل الموادِّ الكيميائية التي في الماء أو الهواء مع معادن الصخور، فيتغيَّر التركيب الكيميائيُّ وتتكوَّن معادنُ وموادُّ جديدة — كتكوُّن الكهوف بفعل المياه الجوفية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما التَّعرية؟</h2><span class="src">ص ١٦٣</span></div>
+<div class="body"><p class="c">عندما يسقط المطر على الأرض ويجري على سطح الأرض يختلط الماء بالتربة ويتشكَّل الطين. وعندما تزداد كمية الماء أكثرَ يتدفَّق بقوة ويجرف كلَّ شيء في طريقه، حتى الأشجار والصخور والتربة. بهذه الطريقة ينتقل فتات الصخور والتربة إلى أماكنَ بعيدة.</p><div class="box idea" style="font-size:25px;">تسمَّى عملية نقل التربة وفتات الصخور من مكان إلى آخر على سطح الأرض <b>التعرية</b>. ومن أهمِّ العوامل الطبيعية التي تسبِّب التعرية: <b>المياه الجارية، والرياح، والجليديَّات، والأمواج البحرية</b>.</div><div class="box note" style="font-size:23px;"><b>حقيقة:</b> تساعدنا حبيبات الصخور التي تمَّ العثور عليها في محافظة العلا على فهم طبيعة البيئة التي ترسَّبت فيها، كما يدلُّ وجود الرواسب الكبيرة والصغيرة على أنها كانت فيما مضى نهرًا عريضًا جدًّا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>معدَّل عمليات التعرية</h2><span class="src">ص ١٦٣ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:24px"><li><b>أكوِّن فرضية.</b> كيف يمكن لسرعة المياه الجارية أن تؤثِّر في تعرية التربة؟ أكتب إجابتي على شكل فرضية.</li><li><b>أعمل نموذجًا.</b> أضع عينةً من التربة في وعاءين مسطَّحين بحيث يكون ارتفاعا التربة فيهما متساويين.</li><li>أضع قطعةً خشبيةً تحت طرف الوعاء حتى يصبح مائلًا.</li><li>أسكب ببطء مقدار كأسين من الماء في كلٍّ من الوعاءين، وأسجِّل ملاحظاتي.</li><li>أزيل غطاء الرشِّ، وأضع كمية الماء نفسها في وعاء الرَّيِّ مرةً أخرى، وأسكب الماء ببطء في الوعاءين، وأسجِّل ملاحظاتي.</li><li><b>أستنتج.</b> هل تدعم نتائجي فرضيَّتي، أم تُناقضها؟</li></ul><div class="box safe" style="font-size:25px;">أمسح ما يتساقط من الماء فورًا، وأغسل يديَّ بعد التعامل مع التربة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>إجابة سؤال النشاط</h2><span class="src">ص ١٦٣ — سؤال الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٦. <b>أستنتج.</b> هل تدعم نتائجي فرضيَّتي، أم تُناقضها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٣</span>إجابة نموذجية مقترحة: نعم تدعمها إذا كانت الفرضية «كلَّما زادت سرعة المياه الجارية زادت تعرية التربة». فالماء المسكوب من دون غطاء الرشِّ يتدفَّق أسرع وبقوة أكبر، فيجرف كمية أكبر من التربة ويحفر مجرًى أعمق. أمَّا الماء المتساقط عبر غطاء الرشِّ فيكون أبطأ وأخفَّ أثرًا. وأقارن كمية التربة المنقولة في الحالتين لأتأكَّد.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الترسيب؟</h2><span class="src">ص ١٦٤</span></div>
+<div class="body"><p class="c">بعد أن تخفَّ سرعة عوامل التعرية (الأنهار والجليديات والرياح وغيرها) يتمُّ <b>ترسيب</b> الفتات الصخريِّ والموادِّ الذائبة في الماء بعيدًا عن المناطق التي حُملت منها.</p><div class="box idea" style="font-size:24px;">وتسمَّى عملية تراكم الفتات في مكان ما <b>الترسيب</b>. وتعمل التعرية والترسيب معًا على تغيير شكل سطح الأرض؛ حيث تختفي بعض المعالم البارزة مثل الجبال والتلال، ويسبِّب ذلك ظهور تضاريسَ جديدة، منها دلتا الأنهار، والكثبان الرَّملية، والطبقات الصخرية وغيرها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تدخُّل الإنسان لمنع التعرية والترسيب</h2><span class="src">ص ١٦٤</span></div>
+<div class="body"><p class="c">ويُمكن للإنسان التدخُّل لمنع عمليات التعرية والترسيب في بعض الأماكن مثل الشواطئ والكثبان الرملية. كيف يمنع الناس الرياح من تعرية الشواطئ والكثبان الرملية؟</p><div class="cards"><div class="card center" style="text-align:center;"><h3>السياج أو الشبك</h3><p style="font-size:26px">في العادة يوضَع سياج أو شبك بجانب الكثبان الرملية لتقليل سرعة الرياح، ولتقليل نقل الرمال بعيدًا.</p></div><div class="card center" style="text-align:center;"><h3>زراعة الأعشاب</h3><p style="font-size:26px">كذلك قد يزرع الناس أعشابًا على الكثبان الرملية، حيث تنمو جذورها في الرمل وتثبِّته.</p></div></div><div class="box note" style="font-size:26px;"><b>نشاط أسري:</b> ناقشْ مع طفلك — طفلتك سببَ وضع الأشجار حول المزارع في المناطق الرملية؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٦٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتج.</b> لماذا تعدُّ الرياح من عوامل التعرية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٤</span>لأن التعرية هي نقل التربة وفتات الصخور من مكان إلى آخر على سطح الأرض، والرياح تفعل ذلك تمامًا؛ فهي تحمل الرمال وتنقلها من مكان إلى آخر — كما يظهر في العواصف الرملية — ولذلك ذكرها الكتاب مع المياه الجارية والجليديَّات والأمواج البحرية من أهمِّ عوامل التعرية.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> كيف يمكن أن يسبِّب انصهارُ الجليديات تغييرَ معالم سطح منطقة ما؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٤</span>الجليديَّات من عوامل التعرية؛ فهي تجرف الصخور والتربة في أثناء زحفها. وعند انصهارها يجري الماء بكميات كبيرة فيزيد التعرية، ثم يُرسِّب ما حمله من فتات صخريٍّ في مناطق أخرى. فتختفي معالم وتظهر تضاريس جديدة، وقد ترتفع مناسيب المياه فتغمر مناطقَ ساحلية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>أيُّ عملية؟</h2><span class="src">ص ١٥٦ — ١٦٤</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأ الوصف، ثم أختار العملية التي يدلُّ عليها.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="w">تجوية</button><button class="simBtn ghost" type="button" data-k="e">تعرية</button><button class="simBtn ghost" type="button" data-k="d">ترسيب</button><button class="simBtn ghost" type="button" data-k="i">عملية داخلية</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ١٦٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">يُحدَّد <b>المركز السطحيُّ</b> للزلزال وتقاس شدَّته بأجهزة السيزمومتر.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px"><b>البراكين</b> ثلاثة أنواع: نشطة وهامدة وساكنة.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px"><b>التعرية</b> عملية نقل الرُّسوبيات من مكان إلى آخر.</p></div></div><div class="box note" style="font-size:25px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمته عن العوامل المؤثِّرة في سطح الأرض: (الزلازل · البراكين · التجوية · التعرية · الترسيب).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">العمليات المؤثِّرة في سطح الأرض</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">عمليات داخلية</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">الزلازل: بؤرة · مركز سطحيٌّ · صدع</span><span class="node leaf">البراكين: نشطة · هامدة · ساكنة</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">التجوية</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">فيزيائية: تجمُّد · جذور · حرارة</span><span class="node leaf">كيميائية: أمطار حمضية · كهوف</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">التعرية</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">مياه جارية · رياح</span><span class="node leaf">جليديَّات · أمواج بحرية</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">الترسيب</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">دلتا الأنهار</span><span class="node leaf">كثبان رملية</span><span class="node leaf">طبقات صخرية</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكر وأتحدَّث وأكتب</h2><span class="src">ص ١٦٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> عندما تنخفض سرعة النهر تحدث عملية …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span><b>الترسيب</b>؛ فبعد أن تخفَّ سرعة عوامل التعرية يتمُّ ترسيب الفتات الصخريِّ والموادِّ الذائبة في الماء.</div></div><div class="qa"><p class="q">٢. <b>أستنتج.</b> ما سبب حدوث التسونامي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span>سببه <b>حدوث زلزال في قاع المحيط</b>؛ فتتحرَّك الأمواج في جميع الاتجاهات بسرعة تتراوح بين ٥٠٠ و١٠٠٠ كم/ساعة حاملةً طاقةً هائلة. وعند اقترابها من السواحل حيث المياه الضحلة يقلُّ حجم الماء المتحرِّك، فيزداد ارتفاع الأمواج فجأةً وتتحوَّل إلى أمواج عملاقة تصطدم بالشاطئ وتسبِّب الدمار.</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> كيف أتعرَّف نوع التجوية الذي أسهم في تكوُّن جرف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span>أفحص الصخور: فإن كانت متفتِّتةً إلى أجزاء أصغر مع بقاء تركيبها الكيميائيِّ ولونها كما هو، ووُجدت شقوق وجذور نباتات وآثار تجمُّد أو تغيُّرات حرارة، فهي <b>تجوية فيزيائية</b>. وإن تغيَّر لون الصخر وتركيبه وظهرت معادن ومواد جديدة أو تجاويف وكهوف بفعل المياه أو الأمطار الحمضية، فهي <b>تجوية كيميائية</b>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ١٦٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> الصهارة:<br>أ. ماء &nbsp;&nbsp; ب. صخر صلب &nbsp;&nbsp; جـ. صخر منصهر &nbsp;&nbsp; د. جبل</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span><b>جـ - صخر منصهر</b>؛ وتسمَّى <b>لابةً</b> عندما تصل إلى سطح الأرض.</div></div><div class="qa"><p class="q">٥. <b>أختار الإجابة الصحيحة.</b> ما الذي يجعل الكثبان الرملية تنتقل من مكان إلى آخر؟<br>أ. الماء &nbsp;&nbsp; ب. الجاذبية &nbsp;&nbsp; جـ. الأمطار الحمضية &nbsp;&nbsp; د. الرياح</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span><b>د - الرياح</b>؛ فهي من عوامل التعرية، تحمل الرمال وتنقلها من مكان إلى آخر. ولذلك يوضَع السياج وتُزرع الأعشاب لتثبيت الكثبان.</div></div><div class="qa"><p class="q">٦. <b>السؤال الأساسي.</b> ما العمليات الطبيعية التي تؤثِّر في تشكيل الأرض؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span>نوعان: <b>عمليات داخلية</b> تحدث في باطن الأرض وهي <b>الزلازل والبراكين</b>؛ و<b>عمليات خارجية</b> تحدث على السطح وهي <b>التجوية والتعرية والترسيب</b>. فالتجوية تفتِّت الصخور، والتعرية تنقل التربة وفتات الصخور، والترسيب يراكمها في مكان آخر — فتختفي معالم وتظهر تضاريس جديدة كدلتا الأنهار والكثبان الرملية والطبقات الصخرية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والكتابة · العلوم والمجتمع</h2><span class="src">ص ١٦٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والكتابة — قصة خيالية.</b> أكتب قصةً خياليةً أصف فيها ثوران بركان. وكيف كانت مشاعر الناس وانفعالاتهم في المدينة القريبة من البركان، وكيف تعاوَنوا من أجل تجنُّب الأضرار وتقليل المخاطر، وإعادة الشعور بالأمان.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span>إجابة نموذجية مقترحة: تُبنى القصة على معلومات الدرس: تصاعد الرماد البركانيِّ والغازات من الفوَّهة، وتدفُّق اللابة على المنحدرات، وخوف الأهالي. ثم يتعاون الناس: يتَّبعون تعليمات الجهات المختصَّة ويبتعدون عن مسار اللابة، ويستفيدون من نشرات <b>المركز الوطنيِّ للزلازل والبراكين</b> التي ترصد النشاط، ويساعدون كبار السنِّ في الإخلاء، ثم يعودون بعد أن يهدأ البركان ويعيدون بناء ما تضرَّر.</div></div><div class="qa"><p class="q"><b>العلوم والمجتمع — أخطار الزلازل.</b> أبحث في الإنترنت والموسوعات العلمية عن الطرائق الواجب اتباعُها للسلامة من أخطار الزلازل.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٦٥</span>إجابة نموذجية مقترحة: ذكر الكتاب أن الإنسان لا يستطيع منع حدوث الزلازل، لكنه يأخذ الحيطة والحذر بـ: <b>تحديد مواصفات خاصَّة للأبنية</b>، و<b>توزيع النشرات التثقيفية</b>، و<b>تدريب المواطنين على الإجراءات الواجب اتِّباعها عند وقوع الزلزال</b>. ويضيف الطالب ممَّا يجده في المصادر الموثوقة. <span class="muted">(ما يُضاف من الإنترنت لا يُنسب إلى الكتاب.)</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">موقع حدوث الزلزال تحت سطح الأرض يسمَّى:</p><div class="opts"><button class="opt" type="button">المركز السطحيَّ</button><button class="opt" type="button">بؤرة الزلزال</button><button class="opt" type="button">الصَّدع</button><button class="opt" type="button">الفوَّهة</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">زيادة درجة واحدة على مقياس رِخْتَر تدلُّ على:</p><div class="opts"><button class="opt" type="button">١٠ أضعاف</button><button class="opt" type="button">٢٠ ضعفًا</button><button class="opt" type="button">٣٠ ضعفًا</button><button class="opt" type="button">١٠٠ ضعف</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">الصهارة عندما تصل إلى سطح الأرض تسمَّى:</p><div class="opts"><button class="opt" type="button">لابةً</button><button class="opt" type="button">رمادًا</button><button class="opt" type="button">صدعًا</button><button class="opt" type="button">فوَّهةً</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">تفتُّت الصخور من دون تغيُّر في تركيبها الكيميائي:</p><div class="opts"><button class="opt" type="button">تجوية كيميائية</button><button class="opt" type="button">تجوية فيزيائية</button><button class="opt" type="button">تعرية</button><button class="opt" type="button">ترسيب</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">من أهمِّ عوامل التعرية التي ذكرها الكتاب:</p><div class="opts"><button class="opt" type="button">المياه الجارية والرياح والجليديات والأمواج</button><button class="opt" type="button">الزلازل فقط</button><button class="opt" type="button">البراكين فقط</button><button class="opt" type="button">الجاذبية فقط</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">لتثبيت الكثبان الرملية يقوم الناس بـ:</p><div class="opts"><button class="opt" type="button">حرق الأعشاب</button><button class="opt" type="button">وضع سياج وزراعة الأعشاب</button><button class="opt" type="button">إزالة التربة</button><button class="opt" type="button">حفر الآبار</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:30px"><li>أُفرِّق بجملة واحدة بين بؤرة الزلزال والمركز السطحيِّ.</li><li>أذكر أنواع البراكين الثلاثة.</li><li>أُرتِّب: تجوية ← تعرية ← ترسيب، وأشرح ماذا يحدث في كلٍّ منها.</li></ul><div class="box idea" style="font-size:28px;">الفكرة الرئيسة: تشكِّل سطحَ الأرض عملياتٌ داخلية (الزلازل والبراكين) وعمليات خارجية (التجوية والتعرية والترسيب).</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: من الصخر إلى المعالم</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1320" height="310" viewBox="0 0 1320 310" xmlns="http://www.w3.org/2000/svg" role="img" id="g5l10SvgHost"><defs><marker id="g5l10sq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><g class="eHot" data-k="weather"><circle cx="1155" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(1092.0,87.0) scale(1.05)"><path d="M18 96 L34 52 L62 40 L92 56 L104 96z" fill="#8C9AA2"/><path d="M34 52 L62 40 L64 96 L34 96z" fill="#A6B2B9"/><circle cx="52" cy="70" r="5" fill="#78868E"/><circle cx="80" cy="76" r="4" fill="#78868E"/></g><g><text x="1155" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التجوية</text><text x="1155" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التجوية</text></g><circle cx="1211" cy="94" r="21" fill="#4A5568"/><text x="1211" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">١</text><rect class="hitBox" x="1081" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M1077 150 H 903" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g5l10sq)"/><g class="eHot" data-k="erode"><circle cx="825" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(762.0,87.0) scale(1.05)"><ellipse cx="60" cy="48" rx="38" ry="22" fill="#E8EEF3"/><ellipse cx="34" cy="56" rx="22" ry="15" fill="#E8EEF3"/><ellipse cx="86" cy="56" rx="22" ry="15" fill="#E8EEF3"/><path d="M38 78 l-6 18 M60 78 l-6 18 M82 78 l-6 18" stroke="#2C7FB8" stroke-width="7" stroke-linecap="round"/></g><g><text x="825" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التعرية</text><text x="825" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التعرية</text></g><circle cx="881" cy="94" r="21" fill="#4A5568"/><text x="881" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٢</text><rect class="hitBox" x="751" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M747 150 H 573" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g5l10sq)"/><g class="eHot" data-k="deposit"><circle cx="495" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(432.0,87.0) scale(1.05)"><rect x="12" y="34" width="96" height="24" rx="6" fill="#5A3E23"/><rect x="12" y="58" width="96" height="22" fill="#8A6636"/><rect x="12" y="80" width="96" height="26" rx="6" fill="#A08768"/><circle cx="34" cy="90" r="7" fill="#7C6A54"/><circle cx="72" cy="94" r="9" fill="#7C6A54"/><path d="M46 34 v-16 M60 34 v-22 M74 34 v-14" stroke="#4E9A34" stroke-width="5" stroke-linecap="round"/></g><g><text x="495" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الترسيب</text><text x="495" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الترسيب</text></g><circle cx="551" cy="94" r="21" fill="#4A5568"/><text x="551" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٣</text><rect class="hitBox" x="421" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M417 150 H 243" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g5l10sq)"/><g class="eHot" data-k="shape"><circle cx="165" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(102.0,87.0) scale(1.05)"><rect x="0" y="70" width="120" height="40" fill="#E5CE9B"/><path d="M0 76 q 30 -14 60 0 t 60 0" fill="#D8BE85"/><circle cx="94" cy="34" r="17" fill="#F6C445"/><g><rect x="52" y="46" width="14" height="46" rx="7" fill="#4E9A34"/><rect x="34" y="58" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="34" y="58" width="10" height="24" rx="5" fill="#4E9A34"/><rect x="72" y="52" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="74" y="52" width="10" height="28" rx="5" fill="#4E9A34"/></g></g><g><text x="165" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تشكُّل المعالم</text><text x="165" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تشكُّل المعالم</text></g><circle cx="221" cy="94" r="21" fill="#4A5568"/><text x="221" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٤</text><rect class="hitBox" x="91" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">كيف تُعيد التجوية والتعرية والترسيب تشكيلَ سطح الأرض.</div></div><div class="eSteps" id="g5l10Pills"><span class="eStepPill" data-s="0">التجوية</span><span class="eStepPill" data-s="1">التعرية</span><span class="eStepPill" data-s="2">الترسيب</span><span class="eStepPill" data-s="3">تشكُّل المعالم</span></div><div class="eInfo" id="g5l10Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g5l10Prev">◀ السابق</button><button class="simBtn" type="button" id="g5l10Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: عواملُ تغيِّر سطح الأرض</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><polygon points="12,102 48,36 72,36 108,102" fill="#7A6A5A"/><polygon points="48,36 72,36 84,64 36,64" fill="#8A7A68"/><path d="M50 36 q 10 -22 20 0z" fill="#E2542A"/><path d="M52 36 q -6 34 -22 50 M68 36 q 8 30 24 46" stroke="#E2542A" stroke-width="7" fill="none" stroke-linecap="round"/></g></svg><h4>البراكين</h4><p>تغيُّرٌ فجائيٌّ يبني تضاريسَ جديدة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M60 18 q 30 40 30 56 a30 30 0 0 1 -60 0 q 0 -16 30 -56z" fill="#3E93C4"/><ellipse cx="48" cy="66" rx="7" ry="11" fill="#8FC7E4" opacity=".8"/></g></svg><h4>الماء الجاري</h4><p>أقوى عوامل التعرية على اليابسة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="55" y="46" width="10" height="62" rx="4" fill="#98A4AE"/><path d="M60 44 L60 8 L72 32z" fill="#5E6B76"/><path d="M60 44 L96 64 L72 66z" fill="#5E6B76"/><path d="M60 44 L24 64 L48 66z" fill="#5E6B76"/><circle cx="60" cy="44" r="9" fill="#3A4553"/><ellipse cx="60" cy="110" rx="24" ry="6" fill="#8A97A0"/></g></svg><h4>الرياح</h4><p>تنقل الرمال وتكوِّن الكثبان</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="52" y="14" width="16" height="60" rx="8" fill="#E4EAEE" stroke="#8A97A0" stroke-width="3"/><circle cx="60" cy="88" r="17" fill="#C0392B"/><rect x="55" y="40" width="10" height="42" fill="#C0392B"/></g></svg><h4>الحرارة والبرودة</h4><p>تمدُّدٌ وانكماشٌ يشقِّق الصخور</p></div></div><div class="eCap">بعض التغيُّرات فجائيةٌ سريعة، وبعضها بطيءٌ يستغرق سنين.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — نحتٌ بطيء</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>الماء الجاري أقوى عوامل التعرية على اليابسة؛ فالأودية العميقة حفرها الماء عبر <b>آلاف السنين</b>.</p></div><div class="fFact"><div class="n">٢</div><p>تمدُّد الصخر نهارًا بالحرارة وانكماشه ليلًا بالبرودة يشقِّقه شيئًا فشيئًا حتى يتفتَّت — <b>تجويةٌ بلا ماء</b>.</p></div><div class="fFact"><div class="n">٣</div><p>الكثبان الرملية تتحرَّك فعلًا! فالرياح تنقل حبيبات الرمل من جانبٍ إلى آخر فتزحف الكثبان ببطء.</p></div></div><div class="fCap">الأرض تتغيَّر تحت أقدامنا ولو لم نشعر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s5j1"><div class="fCard"><div class="fIn"><div class="fF"><span>الزَّلازل</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>اهتزاز قشرة الأرض.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>بؤرة الزلزال</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>موقع حدوث الزلزال تحت سطح الأرض.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>المركز السطحيُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نقطة تقع أعلى البؤرة مباشرةً، تنتشر منها الأمواج عند وصولها إلى السطح.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>قوة الزلزال</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تقدَّر بمقدار الطاقة التي تتحرَّر إثر حدوثه.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التسونامي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>أمواج عملاقة تصطدم بالشاطئ وتسبِّب الدمار.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>البركان</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>فتحة في القشرة الأرضية تخرج منها الصهارة والغازات والرماد البركانيُّ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5j1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب العمليات</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s5j2P"><button class="fChip" type="button" data-i="1">التعرية</button><button class="fChip" type="button" data-i="0">التجوية</button><button class="fChip" type="button" data-i="2">الترسيب</button><button class="fChip" type="button" data-i="3">تكوُّن معالمَ جديدة</button></div><div class="fSlots" id="s5j2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div></div><div class="fFb" id="s5j2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5j2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب العمليات التي تغيِّر سطح الأرض.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>تجربةٌ منزليةٌ آمنة</h4><p>اسكب ماءً على كومة رملٍ مائلةٍ في صينية، ولاحظ كيف يحفر الماء مجرًى وينقل الرمل إلى الأسفل.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا تُبنى حواجزُ ومصدَّاتٌ قرب الطرق في المناطق الرملية؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="5" aria-label="إثراء مصور: العمليات المؤثرة في سطح الأرض">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">كيف يمكن أن يسهم النهر في نقل فتات الصخور وترسيبه في موضع آخر؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/erosion.jpg" alt="مياه نهر عند قاعدة جروف صخرية" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>نهر ياكيما بين جوانب الوادي؛ تسهم المياه الجارية في نحت سطح الأرض عبر الزمن.</figcaption><p class="se-credit">الصورة: Michael Campbell / Bureau of Land Management · <a href="https://commons.wikimedia.org/wiki/File:Yakima_River_Canyon_(26386474994).jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://commons.wikimedia.org/wiki/File:Yakima_River_Canyon_(26386474994).jpg#Licensing" target="_blank" rel="noopener noreferrer">Public domain</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>تفتت التجوية الصخور أو تغير معادنها، بينما تنقل التعرية المواد بعيدًا عن موضعها.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>يحدث الترسيب عندما تتراكم المواد المنقولة؛ وقد يزداد عند تباطؤ الماء الحامل لها.</span></p>
+<p class="se-fact"><span aria-hidden="true">🏞️</span><span>يعتمد نقل الرواسب على سرعة الماء وحجم الحبيبات وخصائصها، وقد تبقى الحبيبات الدقيقة معلقة طويلًا.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.usgs.gov/publications/fluvial-sediments-a-summary-source-transportation-deposition-and-measurement-sediment" target="_blank" rel="noopener noreferrer">USGS: نقل الرواسب النهرية وترسيبها</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="5" aria-label="رسم توضيحي: من الصخر إلى الرواسب">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>من الصخر إلى الرواسب</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="من الصخر إلى الرواسب"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🪨</span><span class="se-node-label">تجوية</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🌊</span><span class="se-node-label">تعرية ونقل</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🏞️</span><span class="se-node-label">ترسيب</span></button></div>
+
+<p class="se-diagram-caption">تميّز بين تكوين الفتات ونقله وتراكمه؛ قد تعمل العمليات معًا في أماكن مختلفة.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🪨</span><div><strong data-detail-title>تجوية</strong><p data-detail-text>صخر يتفتت أو يتغير</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="5" aria-label="محاكاة إثرائية: سرعة الماء ونقل الحبيبات">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>سرعة الماء ونقل الحبيبات</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير اتجاه نقل حبيبات متماثلة إذا تغيرت سرعة الماء فقط؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">سرعة الجريان</p><div class="se-options" role="group" aria-label="سرعة الجريان"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">بطيئة</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">متوسطة</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">أسرع</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">الحبيبات متشابهة في النموذج؛ لا تصلح الرموز لتوقع انجراف حقيقي أو مقارنة الطين بالحصى.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر تصوري لكمية حبيبات العينة التي ينقلها الماء</p><div class="se-model" role="img" data-model aria-label="نقل قليل"><span class="se-symbol se-active" aria-hidden="true">🟤</span><span class="se-symbol se-active" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>نقل قليل</p><p class="se-observation" data-observation>رموز قليلة تمثل الحبيبات المتحركة.</p></div><p class="se-explanation" data-explanation>يعجز الجريان البطيء عن إبقاء بعض حبيبات العينة في الحركة، فيستقر جزء أكبر منها في النموذج.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 عندما يدخل النهر بحيرة ويبطؤ، أين تتوقع تراكم بعض حبيباته؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الخامس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثالثة: الأرض ومواردها · الفصل الخامس: أرضنا المتغيرة · العمليات المؤثرة في سطح الأرض<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٥٤ – ١٦٥ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['تجمُّد الماء في شقوق الصخر فيتفتَّت','w','تجوية فيزيائية: تفتُّت من دون تغيُّر كيميائي.'],
+           ['الرياح تحمل الرمال وتنقلها بعيدًا','e','التعرية: نقل التربة وفتات الصخور.'],
+           ['تكوُّن دلتا عند مصبِّ النهر','d','الترسيب: تراكم الفتات في مكان ما.'],
+           ['اهتزاز قشرة الأرض عند الصَّدع','i','الزلازل من العمليات الداخلية.'],
+           ['الأمطار الحمضية تغيِّر تركيب الصخر','w','تجوية كيميائية.'],
+           ['خروج اللابة من فوَّهة في القشرة','i','البراكين من العمليات الداخلية.'],
+           ['المياه الجارية تجرف التربة والأشجار','e','التعرية بفعل المياه الجارية.'],
+           ['تراكم الرمال مكوِّنةً كثبانًا رملية','d','الترسيب بعد أن تخفَّ سرعة الرياح.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع الأوصاف.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='وصف '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g5l10SvgHost','g5l10Info',{'weather':'<span><b>التجوية</b> — تفتُّت الصخور إلى قطعٍ أصغر بفعل الماء والحرارة والجليد.</span>','erode':'<span><b>التعرية</b> — نقل الفتات الصخري والتربة بفعل الماء أو الرياح أو الجليد.</span>','deposit':'<span><b>الترسيب</b> — استقرار الفتات المنقول في مكانٍ جديدٍ فيكوِّن طبقات.</span>','shape':'<span><b>تشكُّل المعالم</b> — تنشأ الأودية والكثبان والدلتا بمرور الزمن.</span>'},'');
+ERT.stepper({pills:'g5l10Pills', info:'g5l10Info', svg:'g5l10SvgHost', next:'g5l10Next', prev:'g5l10Prev', stages:[['weather','التجوية','تفتُّت الصخور إلى قطعٍ أصغر بفعل الماء والحرارة والجليد.'],['erode','التعرية','نقل الفتات الصخري والتربة بفعل الماء أو الرياح أو الجليد.'],['deposit','الترسيب','استقرار الفتات المنقول في مكانٍ جديدٍ فيكوِّن طبقات.'],['shape','تشكُّل المعالم','تنشأ الأودية والكثبان والدلتا بمرور الزمن.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s5j1');
+EG.order({pool:'s5j2P', slots:'s5j2S', fb:'s5j2Fb', reset:'s5j2R', n:4});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"05_الصف_الخامس_الابتدائي/03_الأرض_ومواردها/05_أرضنا_المتغيرة/02_العمليات_المؤثرة_في_سطح_الأرض/علوم_خامس_ابتدائي_ف1_الدرس_الثاني_العمليات_المؤثرة_في_سطح_الأرض.html","title":"العمليات المؤثرة في سطح الأرض","grade":5,"emoji":"🏞️","photoTopic":"erosion","observeQuestion":"كيف يمكن أن يسهم النهر في نقل فتات الصخور وترسيبه في موضع آخر؟","facts":["تفتت التجوية الصخور أو تغير معادنها، بينما تنقل التعرية المواد بعيدًا عن موضعها.","يحدث الترسيب عندما تتراكم المواد المنقولة؛ وقد يزداد عند تباطؤ الماء الحامل لها.","يعتمد نقل الرواسب على سرعة الماء وحجم الحبيبات وخصائصها، وقد تبقى الحبيبات الدقيقة معلقة طويلًا."],"diagram":{"title":"من الصخر إلى الرواسب","relation":"sequence","nodes":[{"emoji":"🪨","label":"تجوية","detail":"صخر يتفتت أو يتغير"},{"emoji":"🌊","label":"تعرية ونقل","detail":"الماء يحرك بعض الفتات"},{"emoji":"🏞️","label":"ترسيب","detail":"تستقر حبيبات في موضع جديد"}],"caption":"تميّز بين تكوين الفتات ونقله وتراكمه؛ قد تعمل العمليات معًا في أماكن مختلفة."},"lab":{"title":"سرعة الماء ونقل الحبيبات","question":"كيف يتغير اتجاه نقل حبيبات متماثلة إذا تغيرت سرعة الماء فقط؟","controlLabel":"سرعة الجريان","options":["بطيئة","متوسطة","أسرع"],"states":[{"label":"نقل قليل","emoji":"🟤","amount":2,"explanation":"يعجز الجريان البطيء عن إبقاء بعض حبيبات العينة في الحركة، فيستقر جزء أكبر منها في النموذج.","observation":"رموز قليلة تمثل الحبيبات المتحركة."},{"label":"نقل متوسط","emoji":"🟤","amount":5,"explanation":"الجريان الأقوى يستطيع تحريك مزيد من حبيبات العينة المتماثلة مقارنة بالجريان الأبطأ.","observation":"يزداد مؤشر الحبيبات المنقولة."},{"label":"نقل أكبر","emoji":"🟤","amount":8,"explanation":"يزداد الميل إلى نقل الحبيبات في هذه المقارنة، مع تثبيت حجمها وشكل القناة وكمية الرواسب المتاحة.","observation":"أكثر رموز نقل في العينة الافتراضية."}],"quantityLabel":"مؤشر تصوري لكمية حبيبات العينة التي ينقلها الماء","modelNote":"الحبيبات متشابهة في النموذج؛ لا تصلح الرموز لتوقع انجراف حقيقي أو مقارنة الطين بالحصى.","tryPrompt":"عندما يدخل النهر بحيرة ويبطؤ، أين تتوقع تراكم بعض حبيباته؟"},"sources":[{"title":"USGS: نقل الرواسب النهرية وترسيبها","url":"https://www.usgs.gov/publications/fluvial-sediments-a-summary-source-transportation-deposition-and-measurement-sediment"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

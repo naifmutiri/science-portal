@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – الدرس الثاني: حماية الموارد</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>حماية الموارد</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الثالثة: الأنظمة البيئية ومواردها<br>الفصل السادس: موارد الأرض والحفاظ عليها — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن الآن؟</h2><span class="src">ص ١٧٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة</h3><p>الوحدة الثالثة: الأنظمة البيئية ومواردها</p></div><div class="card"><h3>الفصل</h3><p>الفصل السادس: موارد الأرض والحفاظ عليها</p></div><div class="card"><h3>الدرس</h3><p>الدرس الثاني: حماية الموارد</p></div></div><div class="box idea"><b>السؤال الأساسي:</b> كيف نحمي موارد الأرض ونحافظ على البيئة؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أوضِّح أهمية حماية اليابسة والماء والهواء.</li><li>أبيِّن دور التدوير في تقليل النفايات.</li><li>أصف مراحل تنقية المياه والمحافظة عليها.</li><li>أعلِّل ضرورة تقليل حرق الوقود الأحفوري.</li><li>أتعرَّف المصادر البديلة للطاقة وأقارن بينها.</li><li>أطبِّق القواعد الثلاث: الترشيد وإعادة الاستخدام والتدوير.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أنظر وأتساءل</span><h2>تمهيد</h2><span class="src">ص ١٧٦</span></div>
+<div class="body"><p class="t">تلتقط الألواح الشمسية أشعة الشمس لكي تُستخدم موردًا للطاقة. يستخدم الناس موارد عديدةً للطاقة، منها الوقود الأحفوري، والماء، والرياح.</p><div class="box ask">فكيف تختلف موارد الطاقة هذه بعضها عن بعض؟ وكيف يمكن استخدام موارد الأرض بفاعليةٍ أكبر؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما الذي أعرفه من قبل؟</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الموارد المتجددة</h3><p>موارد تتجدَّد سريعًا أو يمكن إعادة استخدامها.</p></div><div class="card"><h3>الموارد غير المتجددة</h3><p>موارد محدودةٌ تنفد ولا تتجدَّد بسرعة.</p></div><div class="card"><h3>التلوُّث</h3><p>إضافة موادَّ ضارَّةٍ إلى التربة أو الماء أو الهواء.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١٧٨</span></div>
+<div class="body"><div class="cards"><div class="card"><h4>الطاقة الحرارية الجوفية</h4><p class="term">الطاقة الحرارية التي مصدرها باطن الأرض.</p></div><div class="card"><h4>الكتلة الحيوية</h4><p class="term">تتكوَّن من فضلات النباتات والحيوانات وبقاياها.</p></div><div class="card"><h4>التكرير الحيوي</h4><p class="term">عملية معالجة الكتلة الحيوية لإنتاج الوقود.</p></div></div><div class="cards"><div class="card"><h4>الطاقة الكهرومائية</h4><p class="term">الطاقة الناتجة عن استخدام طاقة المياه الجارية لإنتاج الكهرباء.</p></div><div class="card"><h4>الخلية الشمسية</h4><p class="term">أداةٌ تحوِّل أشعة الشمس إلى طاقةٍ كهربائية.</p></div></div><div class="muted">مهارة القراءة في هذا الدرس: <b>مشكلةٌ وحل</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>هل تُهدر بعض المصابيح الكهربائية طاقةً أقلَّ من مصابيحَ أخرى؟</h2><span class="src">ص ١٧٧</span></div>
+<div class="body"><div class="box idea"><b>أتوقَّع:</b> تصدر المصابيح الكهربائية ضوءًا وحرارة، فهل تُعطي بعض أنواع المصابيح حرارةً أكثر، وتستهلك طاقةً أكبرَ من مصابيحَ أخرى؟ «إذا كان هناك نوعٌ من المصابيح يعطي حرارةً أقلَّ من نوعٍ آخر فعندئذٍ ………».</div><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">أحتاج إلى</h4><ul class="list"><li>منشفة بيضاء</li><li>حامل مصابيح</li><li>وصلة كهربائية</li><li>مقياس حرارة</li><li>مصباح أصفر (متوهج)</li><li>مسطرة</li><li>ساعة إيقاف</li><li>مصباح فلورسنت</li></ul></div><div style="flex:1 1 0"><h4 class="hl">أختبر توقُّعي</h4><ul class="list num"><li><b>أقيس. أحذر:</b> أضع المنشفة البيضاء على الطاولة، وأضع حامل المصابيح الكهربائية عند أحد طرفَي المنشفة، ومقياس الحرارة عند الطرف الآخر منها. وأدوِّن درجة الحرارة التي يبيِّنها مقياس الحرارة. أتأكَّد أن المصباح غير متَّصلٍ بمصدر الكهرباء. ثم أثبِّت المصباح الأصفر في حامل المصابيح، وأستخدم المسطرة لتوجيه المصباح في زاويةٍ مناسبة، بحيث يسقط ضوؤه على مقياس الحرارة.</li><li><b>أجرِّب. أحذر:</b> أصل المصباح الكهربائيَّ بالكهرباء، وأضغط مفتاح التشغيل. وأترك الضوء مسلَّطًا على مقياس الحرارة مدة خمس دقائق. وأدوِّن درجة الحرارة، ثم أطفئ المصباح، وأفصله عن مصدر الكهرباء وأتركه على الطاولة حتى يبرد، وتصل درجة حرارة مقياس الحرارة إلى الدرجة التي بُدئت بها التجربة.</li><li>أكرِّر الخطوة ٢ مستخدمًا مصباح الفلورسنت.</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>أستخلص النتائج</h2><span class="src">ص ١٧٧</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أستنتج: أيُّ أنواع المصابيح يهدر طاقةً أقلَّ في صورة حرارة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>مصباح الفلورسنت</b>؛ إذ يرتفع مقياس الحرارة عنده أقلَّ ممَّا يرتفع عند المصباح الأصفر (المتوهج)، فيهدر طاقةً أقلَّ على شكل حرارة.</div></div><div class="qa"><p class="q">٥ – أتواصل: أيُّ أنواع المصابيح الكهربائية يمكن التوصية باستخدامه لمن يرغب في توفير الطاقة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يُوصى بمصابيح <b>الفلورسنت</b>؛ لأنها تحوِّل جزءًا أكبرَ من الطاقة إلى ضوءٍ وتهدر أقلَّ منها حرارةً، فتوفِّر الطاقة الكهربائية.</div></div><div class="qa"><p class="q">أستكشف أكثر: أيُّ المصابيح يُفضَّل استخدامه في المنازل التي تستخدم المكيفات الهوائية: الصفراء أم الفلورسنت؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span><b>إجابة نموذجية مقترحة:</b> يُفضَّل <b>الفلورسنت</b>؛ لأنه يعطي حرارةً أقلَّ فيقلُّ الحمل على المكيف فتقلُّ الطاقة المستهلكة مرتين. ولاختبار ذلك أضع مصباحًا من كل نوعٍ في حجرتين متماثلتين وأقيس درجة الحرارة بعد مدةٍ متساوية.</div></div><div class="box safe"><b>أحذر:</b> المصابيح تصبح ساخنةً جدًّا؛ لا ألمسها وهي مضاءة، وأفصل الكهرباء قبل التعامل معها، ولا أستعمل الكهرباء إلا بإشراف المعلم.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>الفكرة الرئيسة للدرس</h2><span class="src">ص ١٧٨</span></div>
+<div class="body"><div class="box idea" style="font-size:bigpx;">يمكن حماية موارد الأرض بالمحافظة على <b>اليابسة والماء والهواء</b>، وباستخدام <b>مصادر بديلةٍ للطاقة</b>، وباتباع القواعد الثلاث: <b>الترشيد وإعادة الاستخدام والتدوير</b>.</div><div class="map"><div class="node">حماية الموارد</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">اليابسة</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">حفظ التربة</span><span class="node leaf">تقليل النفايات</span></div></div><div class="col"><div class="node sub" style="background:#E8F1F9;border-color:#2E6DA4;color:#2E6DA4">الماء</div><div class="line" style="background:#2E6DA4"></div><div class="leaves"><span class="node leaf">التنقية</span><span class="node leaf">الترشيد</span></div></div><div class="col"><div class="node sub" style="background:#FBF3DF;border-color:#B8860B;color:#B8860B">الطاقة</div><div class="line" style="background:#B8860B"></div><div class="leaves"><span class="node leaf">مصادر بديلة</span><span class="node leaf">ترشيد الاستهلاك</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">القواعد الثلاث</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">ترشيد</span><span class="node leaf">إعادة استخدام</span><span class="node leaf">تدوير</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">شرح</span><h2>كيف نحافظ على اليابسة والماء والهواء في الأرض؟</h2><span class="src">ص ١٧٨</span></div>
+<div class="body"><p class="t">موارد الأرض ثمينةٌ سخَّرها الله للإنسان لتلبية متطلبات حياته.</p><div class="box note">قال تعالى: ﴿وَسَخَّرَ لَكُم مَّا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ جَمِيعًا مِّنْهُ ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ﴾ &nbsp;<span class="muted">[الجاثية: ١٣]</span></div><p class="t">ومع الزيادة المستمرة في عدد السكان زاد الطلب على موارد الأرض، واستغلَّها الناس بشتَّى الوسائل. وقد أدَّى ذلك إلى ظهور عددٍ من المشكلات البيئية، منها <b>التلوُّث</b> و<b>النفايات</b> وغيرهما.</p><div class="box idea">ويجب على الناس حماية اليابسة والماء والهواء من النفايات والتلوُّث. ولحسن الحظِّ بحث العديد من العلماء طرقًا، واختبروها؛ لكي تساعدنا على حماية كوكب الأرض.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">حفظ التربة</span><h2>مراجعة: طرقٌ لحفظ التربة</h2><span class="src">ص ١٧٨</span></div>
+<div class="body"><p class="t">وقد درستُ طرقًا عديدةً لحفظ التربة:</p><ul class="list"><li>يقوم بعض المزارعين بزراعة الأعشاب بين صفوف نباتات المحاصيل.</li><li>ويقوم بعضهم الآخر بزراعة المحاصيل في <b>مصاطب</b>.</li><li>وهناك مزارعون آخرون ما زالوا يزرعون الأشجار في صفوفٍ على قمم التلال.</li></ul><div class="box note">وكلُّ هذه الطرق تساعد على تعويض المعادن التي تمتصُّها المحاصيل من التربة في أثناء نموِّها، وتساعد على التحكُّم في جريان المياه ومنع انجراف التربة أو انتقالها إلى مكانٍ آخرَ وفقدانها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">التدوير</span><h2>التدوير</h2><span class="src">ص ١٧٩</span></div>
+<div class="body"><div class="box ask">تُرى، هل يفكِّر الإنسان أين تذهب النفايات التي يلقيها؟ <span class="muted">نحن نلقي نفاياتنا في سلة المهملات، ومن المرجَّح أن تنتهيَ هذه النفايات في حُفرٍ على سطح الأرض، أو في الشوارع، أو في مجاري المياه.</span></div><div class="box idea"><b>تدوير النفايات</b> يقلِّل ما يُرمَى منها في مكبَّات النفايات، ويقلِّل من احتمال تلويثها للبيئة.</div><p class="t">وفي العديد من المجتمعات مراكزُ أُنشئت من أجل جمع موادَّ معيَّنة، منها <b>الورق والزجاج والمواد الفلزيَّة والبلاستيك</b>؛ حيث يمكن إعادة استخدامها مرةً أخرى.</p><div class="muted">إن استخدام المواد المعاد تدويرها يساعد على تقليل كمية النفايات التي تُرسَل إلى المكبَّات.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الماء</span><h2>المحافظة على الماء</h2><span class="src">ص ١٧٩</span></div>
+<div class="body"><p class="t">تهتمُّ الدول — وخصوصًا تلك التي تعاني شُحًّا في موارد المياه — بكيفية تنقية الماء من الشوائب بعد تلوُّثه.</p><ul class="list"><li>يمكن تنقية الماء الملوَّث في محطاتٍ خاصةٍ للتنقية أو المعالجة.</li><li>وفي هذه المحطات تعالَج المياه الملوَّثة بالمواد الكيميائية، ثم يُرشَّح الماء لإزالة الشوائب.</li><li>ثم يعالَج الماء مرةً أخرى بموادَّ كيميائية، منها <b>الكلور</b>، لقتل البكتيريا؛ ليصبح الماء صالحًا لريِّ أنواعٍ معيَّنةٍ من المزروعات أو لتصريفه في البحار أو الأنهار دون تلويثها.</li><li>وفي بعض الدول التي تعاني شُحًّا في المياه يمكن إضافة مراحلَ للمعالجة ليصبح صالحًا للشرب.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تنقية المياه</span><h2>مراحل تنقية المياه</h2><span class="src">ص ١٧٩</span></div>
+<div class="body"><ul class="list num"><li>فصل المواد الصلبة الكبيرة العالقة.</li><li>تُترك المياه في أحواضٍ خاصةٍ فترةً من الوقت لترسيب ما تبقَّى من موادَّ عالقةٍ في الماء.</li><li>تمرُّ المياه عبر طبقاتٍ من <b>الحصى والرمل</b>؛ لترشيح الكتل الصغيرة منها وإزالتها.</li><li>يضاف <b>الكلور</b> وموادُّ أخرى لقتل البكتيريا، أو التخلص من المواد المذابة السامة قبل التخلص منها في البحار.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>الحصى والرمل في التنقية</h2><span class="src">ص ١٧٩</span></div>
+<div class="body"><div class="box ask">كيف تَستخدم محطاتُ تنقية المياه الحصى والرملَ لجعل الماء صالحًا لريِّ أنواعٍ معينةٍ من المزروعات؟<br><span class="muted">إرشاد: ما دور الرمل في عملية التنقية؟</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الشكل»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تُمرَّر المياه عبر <b>طبقاتٍ من الحصى والرمل</b> تعمل عمل المصفاة؛ فتحتجز الكتل والشوائب الصغيرة العالقة وتُزيلها من الماء، فيخرج الماء أنقى، ثم يعالَج بالكلور فيصبح صالحًا لريِّ أنواعٍ معيَّنةٍ من المزروعات.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">إثراء اختياري</span><h2>الربط مع رؤية ٢٠٣٠</h2><span class="src">ص ١٧٩</span></div>
+<div class="body"><div class="box note"><b>الربط مع رؤية ٢٠٣٠</b> — من أهداف الرؤية: <b>٢.٤.٥ ضمان استفادةٍ مُستدامةٍ من الموارد المائية</b>.</div><p class="t">وتُولي التشريعات والقوانين المتصلة بحماية البيئة في المملكة العربية السعودية أهميةً خاصةً للحفاظ على المياه، ومعالجة مياه الصرف الصحي والمصانع، وعدم التخلص منها في البحار قبل معالجتها.</p><div class="muted">وردت في الكتاب إشارةٌ إلى موقع «المركز الوطني لكفاءة وترشيد المياه» عبر رمز استجابةٍ سريعة (QR). وهذا العرض يعمل دون إنترنت، فيُمسح الرمز من الكتاب نفسه عند الرغبة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٧٩</h2><span class="src">ص ١٧٩</span></div>
+<div class="body"><div class="qa"><p class="q">مشكلةٌ وحلٌّ: كيف أقلِّل من النفايات التي تلقيها أسرتي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> كثرة النفايات المنزلية تملأ المكبَّات وتلوِّث البيئة. <b>الخطوات نحو الحل:</b> شراء ما نحتاج إليه فقط، واستعمال أوانٍ يمكن غسلها بدل الأطباق الورقية والبلاستيكية، وفصل الورق والزجاج والفلزات والبلاستيك وإرسالها إلى مراكز التدوير، وإعادة استخدام العبوات. <b>الحل:</b> تقلُّ كمية النفايات المرسلة إلى المكبَّات ويقلُّ التلوُّث.</div></div><div class="qa"><p class="q">التفكير الناقد: كيف يمكن أن يؤثِّر إلقاء النفايات في المحيطات، في الناس؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> تلوِّث النفايات مياه المحيط فتضرُّ بالأسماك والمخلوقات البحرية التي يتغذَّى عليها الناس، وقد تنتقل الملوِّثات إلى غذائهم، كما تُفسد الشواطئ وتضرُّ بالصيد والسياحة ومياه التحلية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الوقود الأحفوري</span><h2>كيف نقلِّل حرق الوقود الأحفوري؟</h2><span class="src">ص ١٨٠</span></div>
+<div class="body"><p class="t">يتكوَّن <b>الوقود الأحفوري</b>، ومنه الفحم والنفط والغاز الطبيعي، من بقايا المخلوقات الحية.</p><ul class="list"><li>إن مصادر الوقود الأحفوري محدودةٌ لأنها <b>مصادر غير متجدِّدة</b>.</li><li>ويستخدم الناس مشتقَّات الوقود الأحفوري في السيارات، وتدفئة المنازل، وتشغيل محطات توليد الكهرباء.</li><li>ومع ازدياد أعداد الناس يزداد استخدام الوقود الأحفوري، ويزداد مقدار تلوُّث البيئة.</li></ul><div class="box idea">ولأنه مصدرٌ غير متجدِّدٍ للطاقة، فمن المهمِّ المحافظة على الوقود الأحفوري وترشيد استهلاكه ليدوم مدةً أطول. وعلى كلِّ حال، فالحلُّ هو <b>البحث عن مصادرَ أخرى للطاقة</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المصادر البديلة</span><h2>المصادر البديلة للطاقة</h2><span class="src">ص ١٨٠</span></div>
+<div class="body"><div class="box idea"><b>المصادر البديلة للطاقة</b> هي مصادر طاقةٍ أخرى غير الوقود الأحفوري. وهناك العديد من المصادر البديلة التي يدرس العديد من العلماء كيفية استخدامها.</div><div class="box note">أُنشئَت في المملكة العربية السعودية <b>مدينة الملك عبدالله للطاقة الذَّرِّيَّة والمتجدِّدة (K.A.CARE)</b> التي تُعنَى بوضع الخطط المستقبلية لإنتاج الكهرباء من المصادر البديلة للطاقة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المصادر البديلة</span><h2>الطاقة الحرارية الجوفية والرياح</h2><span class="src">ص ١٨٠</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">الطاقة الحرارية الجوفية</h4><p class="t">توجد بعض مصادر هذه الطاقة في باطن الأرض؛ فباطن الأرض شديد الحرارة. وقد تصل هذه الحرارة إلى سطح الأرض في بعض الأماكن في صورة بخار ماءٍ أو ماءٍ ساخنٍ كما في الينابيع الساخنة.</p><div class="box idea">ويزوِّدنا هذا البخار أو الماء الساخن <b>بالطاقة الحرارية الجوفية</b>، أي الطاقة الحرارية التي مصدرها باطن الأرض. ويمكن استخدامها في بعض المناطق لتدفئة المنازل وإنتاج الكهرباء.</div></div><div style="flex:1 1 0"><h4 class="hl">طاقة الرياح</h4><p class="t">وتمثِّل الرياح حاليًّا مصدرًا بديلًا رئيسًا للطاقة. وتستخدم <b>مراوح الهواء</b> طاقة الهواء المتحرِّك في إنتاج الكهرباء؛ لاستخدامها في المنازل والمصانع.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المصادر البديلة</span><h2>الكتلة الحيوية والتكرير الحيوي</h2><span class="src">ص ١٨٠</span></div>
+<div class="body"><div class="box idea">تتكوَّن <b>الكتلة الحيوية</b> من فضلات النباتات والحيوانات وبقاياها، ويُتخلَّص منها غالبًا من دون فائدة، مع أنه يمكن معالجتها لإنتاج الوقود.</div><p class="t">وتُسمَّى هذه العملية <b>التكرير الحيوي</b>، وتتمُّ في محطاتٍ خاصةٍ بمعالجة النفايات الحيوية. وتنتج هذه المحطات أنواع وقودٍ أساسها <b>مادة الكحول</b>، وتُستخدم في إنتاج الكهرباء والحرارة.</p><div class="box note">ويمكن تحويل نبات الذُّرة وقصب السكر ونباتات حبوبٍ أخرى إلى وقودٍ بهذه الطريقة أيضًا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المصادر البديلة</span><h2>الطاقة الكهرومائية والشمسية</h2><span class="src">ص ١٨١</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">الطاقة الكهرومائية</h4><p class="t">تُستخدم طاقة المياه الجارية كذلك لإنتاج الطاقة الكهربائية. وتُسمَّى هذه الطاقة الناتجة <b>الطاقة الكهرومائية</b>؛ حيث توضع عند قواعد السدود محطاتٌ لتوليد الكهرباء للإفادة من طاقة المياه التي يحتجزها السدُّ.</p></div><div style="flex:1 1 0"><h4 class="hl">الطاقة الشمسية</h4><p class="t">كما سخَّر الله لنا الشمس لتزوِّدنا بكميةٍ كبيرةٍ من الطاقة تسبِّب تسخين الغلاف الجوي، وتكوين الرياح، وتحفيز دورة الماء في الطبيعة. وتستخدم النباتات طاقة الشمس لإنتاج الغذاء.</p></div></div><div class="box idea">ويستخدم الناس الطاقة الشمسية عن طريق استخدام <b>الخلايا الشمسية</b>؛ وهي أدواتٌ تحوِّل أشعة الشمس إلى طاقةٍ كهربائية. وتُستخدم الطاقة الكهربائية التي تُخزَّن في سلسلةٍ من الخلايا الشمسية، في إضاءة المنازل وتدفئتها طوال الليل.</div><div class="muted">وتوفِّر الألواح الشمسية الطاقة لمرافق جامعة الملك عبدالله للعلوم والتقنية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>قوة الماء</h2><span class="src">ص ١٨١</span></div>
+<div class="body"><ul class="list num"><li>أعمل قائمةً بعواملَ أعتقد أنها تؤثِّر في كيفية عمل عجلة الماء، وكيف يمكن أن تصمَّم شفرات العجلة لنحصل منها على أقصى سرعةٍ ممكنة.</li><li><b>أعمل نموذجًا. أحذر:</b> أقصُّ (٨) قطعٍ متساويةٍ ابتداءً من إطار كأسٍ بلاستيكيةٍ إلى قاعدتها.</li><li>أعمل القطع السابقة على شكل مروحة، وأدخل قلم رصاصٍ في قعر الكأس.</li><li><b>ألاحظ:</b> أمسك بالقلم من نهايته، وأضعه بشكلٍ أفقي، وأضع الكأس التي على شكل مروحةٍ تحت ماء الحنفية. فماذا يحدث؟</li></ul><div class="box safe"><b>أحذر:</b> أستعمل المقص بحذر، وأنتبه للحواف الحادَّة للبلاستيك.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نشاط قوة الماء — التوقُّع</h2><span class="src">ص ١٨١</span></div>
+<div class="body"><div class="qa"><p class="q">٥ – أتوقَّع: هل تتحرَّك عجلة الماء بسرعةٍ أكثرَ مع زيادة عدد القطع أم مع نقصانها؟ أصمِّم تجربةً لاكتشاف ذلك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span><b>إجابة نموذجية مقترحة:</b> يتوقَّع كثيرٌ من الطلاب أن تزداد السرعة مع زيادة عدد الشفرات؛ لأن الماء يدفع عددًا أكبرَ منها. ولاختبار ذلك أصنع عجلاتٍ متماثلةً بعدد شفراتٍ مختلف (٤ و٦ و٨)، وأضعها تحت الحنفية نفسها بالتدفُّق نفسه، وأعُدُّ الدورات في ١٠ ثوانٍ لكلٍّ منها، وأقارن النتائج. <span class="muted">وتُسجَّل النتيجة الفعلية من التجربة، لا من التوقُّع.</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٨١</h2><span class="src">ص ١٨١</span></div>
+<div class="body"><div class="qa"><p class="q">مشكلةٌ وحلٌّ: كيف يمكن للناس أن يقلِّلوا من اعتمادهم على الوقود الأحفوري؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> الوقود الأحفوري مصدرٌ غير متجدِّدٍ ومحدودٌ ويلوِّث البيئة. <b>الخطوات نحو الحل:</b> ترشيد استهلاك الطاقة في التدفئة والتكييف، واستخدام سياراتٍ أكفأَ في استهلاك الوقود، والتوسُّع في المصادر البديلة (الشمسية والرياح والكهرومائية والحرارية الجوفية والتكرير الحيوي). <b>الحل:</b> يقلُّ الاعتماد على الوقود الأحفوري ويقلُّ التلوُّث ويدوم الموردُ مدةً أطول.</div></div><div class="qa"><p class="q">التفكير الناقد: أيُّ المصادر البديلة للطاقة يفضِّل الناس استخدامها؟ برِّرْ إجابتك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> تعتمد الإجابة على المنطقة؛ ففي بلادنا تُفضَّل <b>الطاقة الشمسية</b> لوفرة أشعة الشمس طوال العام وسهولة تركيب الخلايا الشمسية. وفي المناطق الغزيرة الأنهار تُفضَّل الطاقة الكهرومائية، وفي المناطق ذات الينابيع الساخنة تُفضَّل الطاقة الحرارية الجوفية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">القواعد الثلاث</span><h2>ما القواعد الثلاث في المحافظة على موارد البيئة؟</h2><span class="src">ص ١٨٢</span></div>
+<div class="body"><p class="t">يمكننا المساعدة على حماية اليابسة والماء والهواء باتباع ثلاث قواعدَ للحماية، هي: <b>الترشيد، وإعادة الاستخدام، والتدوير</b>.</p><table class="cmp"><tr><th style="width:20%">القاعدة</th><th>الوصف</th></tr><tr><td>الترشيد</td><td>ترشيد كمية الموارد الطبيعية التي نستخدمها. ومن الأمثلة على ذلك تقليل كميات الوقود المستخدم في التدفئة والتكييف؛ وذلك بضبط درجة الحرارة الداخلية في المنازل، بحيث تُستخدم حرارةٌ أقلُّ في التدفئة في الطقس البارد، ويُستخدم أقلُّ قدرٍ من تكييف الهواء في الطقس الحارِّ. ويمكن كذلك تصميم سياراتٍ أكثرَ كفاءةً في استهلاك الوقود، وتشجيع الناس على شرائها.</td></tr><tr><td>إعادة الاستخدام</td><td>تساعد على المحافظة على موارد البيئة؛ إذ يمكننا إعادة استخدام العديد من المنتجات، بدلًا من استخدام المنتجات المصمَّمة للاستخدام مرةً واحدة، والتي يتمُّ التخلُّص منها في صورة نفايات. ومن ذلك استخدام الأطباق التي يمكن غسلها بدل الأطباق الورقية أو البلاستيكية.</td></tr><tr><td>التدوير</td><td>حفظ المصادر بتدوير المواد؛ بحيث يمكن استخدامها بطرقٍ جديدة؛ إذ تقلِّل عمليات التدوير من كمية الطاقة التي نحتاج إليها لصنع الأشياء، كما تقلِّل كمية النفايات الناتجة أيضًا، ومن ذلك إعادة تدوير الورق والبلاستيك.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">القواعد الثلاث</span><h2>الطاقة وإعادة الاستخدام والتدوير</h2><span class="src">ص ١٨٢</span></div>
+<div class="body"><div class="box idea">إن صنع المنتجات يحتاج إلى طاقة، ويمكن ترشيد استهلاك هذه الطاقة عندما يتمُّ إعادة استخدام المنتجات.</div><div class="box note">ومن المهمِّ أيضًا إعادة <b>تدوير المعدات الإلكترونية</b>، ومنها الحواسيب وأجهزة التلفاز والهواتف النقالة ومنتجاتٌ أخرى تمَّ الاستغناء عنها. وتحتوي هذه الأجهزة على موادَّ خطرةٍ يمكن أن تؤذيَ البيئة إذا لم يتمَّ إعادة استخدامها على نحوٍ سريع.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>ما النفايات التي نطرحها؟</h2><span class="src">ص ١٨٢</span></div>
+<div class="body"><p class="t">يبيِّن الشكل في الكتاب قطاعاتٍ للنفايات: <b>الورق والكرتون</b>، ونفايات المزارع، ونفاياتٌ أخرى، وفضلات الطعام، والزجاج، والفلزات، والبلاستيك.</p><div class="box ask">أيُّ أنواع النفايات يتمُّ طرحُها أكثر؟<br><span class="muted">إرشاد: أقارن بين مساحة القطاعات.</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الشكل»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>الورق والكرتون</b>؛ لأن قطاعه في الشكل هو الأكبر مساحةً بين القطاعات.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط تفاعلي</span><h2>أيُّ القواعد الثلاث؟</h2><span class="src">تدريب إضافي</span></div>
+<div class="body"><p class="t">أصنِّف كل ممارسةٍ إلى القاعدة المناسبة.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="R">ترشيد</button><button class="simBtn ghost" type="button" data-k="U">إعادة استخدام</button><button class="simBtn ghost" type="button" data-k="C">تدوير</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٨٢</h2><span class="src">ص ١٨٢</span></div>
+<div class="body"><div class="qa"><p class="q">مشكلةٌ وحلٌّ: كيف تساعد عمليات تدوير المواد على حلِّ مشكلة تلوث البيئة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> النفايات تتراكم في المكبَّات وتلوِّث اليابسة والماء والهواء. <b>الخطوات نحو الحل:</b> جمع الورق والزجاج والفلزات والبلاستيك وإعادة تصنيعها بطرقٍ جديدة. <b>الحل:</b> تقلُّ كمية النفايات المرسلة إلى المكبَّات، وتقلُّ الطاقة اللازمة لصنع الأشياء الجديدة، فيقلُّ التلوُّث الناتج عنها.</div></div><div class="qa"><p class="q">التفكير الناقد: كيف يمكن استعمال الخلايا الشمسية للمساعدة على تشغيل المكيفات في المنازل؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> تُركَّب ألواحُ خلايا شمسيةٍ على أسطح المنازل تحوِّل أشعة الشمس إلى طاقةٍ كهربائية، وتُخزَّن هذه الطاقة في بطاريات، ثم تُستعمل في تشغيل المكيفات — وهي أشدُّ ما تُحتاج إليه في النهار الحارِّ وقت أقوى إشعاعٍ شمسي — فيقلُّ استهلاك الكهرباء المولَّدة من الوقود الأحفوري.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>الملخص المصوَّر</h2><span class="src">ص ١٨٣</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>حفظ الموارد</h3><p>تمَّ تطوير طرقٍ مختلفةٍ لحفظ موارد البيئة وحمايتها.</p></div><div class="card"><h3>المصادر البديلة</h3><p>المصادر البديلة للطاقة تساعد على تقليل نسبة استخدام الوقود الأحفوري.</p></div><div class="card"><h3>القواعد الثلاث</h3><p>اتِّباع القواعد الثلاث: ترشيد الاستعمال، وإعادة الاستخدام، والتدوير، تساعد على حماية البيئة والمحافظة على المصادر الطبيعية.</p></div></div><div class="box note"><b>المطويات:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمتُه عن المحافظة على موارد البيئة بإكمال العبارات وإضافة التفاصيل الضرورية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ١ – ٣</h2><span class="src">ص ١٨٣</span></div>
+<div class="body"><div class="qa"><p class="q">١ – المفردات: تُستخدم طاقة المياه الجارية في توليد ………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>الطاقة الكهرومائية</b> (الكهرباء).</div></div><div class="qa"><p class="q">٢ – مشكلةٌ وحلٌّ: كيف يمكنني أن أمنع الوقود الأحفوريَّ من تلويث البيئة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> حرق الوقود الأحفوري يلوِّث الهواء والبيئة. <b>الخطوات نحو الحل:</b> ترشيد استهلاك الكهرباء والوقود في المنازل والسيارات، واستعمال المصابيح الأكفأ، والتحوُّل إلى المصادر البديلة للطاقة كالشمسية والرياح والكهرومائية، والتقيُّد بالقوانين البيئية. <b>الحل:</b> تقلُّ كميات الوقود المحروقة، فيقلُّ التلوُّث الناتج عنها.</div></div><div class="qa"><p class="q">٣ – التفكير الناقد: كيف يمكن استخدام الخلايا الشمسية في تزويدنا بالطاقة ليلًا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تُجمَع الطاقة الكهربائية التي تنتجها الخلايا الشمسية نهارًا وتُخزَّن في <b>سلسلةٍ من الخلايا (بطاريات)</b>، ثم تُستعمل هذه الطاقة المخزَّنة في إضاءة المنازل وتدفئتها طوال الليل.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ٤ – ٦</h2><span class="src">ص ١٨٣</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أختار الإجابة الصحيحة: ما نوع الطاقة التي يمكن الحصول عليها من ينابيع المياه الساخنة؟ أ) الكهروكيميائية &nbsp; ب) الطاقة الشمسية &nbsp; جـ) طاقة الرياح &nbsp; د) الطاقة الحرارية الجوفيَّة</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>د) الطاقة الحرارية الجوفيَّة.</b></div></div><div class="qa"><p class="q">٥ – أختار الإجابة الصحيحة: عملية تحويل الكتلة الحيوية إلى طاقة تَنتج عن: أ) بقايا النباتات والحيوانات &nbsp; ب) المياه الجارية &nbsp; جـ) ضوء الشمس &nbsp; د) حركة الهواء</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>أ) بقايا النباتات والحيوانات.</b> فالكتلة الحيوية تتكوَّن من فضلات النباتات والحيوانات وبقاياها.</div></div><div class="qa"><p class="q">٦ – السؤال الأساسي: كيف نحمي موارد الأرض ونحافظ على البيئة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>بحماية <b>اليابسة</b> بطرق حفظ التربة وتقليل النفايات وتدويرها؛ وبحماية <b>الماء</b> بتنقيته ومعالجته وترشيد استهلاكه وعدم تصريف الملوِّثات قبل معالجتها؛ وبحماية <b>الهواء</b> بتقليل حرق الوقود الأحفوري والتحوُّل إلى <b>المصادر البديلة للطاقة</b> (الشمسية والرياح والكهرومائية والحرارية الجوفية والتكرير الحيوي)؛ وباتِّباع <b>القواعد الثلاث</b>: الترشيد، وإعادة الاستخدام، والتدوير.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم والكتابة · العلوم والرياضيات</h2><span class="src">ص ١٨٣</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">كتابةٌ مقارنة</h4><p class="t">أعمل نشرةً عن مصدرين بديلين للطاقة، وأصف كلًّا منهما، وأقارن بينهما من حيث أوجه الشبه والاختلاف، وأشارك زملائي في هذه النشرات.</p></div><div style="flex:1 1 0"><h4 class="hl">أحسب معدَّل إنتاج النفايات</h4><p class="t">تنتج عائلةٌ ٦٤ كيلوجرامًا من النفايات أسبوعيًّا. فإذا قامت هذه العائلة بتدوير ¼ هذه النفايات، فما كمية النفايات التي تتخلَّص منها أسبوعيًّا؟</p><div class="qa"><p class="q">الحل</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>المدوَّر = ٦٤ × ¼ = <b>١٦ كجم</b>.<br>المتبقِّي الذي تتخلَّص منه = ٦٤ − ١٦ = <b>٤٨ كيلوجرامًا</b> أسبوعيًّا.</div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">الأداة التي تحوِّل أشعة الشمس إلى طاقةٍ كهربائية هي:</p><div class="opts"><button class="opt" type="button">مروحة الهواء</button><button class="opt" type="button">الخلية الشمسية</button><button class="opt" type="button">السدُّ</button><button class="opt" type="button">محطة التكرير</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">الطاقة التي مصدرها باطن الأرض تُسمَّى:</p><div class="opts"><button class="opt" type="button">الطاقة الكهرومائية</button><button class="opt" type="button">الطاقة الشمسية</button><button class="opt" type="button">الطاقة الحرارية الجوفية</button><button class="opt" type="button">الكتلة الحيوية</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">من أنواع الوقود الأحفوري:</p><div class="opts"><button class="opt" type="button">الكحول</button><button class="opt" type="button">الفحم والنفط والغاز الطبيعي</button><button class="opt" type="button">بخار الماء</button><button class="opt" type="button">الرياح</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي (٢)</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">المادة التي تُضاف إلى الماء لقتل البكتيريا في محطات التنقية هي:</p><div class="opts"><button class="opt" type="button">الرمل</button><button class="opt" type="button">الكلور</button><button class="opt" type="button">الحصى</button><button class="opt" type="button">الكحول</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">استعمال أطباقٍ يمكن غسلها بدل الأطباق الورقية مثالٌ على:</p><div class="opts"><button class="opt" type="button">الترشيد</button><button class="opt" type="button">إعادة الاستخدام</button><button class="opt" type="button">التدوير</button><button class="opt" type="button">التلوُّث</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">عملية معالجة الكتلة الحيوية لإنتاج الوقود تُسمَّى:</p><div class="opts"><button class="opt" type="button">التكرير الحيوي</button><button class="opt" type="button">التدوير</button><button class="opt" type="button">الترشيح</button><button class="opt" type="button">الترسيب</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبل أن أغادر</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أذكر القواعد الثلاث للمحافظة على موارد البيئة.</li><li>أذكر مصدرين بديلين للطاقة.</li><li>أكتب سلوكًا واحدًا سأبدأ به لترشيد استهلاك الماء أو الكهرباء في بيتي.</li></ul><div class="box idea">سؤالٌ أفكر فيه: لماذا يُقال إن ترشيد الاستهلاك أفضل من التدوير؟</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: دورة الماء في الطبيعة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="540" viewBox="0 0 1360 540" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l12aSvgHost"><defs><linearGradient id="g6l12asky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFE3F7"/><stop offset="1" stop-color="#EAF6FD"/></linearGradient><linearGradient id="g6l12asea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E93C4"/><stop offset="1" stop-color="#1F5E86"/></linearGradient><linearGradient id="g6l12asoil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A97B4F"/><stop offset="1" stop-color="#7B5632"/></linearGradient><marker id="g6l12aah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1F5E86"/></marker><marker id="g6l12aah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2F7D32"/></marker><marker id="g6l12aah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3B5C7A"/></marker></defs><rect x="0" y="0" width="1360" height="392" fill="url(#g6l12asky)"/><circle cx="1240" cy="78" r="40" fill="#F6C445"/><line x1="1290.0" y1="78.0" x2="1306.0" y2="78.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1283.3" y1="103.0" x2="1297.2" y2="111.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1265.0" y1="121.3" x2="1273.0" y2="135.2" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1240.0" y1="128.0" x2="1240.0" y2="144.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1215.0" y1="121.3" x2="1207.0" y2="135.2" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1196.7" y1="103.0" x2="1182.8" y2="111.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1190.0" y1="78.0" x2="1174.0" y2="78.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1196.7" y1="53.0" x2="1182.8" y2="45.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1215.0" y1="34.7" x2="1207.0" y2="20.8" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1240.0" y1="28.0" x2="1240.0" y2="12.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1265.0" y1="34.7" x2="1273.0" y2="20.8" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="1283.3" y1="53.0" x2="1297.2" y2="45.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><polygon points="70,392 285,140 500,392" fill="#7E8E97"/><polygon points="285,140 500,392 336,392" fill="#A9B7BE" opacity=".55"/><polygon points="285,140 259,180 311,180" fill="#FFFFFF" opacity=".92"/><polygon points="300,392 450,222 600,392" fill="#8C9AA2"/><polygon points="450,222 600,392 486,392" fill="#B3BEC4" opacity=".55"/><rect x="0" y="392" width="906" height="148" fill="url(#g6l12asoil)"/><rect x="0" y="470" width="906" height="70" fill="#5E7E96" opacity=".55"/><rect x="898" y="392" width="462" height="148" fill="url(#g6l12asea)"/><path d="M906 404 q 22 -11 44 0 t 44 0" stroke="#9FD3EF" stroke-width="4" fill="none" opacity=".7"/><path d="M982 404 q 22 -11 44 0 t 44 0" stroke="#9FD3EF" stroke-width="4" fill="none" opacity=".7"/><path d="M1058 404 q 22 -11 44 0 t 44 0" stroke="#9FD3EF" stroke-width="4" fill="none" opacity=".7"/><path d="M1134 404 q 22 -11 44 0 t 44 0" stroke="#9FD3EF" stroke-width="4" fill="none" opacity=".7"/><path d="M1210 404 q 22 -11 44 0 t 44 0" stroke="#9FD3EF" stroke-width="4" fill="none" opacity=".7"/><path d="M1286 404 q 22 -11 44 0 t 44 0" stroke="#9FD3EF" stroke-width="4" fill="none" opacity=".7"/><g transform="translate(700,392) scale(1.00)"><rect x="-9" y="-64" width="18" height="66" rx="6" fill="#8A5A2B"/><ellipse cx="0" cy="-84" rx="56" ry="42" fill="#3B7D2A"/><ellipse cx="-24" cy="-70" rx="34" ry="26" fill="#59A03B"/><ellipse cx="26" cy="-72" rx="32" ry="25" fill="#59A03B"/></g><g transform="translate(790,392) scale(0.78)"><rect x="-9" y="-64" width="18" height="66" rx="6" fill="#8A5A2B"/><ellipse cx="0" cy="-84" rx="56" ry="42" fill="#3B7D2A"/><ellipse cx="-24" cy="-70" rx="34" ry="26" fill="#59A03B"/><ellipse cx="26" cy="-72" rx="32" ry="25" fill="#59A03B"/></g><g transform="translate(640,392) scale(1.00)"><path d="M0 0 Q -6 -22 -16 -30" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M0 0 Q 0 -26 2 -36" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M0 0 Q 8 -22 18 -30" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/></g><g transform="translate(860,392) scale(0.90)"><path d="M0 0 Q -6 -22 -16 -30" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M0 0 Q 0 -26 2 -36" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M0 0 Q 8 -22 18 -30" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/></g><g transform="translate(430,140) scale(1.00)" opacity=".95"><ellipse cx="0" cy="0" rx="58" ry="30" fill="#FFFFFF"/><ellipse cx="-42" cy="8" rx="34" ry="22" fill="#FFFFFF"/><ellipse cx="44" cy="8" rx="38" ry="24" fill="#FFFFFF"/><ellipse cx="8" cy="-20" rx="34" ry="24" fill="#FFFFFF"/></g><g transform="translate(720,112) scale(0.86)" opacity=".95"><ellipse cx="0" cy="0" rx="58" ry="30" fill="#FFFFFF"/><ellipse cx="-42" cy="8" rx="34" ry="22" fill="#FFFFFF"/><ellipse cx="44" cy="8" rx="38" ry="24" fill="#FFFFFF"/><ellipse cx="8" cy="-20" rx="34" ry="24" fill="#FFFFFF"/></g><g transform="translate(1000,158) scale(0.95)" opacity=".95"><ellipse cx="0" cy="0" rx="58" ry="30" fill="#FFFFFF"/><ellipse cx="-42" cy="8" rx="34" ry="22" fill="#FFFFFF"/><ellipse cx="44" cy="8" rx="38" ry="24" fill="#FFFFFF"/><ellipse cx="8" cy="-20" rx="34" ry="24" fill="#FFFFFF"/></g><path id="g6l12apEvap" d="M1120 396 C 1120 320, 1060 250, 1010 196" stroke="#1F5E86" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12aah)" stroke-dasharray="12 10"/><path id="g6l12apTrans" d="M700 302 C 706 250, 706 190, 716 148" stroke="#2F7D32" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12aah2)" stroke-dasharray="12 10"/><path id="g6l12apCond" d="M1000 158 C 850 96, 640 84, 470 122" stroke="#3B5C7A" stroke-width="6" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12aah3)" stroke-dasharray="10 9"/><path id="g6l12apRain" d="M396 186 C 380 250, 356 300, 332 340" stroke="#2C7FB8" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12aah)"/><path id="g6l12apRun" d="M330 344 C 470 400, 660 424, 890 428" stroke="#2C7FB8" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12aah)"/><path id="g6l12apInf" d="M596 424 C 600 462, 606 486, 612 508" stroke="#2C7FB8" stroke-width="6" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12aah)"/><line x1="352" y1="200" x2="344" y2="220" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="382" y1="200" x2="374" y2="220" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="412" y1="200" x2="404" y2="220" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="352" y1="234" x2="344" y2="254" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="382" y1="234" x2="374" y2="254" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="412" y1="234" x2="404" y2="254" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="352" y1="268" x2="344" y2="288" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="382" y1="268" x2="374" y2="288" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><line x1="412" y1="268" x2="404" y2="288" stroke="#2C7FB8" stroke-width="5" stroke-linecap="round" opacity=".75"/><g class="eHot" data-k="evap"><g><text x="1178" y="306" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التبخُّر</text><text x="1178" y="306" font-size="27" fill="#0E4B67" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التبخُّر</text></g><rect class="hitBox" x="1088" y="274" width="180" height="52" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="trans"><g><text x="806" y="254" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">النتح</text><text x="806" y="254" font-size="27" fill="#1F5E22" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">النتح</text></g><rect class="hitBox" x="752" y="222" width="118" height="52" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="cond"><g><text x="716" y="56" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التكاثف</text><text x="716" y="56" font-size="27" fill="#25405A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التكاثف</text></g><rect class="hitBox" x="642" y="24" width="152" height="52" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="rain"><g><text x="214" y="246" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الهطول</text><text x="214" y="246" font-size="27" fill="#12557A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الهطول</text></g><rect class="hitBox" x="146" y="214" width="146" height="52" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="run"><g><text x="790" y="452" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الجريان السطحي</text><text x="790" y="452" font-size="26" fill="#0E4B67" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الجريان السطحي</text></g><rect class="hitBox" x="654" y="420" width="280" height="50" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="inf"><g><text x="268" y="516" font-size="25" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التسرُّب — المياه الجوفية</text><text x="268" y="516" font-size="25" fill="#EAF3F8" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التسرُّب — المياه الجوفية</text></g><rect class="hitBox" x="86" y="486" width="372" height="48" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="sea"><g><text x="1156" y="500" font-size="26" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">المُسطَّحات المائية</text><text x="1156" y="500" font-size="26" fill="#EAF6FD" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">المُسطَّحات المائية</text></g><rect class="hitBox" x="1016" y="470" width="292" height="50" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">دورة الماء في الطبيعة: طاقة الشمس تُحرِّك الماء بين الأرض والجو في دورةٍ لا تتوقف.</div></div><div class="eSteps" id="g6l12aPills"><span class="eStepPill" data-s="0">التبخُّر</span><span class="eStepPill" data-s="1">النتح</span><span class="eStepPill" data-s="2">التكاثف</span><span class="eStepPill" data-s="3">الهطول</span><span class="eStepPill" data-s="4">الجريان السطحي</span><span class="eStepPill" data-s="5">التسرُّب</span><span class="eStepPill" data-s="6">المُسطَّحات المائية</span></div><div class="eInfo" id="g6l12aInfo">اضغط على مرحلةٍ في الرسم أو استعمل الأزرار لتتبُّع الدورة خطوةً خطوة.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l12aPrev">◀ السابقة</button><button class="simBtn" type="button" id="g6l12aNext">التالية ▶</button><button class="simBtn ghost" type="button" id="g6l12aPlay">▶ تشغيل الحركة</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: دورة الكربون</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="560" viewBox="0 0 1360 560" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l12bSvgHost"><defs><linearGradient id="g6l12bsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8F1F8"/><stop offset="1" stop-color="#F8FBFD"/></linearGradient><marker id="g6l12bc1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5E6B76"/></marker><marker id="g6l12bc2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2F7D32"/></marker><marker id="g6l12bc3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8A5A2B"/></marker></defs><rect x="0" y="0" width="1360" height="392" fill="url(#g6l12bsk)"/><rect x="0" y="392" width="1360" height="168" fill="#8A6636"/><rect x="0" y="392" width="1360" height="14" fill="#6B4A24"/><circle cx="120" cy="74" r="36" fill="#F6C445"/><line x1="166.0" y1="74.0" x2="182.0" y2="74.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="159.8" y1="97.0" x2="173.7" y2="105.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="143.0" y1="113.8" x2="151.0" y2="127.7" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="120.0" y1="120.0" x2="120.0" y2="136.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="97.0" y1="113.8" x2="89.0" y2="127.7" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="80.2" y1="97.0" x2="66.3" y2="105.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="74.0" y1="74.0" x2="58.0" y2="74.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="80.2" y1="51.0" x2="66.3" y2="43.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="97.0" y1="34.2" x2="89.0" y2="20.3" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="120.0" y1="28.0" x2="120.0" y2="12.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="143.0" y1="34.2" x2="151.0" y2="20.3" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><line x1="159.8" y1="51.0" x2="173.7" y2="43.0" stroke="#F6C445" stroke-width="6" stroke-linecap="round" opacity=".85"/><g><text x="680" y="60" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ثاني أكسيد الكربون في الهواء</text><text x="680" y="60" font-size="28" fill="#2C3A46" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ثاني أكسيد الكربون في الهواء</text></g><rect x="470" y="82" width="420" height="6" rx="3" fill="#9FB4C4"/><g transform="translate(320,392) scale(1.00)"><rect x="-9" y="-64" width="18" height="66" rx="6" fill="#8A5A2B"/><ellipse cx="0" cy="-84" rx="56" ry="42" fill="#3B7D2A"/><ellipse cx="-24" cy="-70" rx="34" ry="26" fill="#59A03B"/><ellipse cx="26" cy="-72" rx="32" ry="25" fill="#59A03B"/></g><g transform="translate(410,392) scale(0.80)"><rect x="-9" y="-64" width="18" height="66" rx="6" fill="#8A5A2B"/><ellipse cx="0" cy="-84" rx="56" ry="42" fill="#3B7D2A"/><ellipse cx="-24" cy="-70" rx="34" ry="26" fill="#59A03B"/><ellipse cx="26" cy="-72" rx="32" ry="25" fill="#59A03B"/></g><g transform="translate(250,392) scale(1.00)"><path d="M0 0 Q -6 -22 -16 -30" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M0 0 Q 0 -26 2 -36" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M0 0 Q 8 -22 18 -30" stroke="#4E9A34" stroke-width="6" fill="none" stroke-linecap="round"/></g><g transform="translate(620,300) scale(0.95)"><path d="M18 92 q 6 -30 26 -32 q 10 -18 22 -2 q 14 -16 24 0 q 18 4 12 34" fill="#C9A063"/><rect x="24" y="84" width="8" height="24" rx="4" fill="#B08B52"/><rect x="44" y="84" width="8" height="24" rx="4" fill="#B08B52"/><rect x="70" y="84" width="8" height="24" rx="4" fill="#B08B52"/><rect x="88" y="84" width="8" height="24" rx="4" fill="#B08B52"/><path d="M18 92 q -10 -10 -4 -22 q 6 -10 16 -6" fill="#C9A063"/><circle cx="14" cy="70" r="3" fill="#3A2B10"/></g><rect x="990" y="252" width="180" height="140" fill="#7E8E97"/><rect x="1020" y="200" width="34" height="56" fill="#6B7889"/><rect x="1096" y="212" width="34" height="44" fill="#6B7889"/><g transform="translate(1040,168) scale(0.50)" opacity=".9"><ellipse cx="0" cy="0" rx="58" ry="30" fill="#C5CDD4"/><ellipse cx="-42" cy="8" rx="34" ry="22" fill="#C5CDD4"/><ellipse cx="44" cy="8" rx="38" ry="24" fill="#C5CDD4"/><ellipse cx="8" cy="-20" rx="34" ry="24" fill="#C5CDD4"/></g><g transform="translate(1120,182) scale(0.42)" opacity=".9"><ellipse cx="0" cy="0" rx="58" ry="30" fill="#C5CDD4"/><ellipse cx="-42" cy="8" rx="34" ry="22" fill="#C5CDD4"/><ellipse cx="44" cy="8" rx="38" ry="24" fill="#C5CDD4"/><ellipse cx="8" cy="-20" rx="34" ry="24" fill="#C5CDD4"/></g><rect x="900" y="452" width="330" height="70" rx="14" fill="#3A3128"/><g><text x="1064" y="496" font-size="24" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">وقودٌ أحفوري</text><text x="1064" y="496" font-size="24" fill="#F0E2C8" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">وقودٌ أحفوري</text></g><path id="g6l12bpPh" d="M330 268 C 340 200, 400 130, 490 96" stroke="#2F7D32" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12bc2)" stroke-dasharray="12 9"/><path id="g6l12bpResp" d="M690 300 C 700 230, 720 150, 740 96" stroke="#5E6B76" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12bc1)" stroke-dasharray="12 9"/><path id="g6l12bpBurn" d="M1030 196 C 1000 160, 940 116, 880 94" stroke="#5E6B76" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12bc1)" stroke-dasharray="12 9"/><path id="g6l12bpDead" d="M420 420 C 620 452, 800 470, 896 480" stroke="#8A5A2B" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12bc3)"/><g class="eHot" data-k="photo"><path d="M214 186 L336 244" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="336" cy="244" r="6.5" fill="#8A97A0"/><g><text x="214" y="194" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">البناء الضوئي</text><text x="214" y="194" font-size="25" fill="#1E5E3A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">البناء الضوئي</text></g><rect class="hitBox" x="64" y="160" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="214" y="228" font-size="20" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يسحب الكربون من الهواء</text><text x="214" y="228" font-size="20" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يسحب الكربون من الهواء</text></g><g class="eHot" data-k="resp"><path d="M620 206 L700 268" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="700" cy="268" r="6.5" fill="#8A97A0"/><g><text x="620" y="214" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التنفُّس</text><text x="620" y="214" font-size="25" fill="#2C3A46" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التنفُّس</text></g><rect class="hitBox" x="505" y="180" width="230" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="620" y="248" font-size="20" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يعيد الكربون إلى الهواء</text><text x="620" y="248" font-size="20" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يعيد الكربون إلى الهواء</text></g><g class="eHot" data-k="burn"><path d="M1176 144 L1060 190" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1060" cy="190" r="6.5" fill="#8A97A0"/><g><text x="1176" y="152" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">حرق الوقود</text><text x="1176" y="152" font-size="25" fill="#2C3A46" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">حرق الوقود</text></g><rect class="hitBox" x="1041" y="118" width="270" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1176" y="186" font-size="20" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يزيد الكربون في الهواء</text><text x="1176" y="186" font-size="20" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يزيد الكربون في الهواء</text></g><g class="eHot" data-k="fossil"><path d="M470 488 L700 462" stroke="#DCC7A8" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="700" cy="462" r="6.5" fill="#DCC7A8"/><g><text x="470" y="496" font-size="25" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">بقايا المخلوقات</text><text x="470" y="496" font-size="25" fill="#F0E2C8" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">بقايا المخلوقات</text></g><rect class="hitBox" x="310" y="462" width="320" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="470" y="528" font-size="20" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تتحوَّل عبر ملايين السنين إلى وقودٍ أحفوري</text><text x="470" y="528" font-size="20" fill="#EADFCF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تتحوَّل عبر ملايين السنين إلى وقودٍ أحفوري</text></g></svg><div class="eCap">دورة الكربون: كيف ينتقل الكربون بين الهواء والمخلوقات الحية والأرض.</div></div><div class="eSteps" id="g6l12bPills"><span class="eStepPill" data-s="0">البناء الضوئي</span><span class="eStepPill" data-s="1">التنفُّس</span><span class="eStepPill" data-s="2">الدفن والتحوُّل</span><span class="eStepPill" data-s="3">الاحتراق</span></div><div class="eInfo" id="g6l12bInfo">اضغط على مرحلةٍ في الرسم أو تابع الخطوات.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l12bPrev">◀ السابقة</button><button class="simBtn" type="button" id="g6l12bNext">التالية ▶</button><button class="simBtn ghost" type="button" id="g6l12bPlay">▶ تشغيل الحركة</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: دورة النيتروجين</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="560" viewBox="0 0 1360 560" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l12cSvgHost"><defs><linearGradient id="g6l12csk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EAF2F8"/><stop offset="1" stop-color="#F9FBFD"/></linearGradient><marker id="g6l12cn1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3E6B8E"/></marker><marker id="g6l12cn2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2F7D32"/></marker><marker id="g6l12cn3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8A5A2B"/></marker></defs><rect x="0" y="0" width="1360" height="330" fill="url(#g6l12csk)"/><rect x="0" y="330" width="1360" height="230" fill="#8A6636"/><rect x="0" y="330" width="1360" height="14" fill="#6B4A24"/><rect x="0" y="450" width="1360" height="110" fill="#6E5030"/><g><text x="680" y="56" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">غاز النيتروجين في الهواء  (٧٨٪ من الهواء)</text><text x="680" y="56" font-size="28" fill="#2C3A46" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">غاز النيتروجين في الهواء  (٧٨٪ من الهواء)</text></g><rect x="380" y="76" width="600" height="6" rx="3" fill="#9FB4C4"/><path d="M300 330 v-96" stroke="#4E9A34" stroke-width="12" stroke-linecap="round"/><path d="M300 246 q -96 -46 -142 4 q 74 50 142 -4z" fill="#3F8E2E"/><path d="M300 268 q 96 -44 142 6 q -76 48 -142 -6z" fill="#57A83E"/><path d="M300 330 v78 M300 348 q -46 22 -78 44 M300 348 q 46 22 78 44" stroke="#B07C3E" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="250" cy="396" r="15" fill="#E4B85C" stroke="#B08B2E" stroke-width="3"/><circle cx="352" cy="398" r="15" fill="#E4B85C" stroke="#B08B2E" stroke-width="3"/><circle cx="300" cy="418" r="15" fill="#E4B85C" stroke="#B08B2E" stroke-width="3"/><g transform="translate(590,232) scale(0.9)"><ellipse cx="62" cy="78" rx="32" ry="24" fill="#B9A78F"/><circle cx="38" cy="58" r="18" fill="#C9B8A2"/><ellipse cx="30" cy="30" rx="7" ry="22" fill="#C9B8A2" transform="rotate(-12 30 30)"/><ellipse cx="48" cy="28" rx="7" ry="22" fill="#C9B8A2" transform="rotate(8 48 28)"/><circle cx="30" cy="56" r="3.4" fill="#2A2118"/><circle cx="94" cy="72" r="10" fill="#E4DCD0"/></g><g transform="translate(860,380) scale(0.85)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g><g transform="translate(1080,400) scale(0.7)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g><path id="g6l12cpFix" d="M300 470 C 306 380, 320 200, 400 96" stroke="#2F7D32" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12cn2)" stroke-dasharray="12 9"/><path id="g6l12cpEat" d="M420 300 C 500 288, 546 288, 584 292" stroke="#8A5A2B" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12cn3)"/><path id="g6l12cpDec" d="M700 320 C 780 348, 830 372, 866 392" stroke="#8A5A2B" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12cn3)"/><path id="g6l12cpBack" d="M1120 372 C 1120 250, 1040 140, 960 92" stroke="#3E6B8E" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l12cn1)" stroke-dasharray="12 9"/><g class="eHot" data-k="fix"><path d="M190 472 L288 410" stroke="#DCC7A8" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="288" cy="410" r="6.5" fill="#DCC7A8"/><g><text x="190" y="480" font-size="24" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">بكتيريا مثبِّتة للنيتروجين</text><text x="190" y="480" font-size="24" fill="#F0E2C8" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">بكتيريا مثبِّتة للنيتروجين</text></g><rect class="hitBox" x="0" y="446" width="380" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="190" y="512" font-size="20" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">في عُقَد جذور البقوليات</text><text x="190" y="512" font-size="20" fill="#EADFCF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">في عُقَد جذور البقوليات</text></g><g class="eHot" data-k="plant"><path d="M190 168 L264 250" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="264" cy="250" r="6.5" fill="#8A97A0"/><g><text x="190" y="176" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">النبات يمتصُّ مركَّبات النيتروجين</text><text x="190" y="176" font-size="24" fill="#1E5E3A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">النبات يمتصُّ مركَّبات النيتروجين</text></g><rect class="hitBox" x="-20" y="142" width="420" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="eat"><path d="M620 168 L630 244" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="630" cy="244" r="6.5" fill="#8A97A0"/><g><text x="620" y="176" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الحيوان يأكل النبات</text><text x="620" y="176" font-size="24" fill="#5A3E23" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الحيوان يأكل النبات</text></g><rect class="hitBox" x="455" y="142" width="330" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="dec"><path d="M1180 462 L900 404" stroke="#DCC7A8" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="900" cy="404" r="6.5" fill="#DCC7A8"/><g><text x="1180" y="470" font-size="24" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">المحلِّلات</text><text x="1180" y="470" font-size="24" fill="#F0E2C8" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">المحلِّلات</text></g><rect class="hitBox" x="1055" y="436" width="250" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1180" y="502" font-size="20" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تحلِّل البقايا والفضلات</text><text x="1180" y="502" font-size="20" fill="#EADFCF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تحلِّل البقايا والفضلات</text></g><g class="eHot" data-k="back"><path d="M1180 192 L1116 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1116" cy="300" r="6.5" fill="#8A97A0"/><g><text x="1180" y="200" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">بكتيريا تُعيد الغاز للهواء</text><text x="1180" y="200" font-size="24" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">بكتيريا تُعيد الغاز للهواء</text></g><rect class="hitBox" x="980" y="166" width="400" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">دورة النيتروجين: من الهواء إلى التربة فالنبات فالحيوان ثم عودةٌ إلى الهواء.</div></div><div class="eSteps" id="g6l12cPills"><span class="eStepPill" data-s="0">التثبيت</span><span class="eStepPill" data-s="1">امتصاص النبات</span><span class="eStepPill" data-s="2">انتقاله للحيوان</span><span class="eStepPill" data-s="3">التحلُّل</span><span class="eStepPill" data-s="4">العودة إلى الهواء</span></div><div class="eInfo" id="g6l12cInfo">اضغط على مرحلةٍ في الرسم أو تابع الخطوات.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l12cPrev">◀ السابقة</button><button class="simBtn" type="button" id="g6l12cNext">التالية ▶</button><button class="simBtn ghost" type="button" id="g6l12cPlay">▶ تشغيل الحركة</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: مصادرُ بديلةٌ للطاقة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="16" y="40" width="88" height="50" rx="6" fill="#2E5F8A" transform="skewX(-8)"/><path d="M22 56 h84 M22 72 h84 M52 42 v50 M78 42 v50" stroke="#8FC7E4" stroke-width="3" opacity=".8" transform="skewX(-8)"/><rect x="56" y="90" width="8" height="20" fill="#4E5B6C"/><circle cx="98" cy="22" r="13" fill="#F6C445"/></g></svg><h4>الطاقة الشمسية</h4><p>خلايا شمسيةٌ تحوِّل الضوء إلى كهرباء</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="55" y="46" width="10" height="62" rx="4" fill="#98A4AE"/><path d="M60 44 L60 8 L72 32z" fill="#5E6B76"/><path d="M60 44 L96 64 L72 66z" fill="#5E6B76"/><path d="M60 44 L24 64 L48 66z" fill="#5E6B76"/><circle cx="60" cy="44" r="9" fill="#3A4553"/><ellipse cx="60" cy="110" rx="24" ry="6" fill="#8A97A0"/></g></svg><h4>طاقة الرياح</h4><p>مراوحُ تستعمل طاقة الهواء المتحرِّك</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M60 18 q 30 40 30 56 a30 30 0 0 1 -60 0 q 0 -16 30 -56z" fill="#3E93C4"/><ellipse cx="48" cy="66" rx="7" ry="11" fill="#8FC7E4" opacity=".8"/></g></svg><h4>الطاقة الكهرومائية</h4><p>محطاتٌ عند قواعد السدود</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><g fill="none" stroke="#2F7D32" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path d="M40 40 L60 16 L80 40"/><path d="M92 56 L104 82 L76 82"/><path d="M44 82 L16 82 L28 56"/></g><path d="M60 16 l-8 12 h16z" fill="#2F7D32"/></g></svg><h4>القواعد الثلاث</h4><p>الترشيد وإعادة الاستخدام والتدوير</p></div></div><div class="eCap">المصادر البديلة تقلِّل الاعتماد على الوقود الأحفوري وتحمي البيئة.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — قراراتٌ صغيرةٌ بأثرٍ كبير</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>إغلاق الصنبور أثناء تنظيف الأسنان يوفِّر <b>لتراتٍ من الماء</b> كلَّ يوم؛ فما بالك بمدرسةٍ كاملةٍ تفعل ذلك؟</p></div><div class="fFact"><div class="n">٢</div><p>إعادة تدوير الألمنيوم توفِّر طاقةً أكبر بكثيرٍ من صناعته من خامه الأصلي.</p></div><div class="fFact"><div class="n">٣</div><p>المملكة أطلقت <b>مبادرة الشرق الأوسط الأخضر</b> ضمن جهودٍ عالميةٍ لخفض الانبعاثات وزيادة الغطاء النباتي.</p></div></div><div class="fCap">حماية الموارد تبدأ بسلوكٍ يوميٍّ بسيط.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6l1"><div class="fCard"><div class="fIn"><div class="fF"><span>الطاقة الحرارية الجوفية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الطاقة الحرارية التي مصدرها باطن الأرض.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الكتلة الحيوية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تتكوَّن من فضلات النباتات والحيوانات وبقاياها.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التكرير الحيوي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عملية معالجة الكتلة الحيوية لإنتاج الوقود.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الطاقة الكهرومائية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الطاقة الناتجة عن استخدام طاقة المياه الجارية لإنتاج الكهرباء.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الخلية الشمسية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>أداةٌ تحوِّل أشعة الشمس إلى طاقةٍ كهربائية.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6l1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: صواب أم خطأ</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fQ" id="s6l2Q">—</div><div class="fOpts" style="max-width:760px"><button class="fOpt" type="button" id="s6l2T">صواب ✔</button><button class="fOpt" type="button" id="s6l2F">خطأ ✖</button></div><div class="fFb" id="s6l2Fb"></div><div class="fBar"><span class="fPill" id="s6l2Sc">النتيجة</span><button class="fBtn ghost" type="button" id="s6l2R">↻ إعادة</button></div></div><div class="fCap">اقرأ العبارة ثم اختر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>مشروعي الصغير</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>خطةُ أسبوع</h4><p>سجِّل كل يومٍ سلوكًا واحدًا رشَّدت به الماء أو الكهرباء، ثم اعرض جدولك على زملائك نهاية الأسبوع.</p></div><div class="fBox warm"><h4>الربط برؤية ٢٠٣٠</h4><p>من أهداف الرؤية ضمان استفادةٍ مستدامةٍ من الموارد المائية — فكِّر: كيف تسهم أنت في ذلك؟</p></div><div class="fBox "><h4>تحدٍّ صفِّي</h4><p>صمِّم ملصقًا يدعو زملاءك إلى تطبيق القواعد الثلاث: الترشيد وإعادة الاستخدام والتدوير.</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: حماية الموارد">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">كيف يمكن لمصباحين أن يعطيا الإضاءة نفسها ويستهلك أحدهما كهرباء أقل؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/bulbs.jpg" alt="ثمانية مصابيح في صف واحد، بينها مصباح متوهج شفاف ومصابيح LED بيضاء" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>مصابيح LED مختلفة بجانب مصباح متوهج، وهو الثالث من اليسار؛ تُقارن كفاءة المصابيح عند مقدار إضاءة متساوٍ.</figcaption><p class="se-credit">الصورة: Bech · <a href="https://commons.wikimedia.org/wiki/File:Taille_lampes_LED.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>يحافظ تقليل الاستهلاك وإعادة الاستخدام والتدوير على الموارد بطرق مختلفة؛ ويبدأ الترشيد بتجنب الاستهلاك غير الضروري.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>تحول الخلايا الشمسية الضوء إلى كهرباء؛ أما تخزين الكهرباء لاستخدامها لاحقًا فيحتاج إلى نظام تخزين مثل البطارية.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>عند إضاءة متساوية، تحتاج المصابيح الأعلى كفاءة إلى طاقة كهربائية أقل؛ فلا تقارن المصابيح بالواط وحده.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.energy.gov/sites/prod/files/guide_to_energy_efficient_lighting.pdf" target="_blank" rel="noopener noreferrer">وزارة الطاقة الأمريكية: دليل الإضاءة الموفرة</a></li><li><a href="https://www.energy.gov/cmei/ssl/led-basics" target="_blank" rel="noopener noreferrer">وزارة الطاقة الأمريكية: أساسيات إضاءة LED</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: ثلاث طرق يومية للحفاظ على الموارد">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>ثلاث طرق يومية للحفاظ على الموارد</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="ثلاث طرق يومية للحفاظ على الموارد"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🛒</span><span class="se-node-label">قلل الاستهلاك</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🔁</span><span class="se-node-label">أعد الاستخدام</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">♻️</span><span class="se-node-label">أعد التدوير</span></button></div>
+
+<p class="se-diagram-caption">إعادة الاستخدام تُبقي الغرض مفيدًا؛ أما التدوير فيعالج مادته لإنتاج شيء جديد.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🛒</span><div><strong data-detail-title>قلل الاستهلاك</strong><p data-detail-text>اشترِ ما تحتاجه ووفّر الطاقة.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: قارن كهرباء المصابيح عند إضاءة متساوية">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>قارن كهرباء المصابيح عند إضاءة متساوية</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير استهلاك الكهرباء إذا ثبتنا شدة الإضاءة المطلوبة ومدة التشغيل؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">تقنية المصباح</p><div class="se-options" role="group" aria-label="تقنية المصباح"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">متوهج</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">فلورسنت مدمج</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">LED موفر</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">القيم توضيحية وليست واطًا أو نسب توفير ثابتة؛ تتحقق المقارنة الواقعية من اللومن والواط على ملصق المصباح.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي للكهرباء المستهلكة عند إضاءة وزمن متساويين</p><div class="se-model" role="img" data-model aria-label="استهلاك أعلى"><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>استهلاك أعلى</p><p class="se-observation" data-observation>أعلى مؤشر استهلاك في المقارنة.</p></div><p class="se-explanation" data-explanation>للحصول على الإضاءة نفسها خلال المدة نفسها، يحتاج المصباح المتوهج المعتاد إلى كهرباء أكثر؛ إذ يتحول كثير منها إلى حرارة.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا يكون تثبيت الإضاءة أكثر عدلًا من تثبيت قدرة المصابيح بالواط؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثالثة: الأنظمة البيئية ومواردها · الفصل السادس: موارد الأرض والحفاظ عليها · الدرس الثاني: حماية الموارد<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٧٦ – ١٨٣ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+(function(){
+  var D=[
+    ["ضبط درجة حرارة المكيف لتقليل استهلاك الطاقة","R","الترشيد يقلِّل كمية الموارد المستخدمة."],
+    ["استعمال أطباقٍ تُغسل بدل الورقية","U","إعادة استخدام المنتجات بدل رميها."],
+    ["جمع الورق وإرساله لمصنع لصنع ورقٍ جديد","C","التدوير يحوِّل المواد لاستخدامٍ جديد."],
+    ["إعادة تدوير الهواتف النقالة القديمة","C","المعدات الإلكترونية تحوي موادَّ خطرةً يجب تدويرها."],
+    ["شراء سيارةٍ أكثرَ كفاءةً في استهلاك الوقود","R","ترشيدٌ لكمية الوقود المستهلكة."],
+    ["استعمال عبوةٍ زجاجيةٍ مرةً أخرى لحفظ الطعام","U","إعادة استخدام العبوة كما هي."]
+  ];
+  var i=0,ok=0,n=0;
+  var card=document.getElementById('aCard'), tag=document.getElementById('aTag');
+  var msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+  if(!card) return;
+  var NM={R:'ترشيد',U:'إعادة استخدام',C:'تدوير'};
+  function ar(x){var s=String(x),o='';for(var k=0;k<s.length;k++){o+='٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(k)-48];}return o;}
+  function show(){
+    if(i>=D.length){card.querySelector('.nm').textContent='انتهى النشاط';tag.textContent='—';
+      msg.textContent='أحسنت! أتقنت القواعد الثلاث.';msg.className='simMsg good';return;}
+    card.querySelector('.nm').textContent=D[i][0];tag.textContent='؟';
+  }
+  function upd(){sc.textContent='النتيجة: '+ar(ok)+' / '+ar(n);}
+  document.querySelectorAll('#simA .simBtn[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(i>=D.length) return;
+      n++;
+      if(b.getAttribute('data-k')===D[i][1]){ok++;msg.textContent='إجابة صحيحة ✓ — '+D[i][2];msg.className='simMsg good';}
+      else{msg.textContent='أعد التفكير ✗ — '+D[i][2];msg.className='simMsg';}
+      tag.textContent=NM[D[i][1]];
+      i++;upd();setTimeout(show,900);
+    });
+  });
+  document.getElementById('aReset').addEventListener('click',function(){
+    i=0;ok=0;n=0;msg.textContent='أبدأ التصنيف.';msg.className='simMsg';upd();show();
+  });
+  upd();show();
+})();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g6l12aSvgHost','g6l12aInfo',{'evap':'<span><b>التبخُّر</b> — تُسخِّن الشمس ماء البحار والأنهار فيتحوَّل إلى <b>بخار ماء</b> يصعد إلى الهواء.</span>','trans':'<span><b>النتح</b> — تُخرج أوراق النبات بخار الماء من <b>الثغور</b> إلى الهواء، وهذا يُسمَّى النتح.</span>','cond':'<span><b>التكاثف</b> — يبرد بخار الماء في طبقات الجو العليا فيتحوَّل إلى قطراتٍ دقيقة تكوِّن <b>السحاب</b>.</span>','rain':'<span><b>الهطول</b> — تكبر القطرات ويثقل وزنها فتسقط <b>مطرًا أو ثلجًا أو بَرَدًا</b> على الأرض.</span>','run':'<span><b>الجريان السطحي</b> — يجري الماء على سطح الأرض في <b>الجداول والأنهار</b> عائدًا إلى البحار.</span>','inf':'<span><b>التسرُّب</b> — يتسرَّب جزءٌ من الماء خلال التربة ليكوِّن <b>المياه الجوفية</b> التي نستخرجها بالآبار.</span>','sea':'<span><b>المُسطَّحات المائية</b> — البحار والمحيطات والبحيرات <b>خزَّان الماء الأكبر</b> الذي تبدأ منه الدورة وتعود إليه.</span>'},'');
+ERT.stepper({pills:'g6l12aPills', info:'g6l12aInfo', svg:'g6l12aSvgHost',
+  next:'g6l12aNext', prev:'g6l12aPrev', stages:[['evap','التبخُّر','تُسخِّن الشمس ماء البحار والأنهار فيتحوَّل إلى <b>بخار ماء</b> يصعد إلى الهواء.'],['trans','النتح','تُخرج أوراق النبات بخار الماء من <b>الثغور</b> إلى الهواء، وهذا يُسمَّى النتح.'],['cond','التكاثف','يبرد بخار الماء في طبقات الجو العليا فيتحوَّل إلى قطراتٍ دقيقة تكوِّن <b>السحاب</b>.'],['rain','الهطول','تكبر القطرات ويثقل وزنها فتسقط <b>مطرًا أو ثلجًا أو بَرَدًا</b> على الأرض.'],['run','الجريان السطحي','يجري الماء على سطح الأرض في <b>الجداول والأنهار</b> عائدًا إلى البحار.'],['inf','التسرُّب','يتسرَّب جزءٌ من الماء خلال التربة ليكوِّن <b>المياه الجوفية</b> التي نستخرجها بالآبار.'],['sea','المُسطَّحات المائية','البحار والمحيطات والبحيرات <b>خزَّان الماء الأكبر</b> الذي تبدأ منه الدورة وتعود إليه.']]});
+ERT.flow({svg:'g6l12aSvgHost', btn:'g6l12aPlay', items:[
+  {path:'g6l12apEvap', color:'#BFE6FA', r:9, n:4, dur:3400},
+  {path:'g6l12apTrans', color:'#CFF0C8', r:8, n:3, dur:3000},
+  {path:'g6l12apCond', color:'#E4EEF7', r:8, n:4, dur:4200},
+  {path:'g6l12apRain', color:'#2C7FB8', r:8, n:4, dur:2400},
+  {path:'g6l12apRun', color:'#4FA3D1', r:9, n:5, dur:4600},
+  {path:'g6l12apInf', color:'#8FC4E0', r:7, n:2, dur:2600}
+]});
+
+ERT.hotspots('g6l12bSvgHost','g6l12bInfo',{'photo':'<span><b>البناء الضوئي</b> — تسحب النباتات <b>ثاني أكسيد الكربون</b> من الهواء لتصنع غذاءها.</span>','resp':'<span><b>التنفُّس</b> — تُطلق المخلوقات الحية ثاني أكسيد الكربون إلى الهواء عند تحرير الطاقة من الغذاء.</span>','fossil':'<span><b>الدفن والتحوُّل</b> — بقايا المخلوقات تُدفَن وتتحوَّل عبر ملايين السنين إلى <b>وقودٍ أحفوري</b>.</span>','burn':'<span><b>الاحتراق</b> — حرق الوقود الأحفوري يعيد الكربون إلى الهواء <b>بسرعةٍ كبيرة</b>، فيزيد التلوُّث.</span>'},'');
+ERT.stepper({pills:'g6l12bPills', info:'g6l12bInfo', svg:'g6l12bSvgHost', next:'g6l12bNext', prev:'g6l12bPrev', stages:[['photo','البناء الضوئي','تسحب النباتات <b>ثاني أكسيد الكربون</b> من الهواء لتصنع غذاءها.'],['resp','التنفُّس','تُطلق المخلوقات الحية ثاني أكسيد الكربون إلى الهواء عند تحرير الطاقة من الغذاء.'],['fossil','الدفن والتحوُّل','بقايا المخلوقات تُدفَن وتتحوَّل عبر ملايين السنين إلى <b>وقودٍ أحفوري</b>.'],['burn','الاحتراق','حرق الوقود الأحفوري يعيد الكربون إلى الهواء <b>بسرعةٍ كبيرة</b>، فيزيد التلوُّث.']]});
+ERT.flow({svg:'g6l12bSvgHost', btn:'g6l12bPlay', items:[
+  {path:'g6l12bpPh', color:'#8FD0A0', r:9, n:3, dur:3200},
+  {path:'g6l12bpResp', color:'#B7C3C9', r:9, n:3, dur:3200},
+  {path:'g6l12bpBurn', color:'#B7C3C9', r:9, n:3, dur:2800},
+  {path:'g6l12bpDead', color:'#C9A063', r:9, n:3, dur:4000}
+]});
+
+ERT.hotspots('g6l12cSvgHost','g6l12cInfo',{'fix':'<span><b>التثبيت</b> — بكتيريا في التربة وفي <b>عُقَد جذور البقوليات</b> تحوِّل غاز النيتروجين إلى مركَّباتٍ يستفيد منها النبات.</span>','plant':'<span><b>امتصاص النبات</b> — يمتصُّ النبات مركَّبات النيتروجين من التربة ليبني <b>البروتينات</b>.</span>','eat':'<span><b>انتقاله للحيوان</b> — يحصل الحيوان على النيتروجين حين يتغذَّى على <b>النبات</b>.</span>','dec':'<span><b>التحلُّل</b> — تحلِّل <b>المحلِّلات</b> بقايا المخلوقات وفضلاتها فتعيد النيتروجين إلى التربة.</span>','back':'<span><b>العودة إلى الهواء</b> — بكتيريا أخرى تُعيد النيتروجين <b>غازًا إلى الهواء</b> فتكتمل الدورة.</span>'},'');
+ERT.stepper({pills:'g6l12cPills', info:'g6l12cInfo', svg:'g6l12cSvgHost', next:'g6l12cNext', prev:'g6l12cPrev', stages:[['fix','التثبيت','بكتيريا في التربة وفي <b>عُقَد جذور البقوليات</b> تحوِّل غاز النيتروجين إلى مركَّباتٍ يستفيد منها النبات.'],['plant','امتصاص النبات','يمتصُّ النبات مركَّبات النيتروجين من التربة ليبني <b>البروتينات</b>.'],['eat','انتقاله للحيوان','يحصل الحيوان على النيتروجين حين يتغذَّى على <b>النبات</b>.'],['dec','التحلُّل','تحلِّل <b>المحلِّلات</b> بقايا المخلوقات وفضلاتها فتعيد النيتروجين إلى التربة.'],['back','العودة إلى الهواء','بكتيريا أخرى تُعيد النيتروجين <b>غازًا إلى الهواء</b> فتكتمل الدورة.']]});
+ERT.flow({svg:'g6l12cSvgHost', btn:'g6l12cPlay', items:[
+  {path:'g6l12cpFix', color:'#8FD0A0', r:9, n:4, dur:4200},
+  {path:'g6l12cpEat', color:'#C9A063', r:9, n:2, dur:2400},
+  {path:'g6l12cpDec', color:'#C9A063', r:9, n:2, dur:2600},
+  {path:'g6l12cpBack', color:'#8FB8D8', r:9, n:3, dur:3600}
+]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6l1');
+EG.tf({q:'s6l2Q', fb:'s6l2Fb', score:'s6l2Sc', btnT:'s6l2T', btnF:'s6l2F', reset:'s6l2R', data:[['الوقود الأحفوريُّ مصدرٌ متجدِّدٌ لا ينفد.','F','بل هو <b>غير متجدِّد</b>؛ ولهذا يجب ترشيد استهلاكه.'],['الخلايا الشمسية تحوِّل أشعة الشمس إلى طاقةٍ كهربائية.','T','وتُخزَّن الطاقة لتُستعمل ليلًا.'],['إعادة التدوير تقلِّل كمية النفايات والطاقة اللازمة للتصنيع.','T','وهي إحدى القواعد الثلاث.'],['استعمال الأطباق الورقية مرَّةً واحدةً أفضل للبيئة من غسل الأطباق.','F','بل <b>إعادة الاستخدام</b> أفضل؛ لأنها تقلِّل النفايات.'],['الطاقة الحرارية الجوفية مصدرها باطن الأرض.','T','ويظهر أثرها في الينابيع الساخنة.']]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/03_الأنظمة_البيئية_ومواردها/06_موارد_الأرض_والحفاظ_عليها/02_حماية_الموارد/علوم_سادس_ابتدائي_ف1_الدرس_الثاني_حماية_الموارد.html","title":"حماية الموارد","grade":6,"emoji":"💡","photoTopic":"energy","observeQuestion":"كيف يمكن لمصباحين أن يعطيا الإضاءة نفسها ويستهلك أحدهما كهرباء أقل؟","facts":["يحافظ تقليل الاستهلاك وإعادة الاستخدام والتدوير على الموارد بطرق مختلفة؛ ويبدأ الترشيد بتجنب الاستهلاك غير الضروري.","تحول الخلايا الشمسية الضوء إلى كهرباء؛ أما تخزين الكهرباء لاستخدامها لاحقًا فيحتاج إلى نظام تخزين مثل البطارية.","عند إضاءة متساوية، تحتاج المصابيح الأعلى كفاءة إلى طاقة كهربائية أقل؛ فلا تقارن المصابيح بالواط وحده."],"diagram":{"title":"ثلاث طرق يومية للحفاظ على الموارد","relation":"comparison","nodes":[{"emoji":"🛒","label":"قلل الاستهلاك","detail":"اشترِ ما تحتاجه ووفّر الطاقة."},{"emoji":"🔁","label":"أعد الاستخدام","detail":"استخدم الغرض نفسه مرات إضافية."},{"emoji":"♻️","label":"أعد التدوير","detail":"حوّل المواد المقبولة إلى منتجات جديدة."}],"caption":"إعادة الاستخدام تُبقي الغرض مفيدًا؛ أما التدوير فيعالج مادته لإنتاج شيء جديد."},"lab":{"title":"قارن كهرباء المصابيح عند إضاءة متساوية","question":"كيف يتغير استهلاك الكهرباء إذا ثبتنا شدة الإضاءة المطلوبة ومدة التشغيل؟","controlLabel":"تقنية المصباح","options":["متوهج","فلورسنت مدمج","LED موفر"],"states":[{"label":"استهلاك أعلى","emoji":"⚡","amount":10,"explanation":"للحصول على الإضاءة نفسها خلال المدة نفسها، يحتاج المصباح المتوهج المعتاد إلى كهرباء أكثر؛ إذ يتحول كثير منها إلى حرارة.","observation":"أعلى مؤشر استهلاك في المقارنة."},{"label":"استهلاك أقل","emoji":"⚡","amount":4,"explanation":"يستخدم مصباح الفلورسنت المدمج المناسب كهرباء أقل من المتوهج لإنتاج إضاءة مماثلة؛ مع بقاء مدة التشغيل ثابتة.","observation":"استهلاك أقل من المتوهج."},{"label":"استهلاك منخفض","emoji":"⚡","amount":2,"explanation":"نفترض مصباح LED ذا كفاءة جيدة يقدم الإضاءة نفسها؛ فيستهلك كهرباء أقل في هذه المقارنة، مع اختلاف المنتجات الفعلية.","observation":"أقل مؤشر استهلاك في النموذج."}],"quantityLabel":"مؤشر وصفي للكهرباء المستهلكة عند إضاءة وزمن متساويين","modelNote":"القيم توضيحية وليست واطًا أو نسب توفير ثابتة؛ تتحقق المقارنة الواقعية من اللومن والواط على ملصق المصباح.","tryPrompt":"لماذا يكون تثبيت الإضاءة أكثر عدلًا من تثبيت قدرة المصابيح بالواط؟"},"sources":[{"title":"وزارة الطاقة الأمريكية: دليل الإضاءة الموفرة","url":"https://www.energy.gov/sites/prod/files/guide_to_energy_efficient_lighting.pdf"},{"title":"وزارة الطاقة الأمريكية: أساسيات إضاءة LED","url":"https://www.energy.gov/cmei/ssl/led-basics"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

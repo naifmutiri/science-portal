@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – الدرس الثاني: عمليات الحياة في المخلوقات الحية الدقيقة</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>عمليات الحياة في المخلوقات الحية الدقيقة</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الثانية: عمليات الحياة<br>الفصل الثالث: عمليات الحياة في النباتات والمخلوقات الحية الدقيقة — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن الآن؟</h2><span class="src">ص ٩٢</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة</h3><p>الوحدة الثانية: عمليات الحياة</p></div><div class="card"><h3>الفصل</h3><p>الفصل الثالث: عمليات الحياة في النباتات والمخلوقات الحية الدقيقة</p></div><div class="card"><h3>الدرس</h3><p>الدرس الثاني: عمليات الحياة في المخلوقات الحية الدقيقة</p></div></div><div class="box idea"><b>السؤال الأساسي:</b> فيمَ تتشابه المخلوقات الحية الدقيقة، وفيمَ تختلف؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أعرِّف المخلوق الحي الدقيق وأذكر أمثلةً عليه.</li><li>أصف الفطريات المجهرية وأذكر فوائدها وأضرارها.</li><li>أميِّز الطلائعيات المجهرية وتراكيب الحركة فيها.</li><li>أقارن بين البكتيريا والبدائيات.</li><li>أوضِّح طرائق تكاثر المخلوقات الحية الدقيقة.</li><li>أصف تركيب عفن الخبز ودور الإنزيمات فيه.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أنظر وأتساءل</span><h2>تمهيد</h2><span class="src">ص ٩٢</span></div>
+<div class="body"><p class="t">يعيش <b>العُثُّ</b> في السجاد والأثاث والأغطية. وهناك بلايين المخلوقات الحية الدقيقة تعيش من حولك.</p><div class="box ask">فما المخلوقات الحية الدقيقة؟ ومن أين تأتي؟ وكيف تمكَّنت من البقاء؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما الذي أعرفه من قبل؟</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الخلية</h3><p>الوحدة الأساسية لبناء أجسام المخلوقات الحية.</p></div><div class="card"><h3>المجهر</h3><p>أداةٌ تُكبِّر الأشياء الصغيرة جدًّا لنراها.</p></div><div class="card"><h3>ممالك المخلوقات</h3><p>تُصنَّف المخلوقات الحية في ممالك، منها الفطريات والطلائعيات والبكتيريا والبدائيات.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ٩٤</span></div>
+<div class="body"><div class="cards"><div class="card"><h4>المخلوق الحي الدقيق</h4><p class="term">مخلوقٌ حيٌّ مجهريٌّ لا يُرى بالعين المجرَّدة.</p></div><div class="card"><h4>وحيد الخلية</h4><p class="term">مخلوقٌ يتكوَّن جسمه من خليةٍ واحدة.</p></div><div class="card"><h4>الانشطار الثنائي</h4><p class="term">تكاثرٌ لاجنسيٌّ ينقسم فيه المخلوق إلى مخلوقين متماثلين.</p></div></div><div class="cards"><div class="card"><h4>الاقتران</h4><p class="term">عمليةٌ جنسيةٌ تلتحم فيها المخلوقات الحية وتتبادل المادة الوراثية.</p></div><div class="card"><h4>التبرعُم</h4><p class="term">تكاثرٌ لاجنسيٌّ ينمو فيه بروزٌ صغيرٌ على الخلية الأم ثم ينفصل.</p></div></div><div class="muted">مهارة القراءة في هذا الدرس: <b>الاستنتاج</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>ما درجات الحرارة التي تحفِّز نمو الخميرة؟</h2><span class="src">ص ٩٣</span></div>
+<div class="body"><div class="box idea"><b>أكوِّن فرضية:</b> «إذا نَمَت الخميرة في ماءٍ دافئٍ وماءٍ بارد، فإن أفضل نموٍّ للخميرة يكون في ……».</div><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">أحتاج إلى</h4><ul class="list"><li>خميرة جافة فورية</li><li>عدسة مكبِّرة</li><li>كأسين زجاجيتين</li><li>مخبار مدرَّج</li><li>ماء دافئ</li><li>ميزان</li><li>مقياس درجة الحرارة</li><li>سكر وملعقة</li><li>قضيبَي تحريكٍ بلاستيكيين</li><li>وعاء فيه ماء ثلج</li><li>ساعة إيقاف</li><li>قطَّارتين</li><li>شرائح مجهرية وأغطية شرائح</li><li>مجهر مركَّب</li></ul></div><div style="flex:1 1 0"><h4 class="hl">أختبر فرضيتي</h4><ul class="list num"><li><b>ألاحظ:</b> أفحص الخميرة الجافة بالعدسة المكبِّرة. ماذا شاهدت؟ وما الذي ساعدني على رؤية تفاصيل أكثر؟</li><li><b>أجرِّب:</b> أملأ الكأسين بـ ١٢٥ مل من الماء الدافئ عند ٤٥°س، وأضيف ٤ جم من السكر إلى كل كأس، وأحرِّك حتى يذوب، ثم أكتب (دافئ) على إحداهما و(بارد) على الأخرى.</li><li><b>أستعمل المتغيرات:</b> أضع الكأس المعنونة (بارد) في وعاءٍ فيه ماء ثلج. ما المتغير المستقل والمتغير التابع؟</li><li>أضع ملعقةً صغيرةً من الخميرة في كل كأس وأحرِّك، وألاحظ الكأسين بعد ١٠ دقائق. أيُّ الكأسين حدث فيها تغيُّرٌ أكثر؟</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>أستخلص النتائج</h2><span class="src">ص ٩٣</span></div>
+<div class="body"><div class="qa"><p class="q">٣ – ما المتغير المستقل والمتغير التابع اللذان سيتم اختبارهما في هذه التجربة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المتغير المستقل:</b> درجة حرارة الماء (دافئ / بارد). <b>المتغير التابع:</b> مقدار نمو الخميرة ونشاطها (ظهور الفقاعات وعدد الخلايا).</div></div><div class="qa"><p class="q">٥ – أقارن: أحصل على عينةٍ من وسط كل كأس وأفحصها بقوَّتَي التكبير الصغرى والكبرى. أيُّ العينتين تحتوي على خلايا خميرةٍ أكثر؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>العينة المأخوذة من الكأس <b>الدافئة</b>؛ لأن الدفء يحفِّز نمو الخميرة وتكاثرها، فيظهر فيها عددٌ أكبر من الخلايا وفقاعاتٌ أكثر.</div></div><div class="qa"><p class="q">أستكشف أكثر: هل الخميرة قادرةٌ على إنتاج غذائها، أم أنها تمتص المواد الغذائية من الوسط الذي تعيش فيه؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span><b>إجابة نموذجية مقترحة:</b> الخميرة فطرٌ لا يصنع غذاءه بنفسه، بل يمتص المواد الغذائية من الوسط الذي يعيش فيه. ولاختبار ذلك: أضع خميرةً في كأسٍ فيها ماءٌ وسكر، وأخرى في كأسٍ فيها ماءٌ فقط، وألاحظ في أيِّهما ينشط النمو.</div></div><div class="box safe">أتعامل مع الماء الساخن بحذر، وأغسل يديَّ بعد انتهاء النشاط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>الفكرة الرئيسة للدرس</h2><span class="src">ص ٩٤</span></div>
+<div class="body"><div class="box idea" style="font-size:bigpx;"><b>المخلوقات الحية الدقيقة</b> مخلوقاتٌ مجهريةٌ لا تُرى بالعين المجرَّدة، منها ما هو نافعٌ ومنها ما هو ضار، وتتكاثر بطرائق جنسيةٍ ولاجنسية.</div><div class="map"><div class="node">المخلوقات الحية الدقيقة</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#F3EDF7;border-color:#7A4E8C;color:#7A4E8C">الفطريات المجهرية</div><div class="line" style="background:#7A4E8C"></div><div class="leaves"><span class="node leaf">العفن</span><span class="node leaf">الخميرة</span></div></div><div class="col"><div class="node sub" style="background:#E7F4F1;border-color:#1F6E63;color:#1F6E63">الطلائعيات</div><div class="line" style="background:#1F6E63"></div><div class="leaves"><span class="node leaf">اليوجلينا</span><span class="node leaf">الدياتومات</span><span class="node leaf">الأميبا</span></div></div><div class="col"><div class="node sub" style="background:#FBEAE7;border-color:#B03A2E;color:#B03A2E">البكتيريا</div><div class="line" style="background:#B03A2E"></div><div class="leaves"><span class="node leaf">كروية</span><span class="node leaf">عصوية</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">البدائيات</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">ينابيع حارة</span><span class="node leaf">بيئات قاسية</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">شرح</span><h2>ما المخلوقات الحية الدقيقة؟</h2><span class="src">ص ٩٤</span></div>
+<div class="body"><p class="t"><b>المخلوق الحي الدقيق</b> مخلوقٌ حيٌّ مجهريٌّ لا يُرى بالعين المجرَّدة، ويُستخدم مصطلح <b>الميكروبات</b> لوصف المخلوقات الحية الدقيقة.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>وحيدة الخلية</b><br>يتكوَّن جسمها من خليةٍ واحدة.</div></div><div style="flex:1 1 0"><div class="box note"><b>متعدِّدة الخلايا</b><br>يتكوَّن جسمها من أكثر من خلية.</div></div></div><div class="box idea"><b>حقيقة:</b> يُستخدم مصطلح الميكروبات لوصف المخلوقات الحية الدقيقة المفيدة والضارَّة، وليس الضارَّة فقط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفطريات المجهرية</span><h2>الفطريات المجهرية</h2><span class="src">ص ٩٤</span></div>
+<div class="body"><p class="t">تشمل الفطريات المجهرية <b>العفن</b> و<b>الخميرة</b>، وهي — مثل بقية الفطريات — لا تستطيع صنع غذائها بنفسها، وبدلًا من ذلك تمتص المواد المغذية من الوسط الذي تعيش فيه.</p><div class="cards"><div class="card"><h3>الخميرة</h3><p>تُستخدم في صنع الخبز.</p></div><div class="card"><h3>فطرياتٌ أخرى</h3><p>تُستخدم في صنع بعض أنواع الجبن.</p></div><div class="card"><h3>فطر البنسيليوم</h3><p>يُستخدم في صناعة الأدوية.</p></div></div><div class="box note">في عام <b>١٨٥٩م</b> اكتشف <b>لويس باستور</b> كيف تؤثِّر خلايا الخميرة في الخبز؛ حيث تتغذَّى الخميرة على نشا دقيق القمح مكوِّنةً فقاقيعَ من غاز ثاني أكسيد الكربون تسبِّب انتفاخ عجينة الخبز.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفطريات المجهرية</span><h2>فطرياتٌ تسبِّب الأمراض</h2><span class="src">ص ٩٤</span></div>
+<div class="body"><p class="t">هناك أنواعٌ من الفطريات المجهرية تسبِّب الأمراض. فعلى سبيل المثال، هناك أنواعٌ تعيش على سطح جسم الإنسان وفي داخله من دون أن تسبِّب له أذى.</p><div class="box note">ولكن إذا توافرت ظروفٌ مناسبة — ومنها <b>الحرارة والرطوبة</b> — فإنها تتكاثر بسرعة، وتسبِّب أمراضًا والتهاباتٍ مُعدية تصيب الجلد ومناطق بين الأصابع، ومن ذلك <b>مرض القدم الرياضي</b>.</div><div class="box safe"><b>توضيح إضافي:</b> تجفيف القدمين جيدًا بعد الوضوء أو الاستحمام، وعدم مشاركة المناشف، يقللان فرصة الإصابة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الطلائعيات</span><h2>الطلائعيات المجهرية</h2><span class="src">ص ٩٥</span></div>
+<div class="body"><p class="t">معظم الطلائعيات مخلوقاتٌ حيةٌ دقيقةٌ وحيدة الخلية، يصعب تصنيفها إلى حيواناتٍ أو نباتات.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>طلائعياتٌ شبيهةٌ بالنباتات</b><br>تصنع غذاءها بنفسها، ومنها <b>اليوجلينا</b>.</div></div><div style="flex:1 1 0"><div class="box note"><b>الدياتومات</b><br>طلائعياتٌ شبيهةٌ بالنباتات تعيش في البحيرات والمحيطات، وتُعدُّ مصدر الغذاء الرئيس في الأنظمة البيئية البحرية.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الطلائعيات</span><h2>تراكيب الحركة في الطلائعيات</h2><span class="src">ص ٩٥</span></div>
+<div class="body"><p class="t">الطلائعيات التي لا تقدر على صنع غذائها لها تراكيبُ تساعدها على الحركة للحصول على غذائها.</p><table class="cmp"><tr><th style="width:26%">التركيب</th><th>الوصف</th></tr><tr><td>الأسواط</td><td>تراكيب تشبه السَّوط تدفع المخلوق للحركة.</td></tr><tr><td>الأهداب</td><td>تراكيب تشبه الشَّعر تتحرَّك جيئةً وذهابًا مثل المجداف.</td></tr><tr><td>الأقدام الكاذبة</td><td>تراكيب في <b>الأميبا</b> تستخدمها في حركتها عن طريق انقباضها وامتدادها.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">البكتيريا</span><h2>البكتيريا</h2><span class="src">ص ٩٥</span></div>
+<div class="body"><p class="t">البكتيريا مخلوقاتٌ وحيدة الخلية.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>بكتيريا ضارَّة</b><br>بعض أنواع البكتيريا ضارٌّ يسبِّب العديد من الأمراض، فهناك <b>بكتيريا كروية</b> تسبِّب التهاب الحلق.</div></div><div style="flex:1 1 0"><div class="box note"><b>بكتيريا نافعة</b><br>معظم أنواع البكتيريا غير ضار، ومنها <b>البكتيريا العصوية</b> التي تُستعمل لإنتاج اللبن الرائب وغيره من المواد المفيدة للجسم.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">البدائيات</span><h2>البدائيات</h2><span class="src">ص ٩٥</span></div>
+<div class="body"><p class="t">البدائيات مخلوقاتٌ حيةٌ وحيدة الخلية. وقد صُنِّفت من قبلُ على أنها أحد أنواع البكتيريا، إلا أن العلماء اكتشفوا اختلاف صفاتها الوراثية عن البكتيريا.</p><p class="t">بعض البدائيات تعيش في ظروفٍ قاسيةٍ على الأرض لا يمكن لغيرها من المخلوقات الحية العيشُ فيها:</p><ul class="list"><li>في الينابيع الحارة التي تصل درجة حرارة الماء فيها إلى درجة الغليان.</li><li>في بيئاتٍ خاليةٍ من الأكسجين بالقرب من فوهات البراكين في قاع المحيطات.</li><li>في القنوات الهضمية للحيوانات، أو في أماكن شديدة الملوحة.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>صخورٌ تزخر بالحياة</h2><span class="src">ص ٩٥</span></div>
+<div class="body"><div class="box ask">نتجت هذه الصخور عن مستعمرات بكتيريا وطحالبَ بدائية. تُرى أين كانت تعيش هذه المخلوقات في أثناء حياتها؟<br><span class="muted">إرشاد: أحدِّد أماكن هذه الصخور التي نتجت عن البكتيريا والطحالب البدائية.</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الصورة»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>كانت تعيش في <b>الماء</b> — على شواطئ البحار والمياه الضحلة — حيث تكوَّنت مستعمراتها فوق بعضها بمرور الزمن وتحجَّرت مكوِّنةً هذه الصخور، ولذلك نجدها اليوم عند حافة الشاطئ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ٩٥</h2><span class="src">ص ٩٥</span></div>
+<div class="body"><div class="qa"><p class="q">أستنتج: هل يُحتمَل وجود بدائياتٍ على جلدي؟ أوضِّح إجابتي.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> نعم، من المحتمل؛ فالبدائيات تعيش في بيئاتٍ متنوعة، ومنها ما يعيش في القنوات الهضمية للحيوانات وعلى أسطح الأجسام. وسطح الجلد بيئةٌ فيها رطوبةٌ ودفءٌ ومواد، ولا تُرى هذه المخلوقات إلا بالمجهر.</div></div><div class="qa"><p class="q">التفكير الناقد: هل توجد الدياتومات بالقرب من سطح البحيرات والمحيطات أم في أعماق المياه؟ لماذا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>توجد بالقرب من <b>السطح</b>؛ لأنها طلائعياتٌ شبيهةٌ بالنباتات تصنع غذاءها بنفسها، وتحتاج إلى ضوء الشمس الذي لا يصل إلى الأعماق.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">التكاثر</span><h2>كيف تتكاثر المخلوقات الحية الدقيقة؟</h2><span class="src">ص ٩٦</span></div>
+<div class="body"><p class="t">تستطيع المخلوقات الحية الدقيقة — بأمر الله تعالى — التكاثر بسرعةٍ ليصبح عددها بالملايين.</p><div class="box ask">كيف تستطيع أن تنتج هذا العدد الكبير بسرعة؟ وكيف استطاعت البقاء على قيد الحياة ملايين السنين؟ <span class="muted">الإجابة تكمن في طريقة تكاثرها.</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الطلائعيات</span><h2>الانشطار الثنائي</h2><span class="src">ص ٩٦</span></div>
+<div class="body"><p class="t">تتكاثر معظم الطلائعيات <b>بالانشطار الثنائي</b>، وهو نوعٌ من التكاثر اللاجنسي ينقسم فيه المخلوق الحي إلى مخلوقين حيَّين جديدين متماثلين.</p><ul class="list num"><li>يتم تضاعُف المادة الوراثية.</li><li>تبدأ الخلية في الانقسام.</li><li>ينتج مخلوقان متماثلان.</li></ul><div class="box idea"><b>مثال:</b> استطالة <b>البراميسيوم</b> وتضاعُف كروموسوماته وانقسامه إلى اثنين.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>ماذا يحدث لهذا البراميسيوم؟</h2><span class="src">ص ٩٦</span></div>
+<div class="body"><div class="box ask">ماذا يحدث لهذا البراميسيوم؟<br><span class="muted">إرشاد: أنظر ماذا يحدث في المنطقة الوسطى؟</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الصورة»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يتكاثر البراميسيوم <b>بالانشطار الثنائي</b>: فقد استطال جسمه وتضاعفت مادته الوراثية، وبدأت الخلية تنخصر في المنطقة الوسطى استعدادًا للانقسام إلى مخلوقين متماثلين.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الطلائعيات</span><h2>الاقتران والأبواغ</h2><span class="src">ص ٩٦</span></div>
+<div class="body"><p class="t">قد تتكاثر الطلائعيات <b>بالاقتران</b>، وهو عمليةٌ جنسيةٌ تلتحم فيها المخلوقات الحية بعضها ببعض، وتتبادل المادة الوراثية فيما بينها، ثم ينفصل بعضها عن بعض، وينقسم كلٌّ منها بعد ذلك بالانشطار الثنائي.</p><div class="box note">بعض أنواع الطلائعيات تتكاثر <b>بالأبواغ</b> وتسمَّى <b>البوغيَّات</b>. وتحتوي الأبواغ على المادة الوراثية داخل غشاءٍ يحميها، وتستطيع تحمُّل الظروف القاسية حتى تتهيَّأ ظروفٌ مناسبةٌ لنموِّها فتنمو.</div><div class="box idea">بعض أنواع البوغيَّات تحتاج إلى جسم مخلوقٍ حيٍّ آخر لتنمو داخله، ومنها <b>البلازموديوم</b> الذي يسبِّب مرض <b>الملاريا</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفطريات</span><h2>التبرعُم</h2><span class="src">ص ٩٧</span></div>
+<div class="body"><p class="t">تتكاثر بعض الفطريات — ومنها <b>الخميرة</b> — لاجنسيًّا <b>بالتبرعُم</b>.</p><ul class="list num"><li>يتكوَّن البرعم بنموِّ بروزٍ صغيرٍ على الخلية الأم.</li><li>تنقسم نواة الخلية الأم انقسامًا متساويًا فينتج نواتان متماثلتان في كروموسوماتهما.</li><li>تصبح إحدى النواتين جزءًا من البرعم النامي.</li><li>ينفصل البرعم ويصبح مخلوقًا حيًّا جديدًا.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">الفطريات</span><h2>التكاثر بالأبواغ في الفطريات</h2><span class="src">ص ٩٧</span></div>
+<div class="body"><p class="t">هناك أنواعٌ أخرى من الفطريات تتكاثر <b>بالأبواغ</b>؛ حيث تندمج الخلايا الذكرية مع الخلايا الأنثوية لتبادل المادة الوراثية وإنتاج الأبواغ.</p><div class="box note">تُحفَظ هذه الأبواغ داخل غلاف، ثم تنتشر منه، فإذا سقطت في بيئةٍ مناسبةٍ لنموِّها فإنها تنمو وتنتج فطرًا جديدًا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">البكتيريا</span><h2>تكاثر البكتيريا</h2><span class="src">ص ٩٧</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>بالانشطار الثنائي</b><br>تتكاثر معظم البكتيريا بالانشطار الثنائي، ومنها بكتيريا (إي. كُولاي) التي تعيش في أمعاء الإنسان.</div></div><div style="flex:1 1 0"><div class="box note"><b>بالاقتران</b><br>تتَّصل خليتان معًا، وتنتقل المادة الوراثية من إحداهما إلى الأخرى، ثم تنفصل الخليتان إحداهما عن الأخرى وتنقسمان.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ٩٧</h2><span class="src">ص ٩٧</span></div>
+<div class="body"><div class="qa"><p class="q">أستنتج: عندما يحدث التبرعُم، هل يشبه المخلوق الجديد أصلَه؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>نعم؛ لأن التبرعُم تكاثرٌ لاجنسي، وتنقسم فيه نواة الخلية الأم انقسامًا متساويًا، فتحمل النواة الجديدة الكروموسومات نفسها، فيكون المخلوق الجديد مطابقًا للأصل في صفاته.</div></div><div class="qa"><p class="q">التفكير الناقد: فيمَ يختلف الانشطار الثنائي عن الاقتران (التزاوُج)؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>الانشطار الثنائي تكاثرٌ <b>لاجنسي</b> ينقسم فيه المخلوق إلى مخلوقين متماثلين دون تبادل مادةٍ وراثية. أما الاقتران فتكاثرٌ <b>جنسي</b> تلتحم فيه خليتان وتتبادلان المادة الوراثية، فتختلف صفات النواتج عن الأصل.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط تفاعلي</span><h2>جنسيٌّ أم لاجنسي؟</h2><span class="src">تدريب إضافي</span></div>
+<div class="body"><p class="t">أصنِّف كل طريقةٍ من طرائق التكاثر.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="X">تكاثر لاجنسي</button><button class="simBtn ghost" type="button" data-k="Y">تكاثر جنسي</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نشاط: نموُّ العفن</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><ul class="list num"><li>أُرطِّب قطعة خبزٍ بالماء، وأضعها داخل كيسٍ بلاستيكيٍّ ذاتيِّ الغلق. أُغلق الكيس وأضعه في مكانٍ مظلمٍ دافئٍ عدة أيام.</li><li><b>ألاحظ.</b> أستخدم عدسةً مكبِّرة، وألاحظ قطعة الخبز، وأفحص كل تركيب.</li><li><b>أدوِّن البيانات.</b> أدوِّن ملاحظاتي حول التغيُّرات على قطعة الخبز، وأرسم ما شاهدته، وأكتب أسماء أجزاء عفن الخبز الظاهرة.</li></ul><div class="box safe"><b>أحذر:</b> لا أفتح الكيس.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نشاط نموُّ العفن — الأسئلة</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أفسِّر البيانات: ما الذي سبَّب التغيُّرات في قطعة الخبز؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>نموُّ <b>عفن الخبز</b> عليها؛ إذ وجد الوسط المناسب من الرطوبة والدفء والظلام والغذاء، فنمت خيوطه الفطرية وأنتجت الأبواغ، فظهر الزغب الأبيض والبقع السوداء.</div></div><div class="qa"><p class="q">٥ – أستنتج: ما مصدر العفن الذي نما على قطعة الخبز؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>أبواغ العفن</b> الموجودة في الهواء ومن حولنا؛ فهي صغيرةٌ جدًّا، وقد سقطت على الخبز قبل وضعه في الكيس، ثم نمت بسرعةٍ عند توافر الرطوبة والدفء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">عفن الخبز</span><h2>ما عفن الخبز؟</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><p class="t">لعلِّي شاهدت مرةً زغبًا ينمو على قطعةٍ من الخبز. إن هذا الزغب الأسود هو <b>عفن الخبز</b>.</p><div class="box note">أبواغ هذا العفن صغيرةٌ جدًّا، ولكنها إذا سقطت في بيئةٍ مناسبةٍ فإنها تنمو سريعًا. وتُعدُّ <b>البيئة الدافئة الرطبة</b> الوسطَ المثاليَّ لنموِّ هذا العفن.</div><div class="box safe"><b>توضيح إضافي:</b> لا آكل الطعام الذي ظهر عليه العفن، وأحفظ الأطعمة في مكانٍ باردٍ جاف.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">عفن الخبز</span><h2>الخيوط الفطرية والإنزيمات</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><p class="t">يتركَّب عفن الخبز من خيوطٍ دقيقةٍ تُسمَّى <b>الخيوط الفطرية</b>، تنتشر لتغطِّي مساحةً كبيرة، وهي تشبه في ذلك جذور النباتات.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>خيوطٌ تنمو إلى أسفل</b><br>تثبِّت العفن على الخبز، وتفرز موادَّ كيميائيةً تسهِّل امتصاص المواد الغذائية.</div></div><div style="flex:1 1 0"><div class="box note"><b>خيوطٌ تنمو إلى أعلى</b><br>تحتوي على تراكيبَ مسؤولةٍ عن تكوين الأبواغ التي تتحرَّر بعد أن يكتمل نموُّها.</div></div></div><div class="box idea"><b>الإنزيمات</b> بروتيناتٌ تفرزها الخيوط الفطرية، ويسبِّب الإنزيم تسريعَ حدوث التفاعلات الكيميائية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">عفن الخبز</span><h2>التكاثر في دورة حياة الفطر</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">التكاثر اللاجنسي</h4><p class="t">تتحرَّر الأبواغ بعد اكتمال نموِّها، وهذا يمثِّل التكاثر اللاجنسي في دورة حياة الفطر.</p></div><div style="flex:1 1 0"><h4 class="hl">التكاثر الجنسي</h4><p class="t">يحدث عندما يندمج خيطان فطريَّان معًا، ويكوِّنان أبواغًا جديدة.</p></div></div><div class="box note">البقع السوداء أعلى الخيوط الفطرية هي <b>محافظ الأبواغ</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ٩٨</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><div class="qa"><p class="q">أستنتج: كيف تساعد الإنزيمات العفنَ على هضم الطعام؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تفرز الخيوط الفطرية إنزيماتٍ تعمل على تسريع التفاعلات الكيميائية التي تُحلِّل المواد الغذائية في الخبز إلى موادَّ أبسط، فيسهُل على العفن امتصاصها.</div></div><div class="qa"><p class="q">التفكير الناقد: كيف يمكن أن تكون الإنزيمات مهمةً لنشاطاتٍ أخرى غير الهضم؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> الإنزيمات تسرِّع التفاعلات الكيميائية عمومًا، فتفيد في بناء المواد داخل الخلية وفي التخلُّص من الفضلات، وتُستعمل في الصناعات مثل صنع الجبن والخبز ومساحيق الغسيل.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>الملخص المصوَّر</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>المخلوقات الحية الدقيقة (الميكروبات)</h3><p>تشتمل على بعض الفطريات ومعظم البكتيريا، وهي مخلوقاتٌ حيةٌ لا تُرى بالعين المجرَّدة.</p></div><div class="card"><h3>التكاثر</h3><p>تتكاثر لاجنسيًّا بالانشطار الثنائي والتبرعُم وتكوين الأبواغ، وتتكاثر جنسيًّا بالتزاوُج (الاقتران).</p></div><div class="card"><h3>عفن الخبز</h3><p>يتكوَّن من كتلةٍ كبيرةٍ من الخيوط الفطرية.</p></div></div><div class="box note"><b>المطويات:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمته عن المخلوقات الحية الدقيقة بكتابة فقراتٍ على الوجه الداخلي للمطوية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ١ – ٣</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><div class="qa"><p class="q">١ – المفردات: العملية التي يلتحم فيها مخلوقان حيَّان ويتبادلان المادة الوراثية معًا تسمَّى ………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>الاقتران</b> (التزاوُج).</div></div><div class="qa"><p class="q">٢ – أستنتج: لماذا صنَّف العلماء البدائيات قديمًا على أنها بكتيريا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>لأنها تشبه البكتيريا في كونها مخلوقاتٍ حيةً دقيقةً وحيدةَ الخلية وتشبهها في مظهرها العام، ثم اكتشف العلماء لاحقًا اختلاف صفاتها الوراثية عن البكتيريا فصُنِّفت مجموعةً مستقلة.</div></div><div class="qa"><p class="q">٣ – التفكير الناقد: ما أهمية قدرة المخلوقات الحية المجهرية على التكاثر جنسيًّا ولا جنسيًّا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> التكاثر اللاجنسي يمكِّنها من زيادة أعدادها بسرعةٍ كبيرةٍ عند توافر الظروف المناسبة، أما التكاثر الجنسي فيُحدث تنوُّعًا في الصفات الوراثية يساعدها على البقاء والتكيُّف عندما تتغيَّر الظروف.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ٤ – ٦</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أختار الإجابة الصحيحة: أيٌّ ممَّا يأتي لا يُعَدُّ شكلًا من أشكال التكاثر اللاجنسي؟ أ) التبرعُم &nbsp; ب) الانشطار الثنائي &nbsp; جـ) الاقتران &nbsp; د) تكوين الأبواغ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>جـ) الاقتران.</b> لأنه تكاثرٌ جنسيٌّ تتبادل فيه المخلوقات المادة الوراثية.</div></div><div class="qa"><p class="q">٥ – أختار الإجابة الصحيحة: ما التركيب الذي يفرز الإنزيمات في عفن الخبز؟ أ) الأبواغ &nbsp; ب) المغازل &nbsp; جـ) الجذور &nbsp; د) الخيوط الفطرية</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>د) الخيوط الفطرية.</b></div></div><div class="qa"><p class="q">٦ – السؤال الأساسي: فيمَ تتشابه المخلوقات الحية الدقيقة، وفيمَ تختلف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>تتشابه</b> في أنها مخلوقاتٌ حيةٌ مجهريةٌ لا تُرى بالعين المجرَّدة، ومعظمها وحيد الخلية، وتتكاثر بسرعةٍ بطرائقَ لاجنسيةٍ وجنسية. <b>وتختلف</b> في المملكة التي تنتمي إليها: فالفطريات المجهرية تمتص غذاءها، والطلائعيات منها ما يصنع غذاءه ومنها ما يتحرَّك ليحصل عليه، والبكتيريا والبدائيات وحيدةُ الخلية تختلفان في صفاتهما الوراثية وفي البيئات التي تعيشان فيها.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم والكتابة · العلوم والصحة</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">العلوم والكتابة</h4><p class="t"><b>الكتابة المقنعة:</b> أكتب مقالًا يبيِّن أهمية دور البكتيريا النافعة، معزِّزًا كتابتي بأمثلةٍ عليها، وصورها ورسومٍ توضيحية.</p></div><div style="flex:1 1 0"><h4 class="hl">العلوم والصحة</h4><p class="t"><b>أعمل ملصقًا:</b> أستقصي الآثار السلبية والإيجابية للمخلوقات الحية الدقيقة في صحتي، وأعمل ملصقًا أعرض فيه المعلومات التي أكتشفها.</p></div></div><div class="muted">هذان نشاطان من الكتاب يُنجزهما الطالب بنفسه، ولا تُنسب نتائجهما إلى صفحات الدرس.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">المخلوق الحي الذي لا يُرى بالعين المجرَّدة يُسمَّى:</p><div class="opts"><button class="opt" type="button">مخلوقًا منتِجًا</button><button class="opt" type="button">مخلوقًا حيًّا دقيقًا</button><button class="opt" type="button">مخلوقًا فقاريًّا</button><button class="opt" type="button">مخلوقًا متحلِّلًا</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">تتكاثر الخميرة لاجنسيًّا بـ:</p><div class="opts"><button class="opt" type="button">الانشطار الثنائي</button><button class="opt" type="button">الاقتران</button><button class="opt" type="button">التبرعُم</button><button class="opt" type="button">التلقيح</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الطلائعيات التي تتحرَّك بالأقدام الكاذبة هي:</p><div class="opts"><button class="opt" type="button">اليوجلينا</button><button class="opt" type="button">الأميبا</button><button class="opt" type="button">الدياتومات</button><button class="opt" type="button">البراميسيوم</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي (٢)</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">مصدر الغذاء الرئيس في الأنظمة البيئية البحرية:</p><div class="opts"><button class="opt" type="button">البكتيريا الكروية</button><button class="opt" type="button">الدياتومات</button><button class="opt" type="button">عفن الخبز</button><button class="opt" type="button">البدائيات</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">التركيب الذي يفرز الإنزيمات في عفن الخبز:</p><div class="opts"><button class="opt" type="button">محافظ الأبواغ</button><button class="opt" type="button">الخيوط الفطرية</button><button class="opt" type="button">الأهداب</button><button class="opt" type="button">الأسواط</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">المخلوق الذي يسبِّب مرض الملاريا هو:</p><div class="opts"><button class="opt" type="button">البلازموديوم</button><button class="opt" type="button">إي. كُولاي</button><button class="opt" type="button">البنسيليوم</button><button class="opt" type="button">اليوجلينا</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبل أن أغادر</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أعرِّف المخلوق الحي الدقيق بجملةٍ واحدة.</li><li>أذكر طريقتين لاجنسيتين لتكاثر المخلوقات الحية الدقيقة.</li><li>أذكر مثالًا لمخلوقٍ دقيقٍ نافعٍ وآخر ضار.</li></ul><div class="box idea">سؤالٌ أفكر فيه: لماذا يُحفَظ الطعام في الثلاجة؟ وما علاقة ذلك بنمو المخلوقات الحية الدقيقة؟</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: كيف تتكاثر؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1340" height="480" viewBox="0 0 1340 480" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l6SvgHost"><defs><marker id="g6l6mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><rect x="0" y="0" width="1340" height="480" fill="#FBFCFD"/><g><text x="1110" y="66" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الانشطار الثنائي</text><text x="1110" y="66" font-size="28" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الانشطار الثنائي</text></g><ellipse cx="1240" cy="180" rx="52" ry="34" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="1240" cy="180" r="14" fill="#3E6E2E"/><path d="M1176 180 H 1120" stroke="#6B7889" stroke-width="6" marker-end="url(#g6l6mr)" stroke-linecap="round"/><ellipse cx="1040" cy="180" rx="60" ry="34" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="1016" cy="180" r="13" fill="#3E6E2E"/><circle cx="1064" cy="180" r="13" fill="#3E6E2E"/><path d="M1040 148 v64" stroke="#3F8E2E" stroke-width="4" stroke-dasharray="6 5"/><path d="M974 180 H 918" stroke="#6B7889" stroke-width="6" marker-end="url(#g6l6mr)" stroke-linecap="round"/><ellipse cx="800" cy="180" rx="38" ry="30" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="800" cy="180" r="12" fill="#3E6E2E"/><ellipse cx="880" cy="180" rx="38" ry="30" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="880" cy="180" r="12" fill="#3E6E2E"/><g><text x="1040" y="272" font-size="23" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مخلوقان متماثلان</text><text x="1040" y="272" font-size="23" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مخلوقان متماثلان</text></g><g><text x="660" y="66" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التبرعُم</text><text x="660" y="66" font-size="28" fill="#7A5410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التبرعُم</text></g><circle cx="740" cy="180" r="42" fill="#F6E2B8" stroke="#C98A1E" stroke-width="5"/><circle cx="740" cy="180" r="14" fill="#B07C3E"/><path d="M694 180 H 654" stroke="#6B7889" stroke-width="6" marker-end="url(#g6l6mr)" stroke-linecap="round"/><circle cx="596" cy="180" r="42" fill="#F6E2B8" stroke="#C98A1E" stroke-width="5"/><circle cx="596" cy="180" r="14" fill="#B07C3E"/><circle cx="636" cy="146" r="20" fill="#F6E2B8" stroke="#C98A1E" stroke-width="4"/><circle cx="636" cy="146" r="7" fill="#B07C3E"/><g><text x="660" y="272" font-size="23" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">بروزٌ ينفصل</text><text x="660" y="272" font-size="23" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">بروزٌ ينفصل</text></g><g><text x="250" y="66" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التكاثر بالأبواغ</text><text x="250" y="66" font-size="28" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التكاثر بالأبواغ</text></g><path d="M180 240 q 0 -70 40 -70 q 40 0 40 70z" fill="#E8DCC4"/><ellipse cx="220" cy="172" rx="70" ry="26" fill="#C46A3A"/><circle cx="152" cy="120" r="6" fill="#7A4410"/><circle cx="174" cy="108" r="6" fill="#7A4410"/><circle cx="196" cy="96" r="6" fill="#7A4410"/><circle cx="218" cy="120" r="6" fill="#7A4410"/><circle cx="240" cy="108" r="6" fill="#7A4410"/><circle cx="262" cy="96" r="6" fill="#7A4410"/><circle cx="284" cy="120" r="6" fill="#7A4410"/><g><text x="250" y="272" font-size="23" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أبواغٌ تنتشر وتنمو</text><text x="250" y="272" font-size="23" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أبواغٌ تنتشر وتنمو</text></g><g class="eHot" data-k="fission"><rect x="790" y="40" width="520" height="250" rx="18" fill="none" stroke="transparent"/><rect class="hitBox" x="790" y="40" width="520" height="250" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="bud"><rect x="500" y="40" width="270" height="250" rx="18" fill="none" stroke="transparent"/><rect class="hitBox" x="500" y="40" width="270" height="250" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="spore"><rect x="90" y="40" width="380" height="250" rx="18" fill="none" stroke="transparent"/><rect class="hitBox" x="90" y="40" width="380" height="250" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="670" y="372" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">جميعها صورٌ من التكاثر اللاجنسي</text><text x="670" y="372" font-size="27" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">جميعها صورٌ من التكاثر اللاجنسي</text></g><g><text x="670" y="428" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أما الاقتران فتكاثرٌ جنسي</text><text x="670" y="428" font-size="24" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أما الاقتران فتكاثرٌ جنسي</text></g></svg><div class="eCap">ثلاث صورٍ لتكاثر المخلوقات الحية الدقيقة.</div></div><div class="eSteps" id="g6l6Pills"><span class="eStepPill" data-s="0">الانشطار الثنائي</span><span class="eStepPill" data-s="1">التبرعُم</span><span class="eStepPill" data-s="2">التكاثر بالأبواغ</span></div><div class="eInfo" id="g6l6Info">اضغط على أيِّ لوحةٍ لتعرف تفاصيلها.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l6Prev">◀ السابق</button><button class="simBtn" type="button" id="g6l6Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: مجموعاتُ المخلوقات الدقيقة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M42 108 q 0 -34 18 -34 q 18 0 18 34z" fill="#E8DCC4"/><ellipse cx="60" cy="62" rx="42" ry="24" fill="#C46A3A"/><circle cx="42" cy="56" r="6" fill="#F0E2C8"/><circle cx="72" cy="52" r="5" fill="#F0E2C8"/><circle cx="86" cy="64" r="4" fill="#F0E2C8"/></g></svg><h4>الفطريات المجهرية</h4><p>العفن والخميرة؛ تمتصُّ غذاءها من الوسط</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg><h4>الطلائعيات</h4><p>معظمها وحيدُ الخلية؛ منها ما يصنع غذاءه</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg><h4>البكتيريا</h4><p>وحيدة الخلية؛ أكثرها نافعٌ وبعضها ضار</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M18 96 L34 52 L62 40 L92 56 L104 96z" fill="#8C9AA2"/><path d="M34 52 L62 40 L64 96 L34 96z" fill="#A6B2B9"/><circle cx="52" cy="70" r="5" fill="#78868E"/><circle cx="80" cy="76" r="4" fill="#78868E"/></g></svg><h4>البدائيات</h4><p>تعيش في بيئاتٍ قاسيةٍ كالينابيع الحارة</p></div></div><div class="eCap">تُستخدم كلمة «الميكروبات» لوصف المخلوقات الدقيقة النافعة والضارَّة معًا.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — أصدقاءُ لا تراهم</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>في أمعائك <b>بكتيريا نافعة</b> تساعدك على هضم الطعام؛ فليست كلُّ الميكروبات عدوًّا.</p></div><div class="fFact"><div class="n">٢</div><p>رغيف الخبز ينتفخ بفضل <b>الخميرة</b> التي تُطلق فقاعات غازٍ داخل العجين.</p></div><div class="fFact"><div class="n">٣</div><p>أشهر دواءٍ مضادٍّ للبكتيريا اكتُشف من <b>فطر البنسيليوم</b>؛ فمن الفطريات جاء علاجٌ أنقذ ملايين الأرواح.</p></div></div><div class="fCap">المخلوقات الدقيقة نافعةٌ في الغذاء والدواء والتربة.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6f1"><div class="fCard"><div class="fIn"><div class="fF"><span>المخلوق الحي الدقيق</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مخلوقٌ حيٌّ مجهريٌّ لا يُرى بالعين المجرَّدة.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>وحيد الخلية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مخلوقٌ يتكوَّن جسمه من خليةٍ واحدة.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الانشطار الثنائي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تكاثرٌ لاجنسيٌّ ينقسم فيه المخلوق إلى مخلوقين متماثلين.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الاقتران</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عمليةٌ جنسيةٌ تلتحم فيها المخلوقات الحية وتتبادل المادة الوراثية.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التبرعُم</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تكاثرٌ لاجنسيٌّ ينمو فيه بروزٌ صغيرٌ على الخلية الأم ثم ينفصل.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6f1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>تحدِّي الوقت — ٤٥ ثانية</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fBar"><span class="fPill warn" id="s6f2T">الوقت</span><span class="fPill" id="s6f2Sc">النقاط</span><button class="fBtn" type="button" id="s6f2Go">▶ ابدأ التحدي</button></div><div class="fQ" id="s6f2Q">اضغط «ابدأ التحدي» لتبدأ.</div><div class="fOpts" id="s6f2O"></div><div class="fFb" id="s6f2Fb"></div></div><div class="fCap">أجب عن أكبر عددٍ ممكنٍ من الأسئلة قبل انتهاء الوقت.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>لماذا الثلاجة؟</h4><p>البرودة <b>تُبطئ</b> تكاثر الميكروبات؛ ولهذا يبقى الطعام صالحًا مدةً أطول في الثلاجة.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا يُنصَح بغسل اليدين عشرين ثانيةً بالماء والصابون قبل الأكل؟</p></div><div class="fBox safe"><h4>تنبيه سلامة</h4><p>لا أفتح كيس تجربة العفن ولا أشمُّ ما بداخله.</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: عمليات الحياة في المخلوقات الحية الدقيقة">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">لماذا يمكن أن تختلف طريقة تكاثر الخميرة عن طريقة تكاثر بكتيريا وحيدة الخلية؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/microscope-clear.jpg" alt="مجهر ضوئي على طاولة المختبر" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>مجهر ضوئي يُستخدم لتكبير العينات الصغيرة ودراسة الخلايا.</figcaption><p class="se-credit">الصورة: Aliva Sahoo · <a href="https://commons.wikimedia.org/wiki/File:Laboratory_Optical_Microscope.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>المخلوقات الدقيقة ليست مجموعة تصنيفية واحدة؛ فمنها بكتيريا وطلائعيات وفطريات مجهرية تؤدي أدوارًا مختلفة في البيئة.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>تتكاثر بكتيريا كثيرة بالانشطار الثنائي، بينما تستطيع الخميرة التكاثر بالتبرعم عندما تسمح الظروف المناسبة.</span></p>
+<p class="se-fact"><span aria-hidden="true">🦠</span><span>تستخدم خميرة الخبز السكر، وقد تنتج ثاني أكسيد الكربون بالتخمر؛ ويساعد الغاز على انتفاخ العجين.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/microbiology/pages/8-4-fermentation" target="_blank" rel="noopener noreferrer">OpenStax: التخمّر</a></li><li><a href="https://openstax.org/books/microbiology/pages/9-4-temperature-and-microbial-growth" target="_blank" rel="noopener noreferrer">OpenStax: الحرارة ونمو الميكروبات</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: قارن طرق تكاثر بعض المخلوقات الدقيقة">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>قارن طرق تكاثر بعض المخلوقات الدقيقة</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="قارن طرق تكاثر بعض المخلوقات الدقيقة"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🦠</span><span class="se-node-label">الانشطار الثنائي</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🧫</span><span class="se-node-label">التبرعم</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🍄</span><span class="se-node-label">الأبواغ</span></button></div>
+
+<p class="se-diagram-caption">أمثلة لطرق مختلفة؛ لا تمر كل المخلوقات الدقيقة بهذه الطرق الثلاث.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🦠</span><div><strong data-detail-title>الانشطار الثنائي</strong><p data-detail-text>خلية بكتيرية تنقسم إلى خليتين.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: قارن نشاط الخميرة عند درجات مختلفة">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>قارن نشاط الخميرة عند درجات مختلفة</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير الغاز الناتج افتراضيًا إذا غيّرنا الحرارة وحدها مع ثبات الخميرة والسكر والزمن؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">الحرارة المحيطة</p><div class="se-options" role="group" aria-label="الحرارة المحيطة"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">باردة</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">دافئة مناسبة</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">شديدة السخونة</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">تجربة افتراضية فقط؛ الأعداد ليست حجم غاز أو حدود حرارة، وتختلف الاستجابة بحسب نوع الخميرة وظروفها.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي للغاز المتكوّن خلال مدة ثابتة</p><div class="se-model" role="img" data-model aria-label="نشاط بطيء"><span class="se-symbol se-active" aria-hidden="true">🫧</span><span class="se-symbol se-active" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span><span class="se-symbol" aria-hidden="true">🫧</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>نشاط بطيء</p><p class="se-observation" data-observation>فقاعات أقل في النموذج.</p></div><p class="se-explanation" data-explanation>نفترض خميرة خبز نشطة وظروف تخمر متماثلة. تؤدي البرودة عادة إلى إبطاء تفاعلاتها، فيتكون غاز أقل خلال المدة نفسها.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 أي متغيرات يجب إبقاؤها ثابتة لنعرف أثر الحرارة وحدها؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثانية: عمليات الحياة · الفصل الثالث: عمليات الحياة في النباتات والمخلوقات الحية الدقيقة · الدرس الثاني: عمليات الحياة في المخلوقات الحية الدقيقة<br>المصدر: كتاب الطالب، صفحات الكتاب: ٩٢ – ٩٩ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+(function(){
+  var D=[
+    ["الانشطار الثنائي في البراميسيوم","X","ينقسم المخلوق إلى مخلوقين متماثلين دون تبادل مادة وراثية."],
+    ["التبرعُم في الخميرة","X","ينمو بروزٌ على الخلية الأم ثم ينفصل مخلوقًا جديدًا مطابقًا."],
+    ["الاقتران في البكتيريا","Y","تتَّصل خليتان وتنتقل المادة الوراثية من إحداهما إلى الأخرى."],
+    ["اندماج خيطين فطريَّين في العفن","Y","اندماج الخيطين وتكوين أبواغٍ جديدة تكاثرٌ جنسي."],
+    ["تحرُّر الأبواغ من محافظ الأبواغ","X","تكاثرٌ لاجنسيٌّ في دورة حياة الفطر."]
+  ];
+  var i=0,ok=0,n=0;
+  var card=document.getElementById('aCard'), tag=document.getElementById('aTag');
+  var msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+  if(!card) return;
+  function ar(x){var s=String(x),o='';for(var k=0;k<s.length;k++){o+='٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(k)-48];}return o;}
+  function show(){
+    if(i>=D.length){card.querySelector('.nm').textContent='انتهى النشاط';tag.textContent='—';
+      msg.textContent='أحسنت! أنهيت جميع الحالات.';msg.className='simMsg good';return;}
+    card.querySelector('.nm').textContent=D[i][0];tag.textContent='؟';
+  }
+  function upd(){sc.textContent='النتيجة: '+ar(ok)+' / '+ar(n);}
+  document.querySelectorAll('#simA .simBtn[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(i>=D.length) return;
+      n++;
+      if(b.getAttribute('data-k')===D[i][1]){ok++;msg.textContent='إجابة صحيحة ✓ — '+D[i][2];msg.className='simMsg good';}
+      else{msg.textContent='أعد التفكير ✗ — '+D[i][2];msg.className='simMsg';}
+      tag.textContent=(D[i][1]==='X'?'لاجنسي':'جنسي');
+      i++;upd();setTimeout(show,900);
+    });
+  });
+  document.getElementById('aReset').addEventListener('click',function(){
+    i=0;ok=0;n=0;msg.textContent='أبدأ التصنيف.';msg.className='simMsg';upd();show();
+  });
+  upd();show();
+})();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g6l6SvgHost','g6l6Info',{'fission':'<span><b>الانشطار الثنائي</b> — تتضاعف المادة الوراثية ثم تنقسم الخلية إلى <b>مخلوقين متماثلين</b>؛ وهو تكاثرٌ لاجنسي.</span>','bud':'<span><b>التبرعُم</b> — ينمو <b>بروزٌ صغير</b> على الخلية الأم، وتنقسم النواة، ثم ينفصل البرعم مخلوقًا جديدًا.</span>','spore':'<span><b>التكاثر بالأبواغ</b> — تُنتَج <b>أبواغٌ</b> دقيقةٌ تتحمَّل الظروف القاسية، فإذا وجدت بيئةً مناسبةً نمت.</span>'},'');
+ERT.stepper({pills:'g6l6Pills', info:'g6l6Info', svg:'g6l6SvgHost', next:'g6l6Next', prev:'g6l6Prev', stages:[['fission','الانشطار الثنائي','تتضاعف المادة الوراثية ثم تنقسم الخلية إلى <b>مخلوقين متماثلين</b>؛ وهو تكاثرٌ لاجنسي.'],['bud','التبرعُم','ينمو <b>بروزٌ صغير</b> على الخلية الأم، وتنقسم النواة، ثم ينفصل البرعم مخلوقًا جديدًا.'],['spore','التكاثر بالأبواغ','تُنتَج <b>أبواغٌ</b> دقيقةٌ تتحمَّل الظروف القاسية، فإذا وجدت بيئةً مناسبةً نمت.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6f1');
+EG.timed({q:'s6f2Q', opts:'s6f2O', fb:'s6f2Fb', timer:'s6f2T', score:'s6f2Sc', start:'s6f2Go', sec:45, data:[['الخميرة التي تُستعمل في صنع الخبز تنتمي إلى:',['الفطريات','البكتيريا','الطلائعيات'],0],['الانشطار الثنائي نوعٌ من التكاثر:',['اللاجنسي','الجنسي','بالتلقيح'],0],['الطلائعيُّ الذي يتحرَّك بالأقدام الكاذبة:',['الأميبا','اليوجلينا','الدياتومات'],0],['العفن الذي ينمو على الخبز يتركَّب من:',['خيوطٍ فطرية','أوعيةٍ دموية','بلاستيدات'],0],['مصطلح «الميكروبات» يصف المخلوقات الدقيقة:',['النافعة والضارَّة','الضارَّة فقط','النافعة فقط'],0],['البكتيريا العصوية تُستعمل في إنتاج:',['اللبن الرائب','الزجاج','الورق'],0]]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/02_عمليات_الحياة/03_عمليات_الحياة_في_النباتات_والمخلوقات_الحية_الدقيقة/02_عمليات_الحياة_في_المخلوقات_الحية_الدقيقة/___1__~1.HTM","title":"عمليات الحياة في المخلوقات الحية الدقيقة","grade":6,"emoji":"🦠","photoTopic":"microscope","observeQuestion":"لماذا يمكن أن تختلف طريقة تكاثر الخميرة عن طريقة تكاثر بكتيريا وحيدة الخلية؟","facts":["المخلوقات الدقيقة ليست مجموعة تصنيفية واحدة؛ فمنها بكتيريا وطلائعيات وفطريات مجهرية تؤدي أدوارًا مختلفة في البيئة.","تتكاثر بكتيريا كثيرة بالانشطار الثنائي، بينما تستطيع الخميرة التكاثر بالتبرعم عندما تسمح الظروف المناسبة.","تستخدم خميرة الخبز السكر، وقد تنتج ثاني أكسيد الكربون بالتخمر؛ ويساعد الغاز على انتفاخ العجين."],"diagram":{"title":"قارن طرق تكاثر بعض المخلوقات الدقيقة","relation":"comparison","nodes":[{"emoji":"🦠","label":"الانشطار الثنائي","detail":"خلية بكتيرية تنقسم إلى خليتين."},{"emoji":"🧫","label":"التبرعم","detail":"ينمو برعم على خلية خميرة ثم قد ينفصل."},{"emoji":"🍄","label":"الأبواغ","detail":"بعض الفطريات تنتج أبواغًا قد تنمو عند ملاءمة الظروف."}],"caption":"أمثلة لطرق مختلفة؛ لا تمر كل المخلوقات الدقيقة بهذه الطرق الثلاث."},"lab":{"title":"قارن نشاط الخميرة عند درجات مختلفة","question":"كيف يتغير الغاز الناتج افتراضيًا إذا غيّرنا الحرارة وحدها مع ثبات الخميرة والسكر والزمن؟","controlLabel":"الحرارة المحيطة","options":["باردة","دافئة مناسبة","شديدة السخونة"],"states":[{"label":"نشاط بطيء","emoji":"🫧","amount":2,"explanation":"نفترض خميرة خبز نشطة وظروف تخمر متماثلة. تؤدي البرودة عادة إلى إبطاء تفاعلاتها، فيتكون غاز أقل خلال المدة نفسها.","observation":"فقاعات أقل في النموذج."},{"label":"نشاط أكبر","emoji":"🫧","amount":8,"explanation":"في دفء مناسب للخميرة تعمل التفاعلات بكفاءة أكبر من البرودة، فيزداد الغاز خلال الفترة نفسها مع ثبات كمية السكر.","observation":"فقاعات أكثر في النموذج."},{"label":"تضرر الخلايا","emoji":"🫧","amount":0,"explanation":"نفترض سخونة شديدة تضر خلايا الخميرة وإنزيماتها؛ لذلك لا يستمر إنتاج الغاز كما يحدث عند الدفء المناسب.","observation":"يتوقف الغاز الجديد في هذا الافتراض."}],"quantityLabel":"مؤشر وصفي للغاز المتكوّن خلال مدة ثابتة","modelNote":"تجربة افتراضية فقط؛ الأعداد ليست حجم غاز أو حدود حرارة، وتختلف الاستجابة بحسب نوع الخميرة وظروفها.","tryPrompt":"أي متغيرات يجب إبقاؤها ثابتة لنعرف أثر الحرارة وحدها؟"},"sources":[{"title":"OpenStax: التخمّر","url":"https://openstax.org/books/microbiology/pages/8-4-fermentation"},{"title":"OpenStax: الحرارة ونمو الميكروبات","url":"https://openstax.org/books/microbiology/pages/9-4-temperature-and-microbial-growth"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

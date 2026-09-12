@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – رابع ابتدائي – ف1 – العدوى وانتقالها</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#5E9E1E;--g-dark:#3B650F;--g-light:#EFF7E5}
+.card{border-color:#CFE5B4}
+.cover{background:linear-gradient(140deg,#3B650F 0%,#5E9E1E 55%,#8FC456 100%)}
+.endS{background:linear-gradient(140deg,#3B650F,#5E9E1E)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>العدوى وانتقالها</h1><div class="rule"></div>
+<div class="meta">الصف الرابع الابتدائي<br>الوحدة الثالثة: صحة الإنسان<br>الفصل الرابع: الأمراض والعدوى — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الثالثة</h3><p>صحةُ الإنسانِ</p></div><div class="card"><h3>الفصل الرابع</h3><p>الأمراضُ والعدوى</p></div><div class="card"><h3>الدرس الثاني</h3><p>العدوى وانتقالُها</p></div></div><div class="box idea" style="font-size:33px;">السؤالُ الأساسيُّ: كيفَ تنتقلُ الأمراضُ إلى أجسامِنا؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلَّمُ في هذا الدرسِ؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:28px"><li>أُعرِّفُ العدوى.</li><li>أذكرُ نواقلَ المرضَ وأُعرِّفُ الناقلَ الحيويَّ.</li><li>أَصِفُ طرقَ انتقالِ العدوى.</li><li>أُعرِّفُ المناعةَ وأُبيِّنُ دورَ خلايا الدَّمِ البيضاءِ.</li><li>أُفرِّقُ بينَ المناعةِ الطبيعيةِ والمناعةِ الاصطناعيةِ.</li><li>أُوضِّحُ أهميةَ التطعيمِ.</li><li>أُوظِّفُ مهارةَ <b>الاستنتاجِ</b>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأْ بسؤالٍ</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:33px;">عطسَ شخصٌ قربَكَ منْ دونِ أنْ يغطِّيَ فمَهُ… ما الذي انتقلَ في الهواءِ؟</div><p class="c">في هذا الدرسِ نتعرَّفُ كيفَ تنتقلُ العدوى، وكيفَ يحمي جسمُنا نفسَهُ.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفُهُ منْ قبلُ</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>الأمراضُ المعديةُ</h3><p>تنتقلُ منَ المصابِ إلى السليمِ.</p></div><div class="card center" style="text-align:center;"><h3>مسبِّباتُها</h3><p>فيروساتٌ · بكتيريا · فطرياتٌ.</p></div><div class="card center" style="text-align:center;"><h3>جهازُ الدورانِ</h3><p>القلبُ والدَّمُ والأوعيةُ الدمويةُ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفرداتُ الدرسِ</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(3,1fr)"><div class="card"><h3>العدوى</h3><p style="font-size:26px">انتقالُ المرضِ منَ المخلوقِ الحيِّ المصابِ إلى المخلوقِ الحيِّ السليمِ.</p></div><div class="card"><h3>الناقلُ الحيويُّ</h3><p style="font-size:26px">المخلوقاتُ الحيةُ الحاملةُ للمرضِ كالكلابِ والفئرانِ والطيورِ والبعوضِ والذبابِ.</p></div><div class="card"><h3>المناعةُ</h3><p style="font-size:26px">قدرةُ الجسمِ على التصدِّي لمسبِّباتِ الأمراضِ.</p></div><div class="card"><h3>خلايا الدَّمِ البيضاءُ</h3><p style="font-size:26px">الخلايا المسؤولةُ عنْ حمايةِ الجسمِ ومحاربةِ الأمراضِ والجراثيمِ.</p></div><div class="card"><h3>التطعيمُ</h3><p style="font-size:26px">الحصولُ على الطُّعمِ لتكوينِ المناعةِ الطبيعيةِ ضدَّ الأمراضِ.</p></div></div><div class="box note" style="font-size:28px;">مهارةُ القراءةِ في هذا الدرسِ: <b>الاستنتاجُ</b> (أدلةٌ منَ النصِّ ← استنتاجات).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أحدِّدُ أكثرَ النواقلِ الحيويةِ خطورةً</h2><span class="src">ص ١٥١ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:29px;"><b>الهدفُ:</b> أيُّهما أشدُّ خطورةً الحيواناتُ الناقلةُ للمرضِ أمِ الحشراتُ الناقلةُ للمرضِ؟</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:0 0 300px"><p class="c"><b>أحتاجُ إلى:</b></p><p class="c">مواقعَ إلكترونيةٍ موثوقةٍ ومصادرِ معلوماتٍ للبحثِ وجمعِ المعلوماتِ.</p><div class="box safe" style="font-size:25px;">أستخدمُ الإنترنتَ بإشرافِ معلِّمي أوْ وليِّ أمري، وأعتمدُ المواقعَ الموثوقةَ فقط.</div></div><div style="flex:1 1 0"><p class="c"><b>الخطواتُ:</b></p><ul class="list num" style="font-size:26px"><li>أرسمُ جداولَ كما في الشكلِ المجاورِ.</li><li>أتعاونُ معَ أفرادِ مجموعتي، وأبحثُ عنْ أكثرِ الحيواناتِ والحشراتِ الناقلةِ للمرضِ.</li><li><b>أقارنُ.</b> بينَ نتائجِ مجموعتي ونتائجِ المجموعاتِ الأخرى؟</li></ul><table class="cmp"><tr><th style="width:50%">اسمُ الحيوانِ / الحشرةِ</th><th>المرضُ المنقولُ</th></tr><tr><td>١</td><td></td></tr><tr><td>٢</td><td></td></tr><tr><td>٣</td><td></td></tr><tr><td>٤</td><td></td></tr></table></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلصُ النتائجَ</h2><span class="src">ص ١٥١ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أفسِّرُ البياناتِ.</b> أيُّهما أكثرُ نقلًا للمرضِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥١</span>إجابةٌ نموذجيةٌ مقترحةٌ: تدلُّ نتائجُ البحثِ على أنَّ <b>الحشراتِ</b> أكثرُ نقلًا للمرضِ؛ لكثرةِ أعدادِها وسرعةِ انتشارِها ووصولِها إلى الطعامِ والإنسانِ مباشرةً — كالبعوضِ والذبابِ. وقدْ ذكرَ الكتابُ منَ النواقلِ الحيويةِ: الكلابَ والفئرانَ والطيورَ والبعوضَ والذبابَ. (تُقبلُ إجابةُ الطالبِ إذا دعمَها بالبياناتِ التي جمعَها.)</div></div><div class="qa"><p class="q">٥. <b>استنتجْ.</b> هلْ توقُّعُكَ صحيحًا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥١</span>إجابةٌ نموذجيةٌ مقترحةٌ: أقارنُ توقُّعي الأوَّلَ بالنتائجِ التي جمعتُها في الجدولينِ، ثمَّ أُبيِّنُ هلْ كانَ توقُّعي مطابقًا أمْ مختلفًا، وأذكرُ الدليلَ منَ المعلوماتِ التي وجدتُها.</div></div><div class="box ask" style="font-size:26px;"><b>أستكشفُ أكثرَ — أجرِّبُ.</b> هلْ تتأثَّرُ نواقلُ المرضِ الحيويةُ، وقدرتُها على نقلِ الأمراضِ بظروفِ البيئةِ التي تعيشُ فيها؟ أضعُ خطةً؛ للتحقُّقِ منْ ذلكَ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما العدوى؟</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><div class="box idea" style="font-size:31px;">تُعرَّفُ <b>العدوى</b> بأنَّها انتقالُ المرضِ منَ المخلوقِ الحيِّ المصابِ إلى المخلوقِ الحيِّ السليمِ.</div><p class="c">ويحدثُ الانتقالُ بصورٍ مختلفةٍ حسبَ نوعِ المسبِّبِ والمرضِ والبيئةِ التي يتكاثرُ فيها.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>نواقلُ المرضِ</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><p class="c">تنتقلُ الأمراضُ المعديةُ عنْ طريقِ الاتِّصالِ المباشرِ بالمخلوقِ الحيِّ المصابِ أوْ منْ خلالِ الماءِ أوِ الهواءِ أوِ الطعامِ أوِ استخدامِ الأدواتِ الملوَّثةِ أوِ الاتِّصالِ بالمخلوقاتِ الحيةِ الحاملةِ للمرضِ أوْ ما يُعرَفُ <b>بالناقلِ الحيويِّ</b> كالكلابِ والفئرانِ والطيورِ والبعوضِ والذبابِ.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الهواءُ الملوَّثُ</h3><p style="font-size:26px">ناقلٌ للأمراضِ.</p></div><div class="card center" style="text-align:center;"><h3>المخلوقاتُ الحيةُ المصابةُ</h3><p style="font-size:26px">ناقلةٌ للأمراضِ.</p></div><div class="card center" style="text-align:center;"><h3>الطعامُ والشرابُ المكشوفُ</h3><p style="font-size:26px">مُسبِّبٌ للأمراضِ.</p></div><div class="card center" style="text-align:center;"><h3>الأدواتُ الملوَّثةُ</h3><p style="font-size:26px">استعمالُها ناقلٌ للأمراضِ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>طرقُ انتقالِ العدوى</h2><span class="src">ص ١٥٣</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الاتِّصالُ المباشرُ</h3><p style="font-size:25px">معَ المصابينَ بالعدوى أوِ الاتِّصالُ بالمخلوقاتِ الحيةِ المصابةِ، أوْ لمسُ أوِ استخدامُ الأدواتِ أوِ الأغراضِ المتَّسخةِ أوِ الملوَّثةِ.</p></div><div class="card"><h3>السُّعالُ أوِ العطاسُ</h3><p style="font-size:25px">إذْ ينتقلُ الرَّذاذُ في الهواءِ لمسافاتٍ. وعندَما يسعُلُ أوْ يعطسُ الشخصُ المصابُ، يمكنُ أنْ تصلَ مُسبِّباتُ الأمراضِ إلى عينِ أوْ أنفِ أوْ فمِ الشخصِ المقابلِ وتُسبِّبُ لهُ العدوى.</p></div><div class="card"><h3>الطعامُ والماءُ</h3><p style="font-size:25px">تناولُ الأطعمةِ المكشوفةِ أوْ شربُ المياهِ الملوَّثةِ بمُسبِّباتِ الأمراضِ. فذلكَ يؤدِّي إلى إصابةِ الجسمِ بالأمراضِ ورُبَّما الخطيرةِ منها.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١٥٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>استنتجْ.</b> كيفَ تُسهمُ النظافةُ في منعِ انتشارِ المرضِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٣</span>النظافةُ تزيلُ مُسبِّباتِ الأمراضِ منَ اليدينِ والأدواتِ والطعامِ قبلَ أنْ تصلَ إلى الجسمِ؛ فغسلُ اليدينِ يمنعُ انتقالَها منَ الأغراضِ المتَّسخةِ إلى الفمِ، وتنظيفُ الأدواتِ يمنعُ استعمالَ الأدواتِ الملوَّثةِ، وتغطيةُ الطعامِ تمنعُ وصولَ الحشراتِ الناقلةِ إليهِ. وبذلكَ تُقطعُ طرقُ انتقالِ العدوى.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> لماذا يُنصحُ بأخذِ احتياطاتٍ أكثرَ عندَ ارتيادِ الأماكنِ المزدحمةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٣</span>لأنَّ الأشخاصَ فيها يكونونَ قريبينَ بعضُهم منْ بعضٍ، فيزدادُ احتمالُ الاتِّصالِ المباشرِ ووصولِ رذاذِ السُّعالِ والعطاسِ إلى العينِ والأنفِ والفمِ، كما تكثرُ الأدواتُ والأسطحُ المشتركةُ التي قدْ تكونُ ملوَّثةً؛ فيزدادُ خطرُ انتقالِ العدوى.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>أُصنِّفُ طريقةَ انتقالِ العدوى</h2><span class="src">ص ١٥٢ — ١٥٣</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأُ الموقفَ، ثمَّ أختارُ طريقةَ انتقالِ العدوى.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="dir">اتِّصالٌ مباشرٌ وأدواتٌ</button><button class="simBtn ghost" type="button" data-k="air">رذاذُ السُّعالِ والعطاسِ</button><button class="simBtn ghost" type="button" data-k="food">طعامٌ وماءٌ</button></div><div class="simMsg" id="aMsg">أبدأُ التصنيفَ.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادةُ النشاطِ</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيفَ نحمي أنفسَنا منَ الأمراضِ؟</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><p class="c">لحمايةِ أجسامِنا منَ الأمراضِ لا بدَّ منْ تقويةِ مناعتِها.</p><div class="box idea" style="font-size:30px;"><b>المناعةُ:</b> هيَ قدرةُ الجسمِ على التصدِّي لمُسبِّباتِ الأمراضِ. والمناعةُ إمَّا أنْ تكونَ طبيعيةً أوْ مناعةً اصطناعيةً.</div><p class="c">فالجهازُ المناعيُّ في أجسامِنا يستطيعُ التعرُّفَ على أعدادٍ لا تُحصى منَ المُسبِّباتِ.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>خلايا الدَّمِ البيضاءُ</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><p class="c">تقومُ <b>خلايا الدَّمِ البيضاءُ</b> بمهاجمةِ المُسبِّباتِ والقضاءِ عليها، وتُعدُّ خلايا الدَّمِ البيضاءُ هيَ الخلايا المسؤولةُ عنْ حمايةِ الجسمِ ومحاربةِ الأمراضِ والجراثيمِ داخلَ أجسامِنا، ويحتوي جهازُ الدورانِ على خلايا الدَّمِ البيضاءِ التي تتجوَّلُ باستمرارٍ في الجسمِ بحثًا عنْ مُسبِّباتِ الأمراضِ لمحاربتِها.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>خطُّ الدفاعِ الأوَّلِ</h3><p style="font-size:27px">يُعدُّ <b>الجلدُ</b> خطَّ الدفاعِ الأوَّلَ عنِ الجسمِ.</p></div><div class="card center" style="text-align:center;"><h3>الإفرازاتُ المختلفةُ</h3><p style="font-size:27px">الدَّمعُ · مُخاطُ الأنفِ · شمعُ الأذنِ · اللُّعابُ · العُصارةُ المعديةُ.</p></div></div><div class="box note" style="font-size:28px;">ويمكنُ تقويةُ مناعتِنا باتِّباعِ العاداتِ الصحيةِ للمحافظةِ على صحةِ أجسامِنا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>المناعةُ الطبيعيةُ والمناعةُ الاصطناعيةُ</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>المناعةُ الطبيعيةُ</h3><p style="font-size:26px">تتمثَّلُ في استجابةٍ مناعيةٍ سريعةٍ تقومُ بإنتاجِ الأجسامِ المُضادَّةِ التي تُساهمُ في محاربةِ مُسبِّباتِ الأمراضِ. وتدومُ المناعةُ الطبيعيةُ طويلًا لذلكَ تجدُ أنَّكَ لا تُصابُ بأمراضٍ مُعيَّنةٍ أكثرَ منْ مرَّةٍ كجُدري الماءِ.</p></div><div class="card"><h3>المناعةُ الاصطناعيةُ</h3><p style="font-size:26px">تتكوَّنُ عنْ طريقِ التطعيمِ وأخذِ اللقاحاتِ، وهذهِ المناعةُ قدْ تدومُ مدةً قصيرةً فيحتاجُ الإنسانُ إلى أخذِ اللِّقاحِ أكثرَ منْ مرةٍ، وقدْ تدومُ مدةً طويلةً وقدْ يبقى بعضُها مدى الحياةِ.</p></div></div><div class="box note" style="font-size:26px;">الجُدري المائي مرضٌ فيروسيٌّ، منْ أعراضِهِ حُمَّى شديدةٌ وطفحٌ جلديٌّ يتكوَّنُ منْ بقعٍ حمراءَ أوْ بثورٍ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>استنتجْ.</b> ما الفرقُ بينَ المناعةِ الطبيعيةِ والمناعةِ الاصطناعيةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٥</span>المناعةُ الطبيعيةُ استجابةٌ مناعيةٌ سريعةٌ يُنتجُ فيها الجسمُ الأجسامَ المُضادَّةَ بنفسِهِ، وتدومُ طويلًا فلا يُصابُ الإنسانُ بالمرضِ نفسِهِ أكثرَ منْ مرَّةٍ — كجُدري الماءِ.<br>أمَّا المناعةُ الاصطناعيةُ فتتكوَّنُ عنْ طريقِ التطعيمِ وأخذِ اللقاحاتِ، وقدْ تدومُ مدةً قصيرةً فيحتاجُ الإنسانُ إلى أخذِ اللِّقاحِ أكثرَ منْ مرةٍ، وقدْ تدومُ مدةً طويلةً وقدْ يبقى بعضُها مدى الحياةِ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> لماذا منَ الضروريِّ أنْ يُكملَ الطفلُ جميعَ جُرعاتِ التطعيمِ المُقرَّرةِ منْ وزارةِ الصحةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٥</span>لأنَّ المناعةَ الاصطناعيةَ قدْ تدومُ مدةً قصيرةً، فيحتاجُ الإنسانُ إلى أخذِ اللِّقاحِ أكثرَ منْ مرةٍ حتى يتكوَّنَ لديهِ ما يكفي منَ الأجسامِ المُضادَّةِ وتستمرَّ الحمايةُ. فإذا لمْ تكتملِ الجُرعاتُ ضعُفتِ المناعةُ وبقيَ الطفلُ معرَّضًا للإصابةِ بالمرضِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التطعيمُ</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><div class="box idea" style="font-size:28px;"><b>التطعيمُ:</b> الطريقةُ الأخرى لتكوينِ المناعةِ الطبيعيةِ ضدَّ الأمراضِ هيَ الحصولُ على الطُّعمِ، ويمكنُ الحصولُ عليهِ بالحَقنِ أوْ تناولِ اللقاحِ عنْ طريقِ الفمِ. ويتكوَّنُ الطُّعمُ منْ أجسامٍ تمنحُكَ مناعةً طبيعيةً ضدَّ مرضٍ مُعيَّنٍ.</div><p class="c">يعملُ التطعيمُ على تكوينِ المناعةِ ضدَّ الأمراضِ.</p><div class="box note" style="font-size:26px;"><b>الرابطُ معَ رؤيةِ ٢٠٣٠:</b> منْ أهدافِ الرؤيةِ: ٢.١.٣ تعزيزُ الوقايةِ ضدَّ المخاطرِ الصحيةِ (نظامُ الصحةِ العامةِ وإدارةِ الأزماتِ).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><div class="qa"><p class="q"><b>استنتجْ.</b> كيفَ يُساعدُ التطعيمُ على حمايةِ جسمِ الإنسانِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٦</span>الطُّعمُ يتكوَّنُ منْ أجسامٍ تمنحُ الجسمَ مناعةً طبيعيةً ضدَّ مرضٍ مُعيَّنٍ؛ فيتعرَّفُ الجهازُ المناعيُّ على مُسبِّبِ المرضِ ويُنتجُ الأجسامَ المُضادَّةَ قبلَ الإصابةِ. فإذا دخلَ المُسبِّبُ الجسمَ فيما بعدُ، تصدَّتْ لهُ خلايا الدَّمِ البيضاءُ سريعًا فلا يُصابُ الإنسانُ بالمرضِ أوْ تخفُّ شدَّتُهُ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> للعديدِ منَ الأمراضِ أعراضٌ تُشبهُ أعراضَ الأنفلونزا. فلماذا لا يكونُ لقاحُ الأنفلونزا فعَّالًا ضدَّ الإصابةِ بهذهِ الأمراضِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٦</span>لأنَّ الطُّعمَ يمنحُ مناعةً طبيعيةً <b>ضدَّ مرضٍ مُعيَّنٍ</b> فقط؛ فأجسامُهُ المُضادَّةُ مصمَّمةٌ للتعرُّفِ على مُسبِّبِ الأنفلونزا وحدَهُ. وتشابهُ الأعراضِ لا يعني تشابهَ المُسبِّبِ؛ فقدْ يكونُ فيروسًا آخرَ أوْ بكتيريا أوْ فطرياتٍ، فلا يتعرَّفُ عليهِ الجهازُ المناعيُّ منْ خلالِ لقاحِ الأنفلونزا.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخصُ الدرسِ</h2><span class="src">ص ١٥٧</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">تنتقلُ الأمراضُ منَ الجسمِ المصابِ إلى الجسمِ السليمِ بواسطةِ نواقلِ المرضِ المختلفةِ.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px">وينتقلُ مسبِّبُ المرضِ بعدةِ طرقٍ ومنها: تناولُ الأطعمةِ المكشوفةِ، ولمسُ الأجسامِ المتَّسخةِ، والعطاسُ والسُّعالُ في اليدِ.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px">وظيفةُ الخلايا البيضاءِ: هيَ مقاومةُ الأمراضِ التي يصابُ بها الجسمُ وحمايتُهُ منها.</p></div></div><div class="box note" style="font-size:26px;"><b>المطويات — أنظِّمُ أفكاري:</b> أعملُ مطويةً ألخِّصُ فيها ما تعلَّمتُهُ عنْ: (العدوى) — (انتقالِها) — (مكافحتِها).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظِّمُ مفاهيمَ الدرسِ</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">العدوى وانتقالُها</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">نواقلُ المرضِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">ماءٌ · هواءٌ · طعامٌ</span><span class="node leaf">أدواتٌ ملوَّثةٌ</span><span class="node leaf">ناقلٌ حيويٌّ: كلابٌ · فئرانٌ · طيورٌ · بعوضٌ · ذبابٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">طرقُ الانتقالِ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">اتِّصالٌ مباشرٌ</span><span class="node leaf">سُعالٌ وعطاسٌ</span><span class="node leaf">طعامٌ وماءٌ ملوَّثانِ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">دفاعاتُ الجسمِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">الجلدُ</span><span class="node leaf">الإفرازاتُ</span><span class="node leaf">خلايا الدَّمِ البيضاءُ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">المناعةُ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">طبيعيةٌ</span><span class="node leaf">اصطناعيةٌ بالتطعيمِ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكِّرُ وأتحدَّثُ وأكتبُ</h2><span class="src">ص ١٥٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفرداتُ.</b> ما المقصودُ بنواقلِ المرضِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span>نواقلُ المرضِ هيَ الوسائلُ التي ينتقلُ بها المرضُ منَ المصابِ إلى السليمِ، وتشملُ: الماءَ والهواءَ والطعامَ والأدواتِ الملوَّثةَ، والمخلوقاتِ الحيةَ الحاملةَ للمرضِ أوْ ما يُعرَفُ بالناقلِ الحيويِّ كالكلابِ والفئرانِ والطيورِ والبعوضِ والذبابِ.</div></div><div class="qa"><p class="q">٢. <b>استنتجْ.</b> ما الذي يحدثُ إذا تناولتَ طعامَكَ ويدُكَ مُتَّسخةٌ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span>تنتقلُ مُسبِّباتُ الأمراضِ العالقةُ باليدِ إلى الطعامِ ثمَّ إلى الفمِ فتدخلُ الجسمَ، فيُصابُ الإنسانُ بالعدوى وقدْ تظهرُ عليهِ أعراضٌ كالإسهالِ والقيءِ وألمِ البطنِ. ولذلكَ يجبُ غسلُ اليدينِ قبلَ الطعامِ.</div></div><div class="qa"><p class="q">٣. <b>التفكيرُ الناقدُ.</b> لا يُصابُ الإنسانُ بالجُدري المائيِّ إلَّا مرةً واحدةً في حياتِهِ. أفسِّرُ إجابتي.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span>لأنَّ الجسمَ يكوِّنُ بعدَ الإصابةِ الأولى <b>مناعةً طبيعيةً</b>؛ إذْ يُنتجُ أجسامًا مُضادَّةً تُساهمُ في محاربةِ مُسبِّبِ المرضِ، وتدومُ هذهِ المناعةُ طويلًا. فإذا دخلَ المُسبِّبُ نفسُهُ مرةً أخرى تصدَّى لهُ الجهازُ المناعيُّ سريعًا فلا يمرضُ الإنسانُ مرةً ثانيةً.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختارُ الإجابةَ الصحيحةَ · السؤالُ الأساسيُّ</h2><span class="src">ص ١٥٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختارُ الإجابةَ الصحيحةَ.</b> ما الخلايا التي تهاجمُ مسبِّباتِ المرضِ؟<br>أ- خلايا الدَّمِ الحمراءُ. &nbsp;&nbsp; ب- خلايا الدَّمِ البيضاءُ. &nbsp;&nbsp; جـ- الصفائحُ الدمويةُ. &nbsp;&nbsp; د- الخلايا العصبيةُ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span><b>ب - خلايا الدَّمِ البيضاءُ</b>؛ فهيَ الخلايا المسؤولةُ عنْ حمايةِ الجسمِ ومحاربةِ الأمراضِ والجراثيمِ.</div></div><div class="qa"><p class="q">٥. <b>السؤالُ الأساسيُّ.</b> كيفَ تنتقلُ الأمراضُ إلى أجسامِنا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span>تنتقلُ الأمراضُ بالعدوى منَ المخلوقِ الحيِّ المصابِ إلى السليمِ عبرَ: الاتِّصالِ المباشرِ ولمسِ الأدواتِ المتَّسخةِ أوِ الملوَّثةِ، ورذاذِ السُّعالِ والعطاسِ الذي ينتقلُ في الهواءِ فيصلُ إلى العينِ أوِ الأنفِ أوِ الفمِ، وتناولِ الأطعمةِ المكشوفةِ أوْ شربِ المياهِ الملوَّثةِ، وعنْ طريقِ النواقلِ الحيويةِ كالبعوضِ والذبابِ والفئرانِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلومُ والكتابةُ · العلومُ والفنُّ</h2><span class="src">ص ١٥٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلومُ والكتابةُ.</b> أكتبُ مقالًا عنْ أفضلِ الوسائلِ التي تُساعدُكَ على تقويةِ مناعةِ جسمِكَ منْ مسبِّباتِ الأمراضِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span>إجابةٌ نموذجيةٌ مقترحةٌ: يمكنُ تقويةُ المناعةِ باتِّباعِ العاداتِ الصحيةِ للمحافظةِ على صحةِ الجسمِ: تناولُ الطعامِ الصحيِّ المتوازنِ، والنومُ الكافي، وممارسةُ الرياضةِ، وشربُ الماءِ النظيفِ، والاهتمامُ بالنظافةِ الشخصيةِ وغسلُ اليدينِ بانتظامٍ. ويُضافُ إلى ذلكَ <b>التطعيمُ</b> وأخذُ اللقاحاتِ المقرَّرةِ؛ لأنَّهُ يمنحُ الجسمَ مناعةً ضدَّ أمراضٍ مُعيَّنةٍ.</div></div><div class="qa"><p class="q"><b>العلومُ والفنُّ.</b> أرسمُ كيفَ تقومُ خليةُ الدَّمِ البيضاءِ بمهاجمةِ مسبِّباتِ الأمراضِ في أجسامِنا.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٥٧</span>إجابةٌ نموذجيةٌ مقترحةٌ للرسمِ: أرسمُ وعاءً دمويًّا فيهِ خلايا دمٍ حمراءُ وخليةُ دمٍ بيضاءُ. ثمَّ أرسمُ ثلاثَ مراحلَ: (١) الخليةُ البيضاءُ تتجوَّلُ في الدَّمِ بحثًا عنِ المُسبِّبِ، (٢) تقتربُ منَ المُسبِّبِ وتحيطُ بهِ، (٣) تبتلعُهُ وتقضي عليهِ. وأكتبُ تحتَ الرسمِ: «خلايا الدَّمِ البيضاءُ مسؤولةٌ عنْ حمايةِ الجسمِ ومحاربةِ الأمراضِ والجراثيمِ».</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ (منْ إعدادِ المعلمِ)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">انتقالُ المرضِ منَ المخلوقِ المصابِ إلى السليمِ يسمَّى:</p><div class="opts"><button class="opt" type="button">المناعةَ</button><button class="opt" type="button">العدوى</button><button class="opt" type="button">التطعيمَ</button><button class="opt" type="button">الأعراضَ</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">منَ النواقلِ الحيويةِ للمرضِ:</p><div class="opts"><button class="opt" type="button">البعوضُ والذبابُ</button><button class="opt" type="button">الماءُ</button><button class="opt" type="button">الهواءُ</button><button class="opt" type="button">الأدواتُ</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">خطُّ الدفاعِ الأوَّلُ عنِ الجسمِ هوَ:</p><div class="opts"><button class="opt" type="button">القلبُ</button><button class="opt" type="button">الجلدُ</button><button class="opt" type="button">الرِّئتانِ</button><button class="opt" type="button">المعدةُ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ (منْ إعدادِ المعلمِ)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">قدرةُ الجسمِ على التصدِّي لمُسبِّباتِ الأمراضِ تسمَّى:</p><div class="opts"><button class="opt" type="button">العدوى</button><button class="opt" type="button">المناعةَ</button><button class="opt" type="button">الأعراضَ</button><button class="opt" type="button">الحساسيةَ</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">المناعةُ التي تتكوَّنُ عنْ طريقِ التطعيمِ وأخذِ اللقاحاتِ هيَ:</p><div class="opts"><button class="opt" type="button">الطبيعيةُ</button><button class="opt" type="button">الاصطناعيةُ</button><button class="opt" type="button">المؤقَّتةُ فقط</button><button class="opt" type="button">لا شيءَ ممَّا سبقَ</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">منْ إفرازاتِ الجسمِ التي تحميهِ:</p><div class="opts"><button class="opt" type="button">الدَّمعُ ومُخاطُ الأنفِ واللُّعابُ</button><button class="opt" type="button">خلايا الدَّمِ الحمراءُ</button><button class="opt" type="button">الصفائحُ الدمويةُ</button><button class="opt" type="button">العظامُ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبلَ أنْ نُنهيَ الدرسَ</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أذكرُ طريقتينِ لانتقالِ العدوى.</li><li>ما وظيفةُ خلايا الدَّمِ البيضاءِ؟</li><li>أُفرِّقُ بجملةٍ واحدةٍ بينَ المناعةِ الطبيعيةِ والاصطناعيةِ.</li></ul><div class="box idea" style="font-size:29px;">الفكرةُ الرئيسةُ: تنتقلُ العدوى بطرقٍ مختلفةٍ، ويحمي الجسمَ منها الجلدُ والإفرازاتُ وخلايا الدَّمِ البيضاءُ والتطعيمُ.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: كيف تنتقل العدوى؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1320" height="310" viewBox="0 0 1320 310" xmlns="http://www.w3.org/2000/svg" role="img" id="g4l10SvgHost"><defs><marker id="g4l10sq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><g class="eHot" data-k="source"><circle cx="1155" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(1092.0,87.0) scale(1.05)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g><g><text x="1155" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مصدر العدوى</text><text x="1155" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مصدر العدوى</text></g><circle cx="1211" cy="94" r="21" fill="#4A5568"/><text x="1211" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">١</text><rect class="hitBox" x="1081" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M1077 150 H 903" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l10sq)"/><g class="eHot" data-k="move"><circle cx="825" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(762.0,87.0) scale(1.05)"><ellipse cx="60" cy="48" rx="38" ry="22" fill="#E8EEF3"/><ellipse cx="34" cy="56" rx="22" ry="15" fill="#E8EEF3"/><ellipse cx="86" cy="56" rx="22" ry="15" fill="#E8EEF3"/><path d="M38 78 l-6 18 M60 78 l-6 18 M82 78 l-6 18" stroke="#2C7FB8" stroke-width="7" stroke-linecap="round"/></g><g><text x="825" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">طريقة الانتقال</text><text x="825" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">طريقة الانتقال</text></g><circle cx="881" cy="94" r="21" fill="#4A5568"/><text x="881" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٢</text><rect class="hitBox" x="751" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M747 150 H 573" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l10sq)"/><g class="eHot" data-k="enter"><circle cx="495" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(432.0,87.0) scale(1.05)"><path d="M40 30 q -20 4 -18 22 q -14 10 -2 24 q -4 18 16 20 q 6 12 22 8 l0 -76 q -12 -6 -18 2z" fill="#E4A0AE"/><path d="M80 30 q 20 4 18 22 q 14 10 2 24 q 4 18 -16 20 q -6 12 -22 8 l0 -76 q 12 -6 18 2z" fill="#D98C9C"/><path d="M60 32 v72" stroke="#B06A78" stroke-width="4"/></g><g><text x="495" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الدخول إلى الجسم</text><text x="495" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الدخول إلى الجسم</text></g><circle cx="551" cy="94" r="21" fill="#4A5568"/><text x="551" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٣</text><rect class="hitBox" x="421" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M417 150 H 243" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l10sq)"/><g class="eHot" data-k="guard"><circle cx="165" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(102.0,87.0) scale(1.05)"><path d="M60 14 L100 30 v30 c0 26 -20 42 -40 48 c -20 -6 -40 -22 -40 -48 V30z" fill="#3E7BB5"/><path d="M44 60 l12 12 l22 -24" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g><g><text x="165" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الوقاية</text><text x="165" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الوقاية</text></g><circle cx="221" cy="94" r="21" fill="#4A5568"/><text x="221" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٤</text><rect class="hitBox" x="91" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">سلسلةُ انتقال العدوى — وكيف نقطعها.</div></div><div class="eSteps" id="g4l10Pills"><span class="eStepPill" data-s="0">مصدر العدوى</span><span class="eStepPill" data-s="1">طريقة الانتقال</span><span class="eStepPill" data-s="2">الدخول إلى الجسم</span><span class="eStepPill" data-s="3">الوقاية</span></div><div class="eInfo" id="g4l10Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g4l10Prev">◀ السابق</button><button class="simBtn" type="button" id="g4l10Next">التالي ▶</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — اكسر السلسلة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>لكي تحدث العدوى لا بدَّ من اكتمال <b>سلسلة</b>؛ فإذا قطعتَ حلقةً واحدةً منها توقَّف المرض.</p></div><div class="fFact"><div class="n">٢</div><p>العطسة الواحدة تنشر رذاذًا يحمل ميكروباتٍ إلى مسافةٍ أبعد ممَّا تتخيَّل؛ لذا نغطِّي الفم والأنف.</p></div><div class="fFact"><div class="n">٣</div><p>الصابون لا يقتل الميكروبات فحسب، بل <b>يفكِّها</b> عن الجلد فيجرفها الماء بعيدًا.</p></div></div><div class="fCap">قطعُ حلقةٍ واحدةٍ يوقف انتقال المرض.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s4j1"><div class="fCard"><div class="fIn"><div class="fF"><span>العدوى</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>انتقالُ المرضِ منَ المخلوقِ الحيِّ المصابِ إلى المخلوقِ الحيِّ السليمِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الناقلُ الحيويُّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>المخلوقاتُ الحيةُ الحاملةُ للمرضِ كالكلابِ والفئرانِ والطيورِ والبعوضِ والذبابِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>المناعةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>قدرةُ الجسمِ على التصدِّي لمسبِّباتِ الأمراضِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>خلايا الدَّمِ البيضاءُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الخلايا المسؤولةُ عنْ حمايةِ الجسمِ ومحاربةِ الأمراضِ والجراثيمِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التطعيمُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الحصولُ على الطُّعمِ لتكوينِ المناعةِ الطبيعيةِ ضدَّ الأمراضِ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4j1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب سلسلة العدوى</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s4j2P"><button class="fChip" type="button" data-i="3">ظهور المرض</button><button class="fChip" type="button" data-i="1">طريقة الانتقال</button><button class="fChip" type="button" data-i="0">مصدر العدوى</button><button class="fChip" type="button" data-i="2">دخول الجسم</button></div><div class="fSlots" id="s4j2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div></div><div class="fFb" id="s4j2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4j2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب سلسلة انتقال العدوى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>طبِّق الآن</h4><p>اغسل يديك عشرين ثانيةً مع تنظيف ما بين الأصابع وتحت الأظافر، وعلِّم زميلًا الطريقة.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>أيُّ حلقةٍ في سلسلة العدوى أسهل أن نقطعها في المدرسة؟ ولماذا؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="4" aria-label="إثراء مصور: العدوى وانتقالها">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">كيف يمكن أن يقطع غسل اليدين أحد مسارات انتقال الجراثيم؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/handwashing.jpg" alt="يدان تُغسلان بالصابون تحت صنبور الماء" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>غسل اليدين بالماء والصابون من عادات النظافة اليومية.</figcaption><p class="se-credit">الصورة: Beat Ruest · <a href="https://commons.wikimedia.org/wiki/File:Washing_hands_with_soap_(1).jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>قد تنتقل بعض الجراثيم من سطح ملوث إلى اليد، ثم إلى الفم أو الأنف أو العينين.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>يساعد الصابون والفرك والشطف على إزالة الأوساخ والجراثيم من اليدين وتقليل انتقالها.</span></p>
+<p class="se-fact"><span aria-hidden="true">🧼</span><span>توصي إرشادات غسل اليدين بفركهما بالصابون عشرين ثانية على الأقل، مع تنظيف ظهر اليدين وبين الأصابع.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.cdc.gov/clean-hands/data-research/facts-stats/" target="_blank" rel="noopener noreferrer">CDC: حقائق غسل اليدين والصابون</a></li><li><a href="https://www.cdc.gov/clean-hands/media/pdfs/2024/05/329459-A-p.pdf" target="_blank" rel="noopener noreferrer">CDC: خطوات غسل اليدين</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="4" aria-label="رسم توضيحي: مسار يمكن قطعه">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>مسار يمكن قطعه</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="مسار يمكن قطعه"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🚪</span><span class="se-node-label">سطح ملوث</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">✋</span><span class="se-node-label">يد تلامس السطح</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🧼</span><span class="se-node-label">غسل وفرك وشطف</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">👐</span><span class="se-node-label">يدان أنظف</span></button></div>
+
+<p class="se-diagram-caption">هذا مسار واحد للانتقال؛ غسل اليدين لا يمنع وحده كل أنواع العدوى أو جميع طرقها.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🚪</span><div><strong data-detail-title>سطح ملوث</strong><p data-detail-text>قد يحمل بعض الجراثيم</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="4" aria-label="محاكاة إثرائية: غسل افتراضي لليدين">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>غسل افتراضي لليدين</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف نقارن بقايا التلوث إذا بدأنا بمستوى واحد واختلفت طريقة تنظيف اليدين؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">طريقة التنظيف في النموذج</p><div class="se-options" role="group" aria-label="طريقة التنظيف في النموذج"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">دون غسل</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">شطف بالماء فقط</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">غسل بالصابون والفرك والشطف</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">الأعداد ليست نسب تعقيم أو أعداد ميكروبات؛ لا تُستخدم عينات حقيقية، ولا يتنبأ النموذج بإصابة شخص.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر تصوري لبقايا التلوث بعد طريقة التنظيف</p><div class="se-model" role="img" data-model aria-label="بقايا أكثر"><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol se-active" aria-hidden="true">🟣</span><span class="se-symbol" aria-hidden="true">🟣</span><span class="se-symbol" aria-hidden="true">🟣</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>بقايا أكثر</p><p class="se-observation" data-observation>رموز كثيرة تمثل بقايا التلوث.</p></div><p class="se-explanation" data-explanation>لم نطبق خطوة تنظيف؛ يبقى مؤشر التلوث مرتفعًا في هذا النموذج البسيط.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا لا نكتب صفر جراثيم بعد الغسل الجيد؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الرابع الابتدائي — الجزء الأول من المقرر<br>الوحدة الثالثة: صحة الإنسان · الفصل الرابع: الأمراض والعدوى · العدوى وانتقالها<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٥٠ – ١٥٧ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var T={dir:'اتِّصالٌ مباشرٌ أوْ لمسُ الأدواتِ المتَّسخةِ أوِ الملوَّثةِ.',
+           air:'رذاذُ السُّعالِ أوِ العطاسِ ينتقلُ في الهواءِ لمسافاتٍ.',
+           food:'تناولُ الأطعمةِ المكشوفةِ أوْ شربُ المياهِ الملوَّثةِ.'};
+    var D=[['مصافحةُ شخصٍ مصابٍ ثمَّ لمسُ الفمِ','dir'],
+           ['عطاسُ شخصٍ قريبٍ منْ دونِ تغطيةِ أنفِهِ','air'],
+           ['أكلُ طعامٍ مكشوفٍ وقفَ عليهِ الذبابُ','food'],
+           ['استعمالُ كوبٍ مستعملٍ لمْ يُغسلْ','dir'],
+           ['شربُ ماءٍ منْ مصدرٍ ملوَّثٍ','food'],
+           ['الوقوفُ قريبًا منْ مريضٍ يسعُلُ','air']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنتَ!'; tag.textContent='انتهى النشاطُ';
+        msg.className='simMsg good'; msg.textContent='أنهيتُ تصنيفَ جميعِ المواقفِ.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='موقف '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابةٌ صحيحةٌ: '+T[D[i][1]]; }
+      else { msg.className='simMsg bad'; msg.textContent='أُعيدُ التفكيرَ: '+T[D[i][1]]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأُ التصنيفَ.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g4l10SvgHost','g4l10Info',{'source':'<span><b>مصدر العدوى</b> — مخلوقٌ دقيقٌ ممرضٌ في شخصٍ مريضٍ أو في الطعام أو الماء.</span>','move':'<span><b>طريقة الانتقال</b> — بالرذاذ عند العطاس، أو بالتلامس، أو عبر الماء والغذاء.</span>','enter':'<span><b>الدخول إلى الجسم</b> — يدخل المُمْرِض عبر الأنف أو الفم أو جرحٍ في الجلد.</span>','guard':'<span><b>الوقاية</b> — غسل اليدين وتغطية الفم والأنف والتطعيم توقف السلسلة.</span>'},'');
+ERT.stepper({pills:'g4l10Pills', info:'g4l10Info', svg:'g4l10SvgHost', next:'g4l10Next', prev:'g4l10Prev', stages:[['source','مصدر العدوى','مخلوقٌ دقيقٌ ممرضٌ في شخصٍ مريضٍ أو في الطعام أو الماء.'],['move','طريقة الانتقال','بالرذاذ عند العطاس، أو بالتلامس، أو عبر الماء والغذاء.'],['enter','الدخول إلى الجسم','يدخل المُمْرِض عبر الأنف أو الفم أو جرحٍ في الجلد.'],['guard','الوقاية','غسل اليدين وتغطية الفم والأنف والتطعيم توقف السلسلة.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s4j1');
+EG.order({pool:'s4j2P', slots:'s4j2S', fb:'s4j2Fb', reset:'s4j2R', n:4});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"04_الصف_الرابع_الابتدائي/03_صحة_الإنسان/04_الأمراض_والعدوى/02_العدوى_وانتقالها/علوم_رابع_ابتدائي_ف1_الدرس_الثاني_العدوى_وانتقالها.html","title":"العدوى وانتقالها","grade":4,"emoji":"🧼","photoTopic":"body","observeQuestion":"كيف يمكن أن يقطع غسل اليدين أحد مسارات انتقال الجراثيم؟","facts":["قد تنتقل بعض الجراثيم من سطح ملوث إلى اليد، ثم إلى الفم أو الأنف أو العينين.","يساعد الصابون والفرك والشطف على إزالة الأوساخ والجراثيم من اليدين وتقليل انتقالها.","توصي إرشادات غسل اليدين بفركهما بالصابون عشرين ثانية على الأقل، مع تنظيف ظهر اليدين وبين الأصابع."],"diagram":{"title":"مسار يمكن قطعه","relation":"sequence","nodes":[{"emoji":"🚪","label":"سطح ملوث","detail":"قد يحمل بعض الجراثيم"},{"emoji":"✋","label":"يد تلامس السطح","detail":"قد تلتقط بعض الجراثيم"},{"emoji":"🧼","label":"غسل وفرك وشطف","detail":"يساعد على إزالة الجراثيم"},{"emoji":"👐","label":"يدان أنظف","detail":"يقل احتمال نقل الجراثيم بهذا المسار"}],"caption":"هذا مسار واحد للانتقال؛ غسل اليدين لا يمنع وحده كل أنواع العدوى أو جميع طرقها."},"lab":{"title":"غسل افتراضي لليدين","question":"كيف نقارن بقايا التلوث إذا بدأنا بمستوى واحد واختلفت طريقة تنظيف اليدين؟","controlLabel":"طريقة التنظيف في النموذج","options":["دون غسل","شطف بالماء فقط","غسل بالصابون والفرك والشطف"],"states":[{"label":"بقايا أكثر","emoji":"🟣","amount":8,"explanation":"لم نطبق خطوة تنظيف؛ يبقى مؤشر التلوث مرتفعًا في هذا النموذج البسيط.","observation":"رموز كثيرة تمثل بقايا التلوث."},{"label":"بقايا أقل","emoji":"🟣","amount":5,"explanation":"قد يزيل الماء بعض الأوساخ والجراثيم، لكنه أقل فاعلية عمومًا من الغسل الجيد بالصابون.","observation":"تنخفض الرموز، ولا تختفي كلها."},{"label":"إزالة أفضل","emoji":"🟣","amount":2,"explanation":"يساعد الصابون والفرك الجيد والشطف على إزالة المزيد؛ لا يعني ذلك أن اليد أصبحت خالية تمامًا من الجراثيم.","observation":"أقل رموز لبقايا التلوث في المقارنة."}],"quantityLabel":"مؤشر تصوري لبقايا التلوث بعد طريقة التنظيف","modelNote":"الأعداد ليست نسب تعقيم أو أعداد ميكروبات؛ لا تُستخدم عينات حقيقية، ولا يتنبأ النموذج بإصابة شخص.","tryPrompt":"لماذا لا نكتب صفر جراثيم بعد الغسل الجيد؟"},"sources":[{"title":"CDC: حقائق غسل اليدين والصابون","url":"https://www.cdc.gov/clean-hands/data-research/facts-stats/"},{"title":"CDC: خطوات غسل اليدين","url":"https://www.cdc.gov/clean-hands/media/pdfs/2024/05/329459-A-p.pdf"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

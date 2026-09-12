@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – رابع ابتدائي – ف1 – الدرس الأول: الخلايا</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#5E9E1E;--g-dark:#3B650F;--g-light:#EFF7E5}
+.card{border-color:#CFE5B4}
+.cover{background:linear-gradient(140deg,#3B650F 0%,#5E9E1E 55%,#8FC456 100%)}
+.endS{background:linear-gradient(140deg,#3B650F,#5E9E1E)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>الخَلايا</h1><div class="rule"></div>
+<div class="meta">الصف الرابع الابتدائي<br>الوحدة الأولى: المخلوقات الحية<br>الفصل الأول: ممالك المخلوقات الحية — الدرس الأول</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أينَ نحنُ في الكتابِ؟</h2><span class="src">صفحات ٢٦ – ٣٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الصف</h3><p>الرابع الابتدائي</p></div><div class="card"><h3>الوحدة الأولى</h3><p style="font-size:27px">المخلوقات الحية</p></div><div class="card"><h3>الفصل الأول</h3><p style="font-size:26px">ممالك المخلوقات الحية</p></div><div class="card"><h3>الدرس الأول</h3><p style="font-size:28px">الخلايا<br><span class='muted' style='font-size:22px'>صفحات ٢٦ – ٣٥</span></p></div></div><div class="box idea" style="font-size:32px;"><strong>السؤالُ الأساسيُّ:</strong> كيفَ تُنظَّمُ المخلوقاتُ الحيةُ؟ &nbsp;<span class='muted' style='font-size:25px'>(ص ٢٨)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأهداف</span><h2>أهدافُ التعلُّمِ</h2><span class="src">مستخلصة من ص ٢٦ – ٣٥</span></div>
+<div class="body"><p class="t">في نهايةِ الدرسِ أكونُ قادرًا على أنْ:</p><ul class="list num"><li>أُعرِّفَ الخليةَ، وأذكرَ الوظائفَ الخمسَ للمخلوقاتِ الحيةِ.</li><li>أُميِّزَ بينَ الصفاتِ الوراثيةِ والصفاتِ المكتسبةِ.</li><li>أُقارنَ بينَ الخلايا النباتيةِ والخلايا الحيوانيةِ.</li><li>أُسمِّيَ أجزاءَ الخليةِ ووظيفةَ كلِّ جزءٍ.</li><li>أُرتِّبَ مستوياتِ التنظيمِ: خلايا ← نسيج ← عضو ← جهاز.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">التهيئة</span><h2>أنظرُ وأتساءَلُ</h2><span class="src">ص ٢٦ — سؤال الكتاب</span></div>
+<div class="body center"><svg width="440" height="205" viewBox="0 0 340 158" role="img" aria-label="رسم خلايا بشرة البصل كما تبدو تحت المجهر على هيئة صناديق متجاورة">
+<rect x="0" y="0" width="340" height="158" fill="#B8CE6E"/>
+<g fill="#C9DC8A" stroke="#4E6B2E" stroke-width="3">
+<path d="M-10 6 L96 -6 L118 44 L14 56z"/><path d="M14 56 L118 44 L138 96 L34 106z"/>
+<path d="M34 106 L138 96 L156 152 L52 164z"/>
+<path d="M96 -6 L204 -12 L222 40 L118 44z"/><path d="M118 44 L222 40 L240 92 L138 96z"/>
+<path d="M138 96 L240 92 L258 148 L156 152z"/>
+<path d="M204 -12 L312 -8 L330 42 L222 40z"/><path d="M222 40 L330 42 L344 94 L240 92z"/>
+<path d="M240 92 L344 94 L350 150 L258 148z"/></g>
+<g fill="#8FA857" opacity="0.85"><ellipse cx="58" cy="26" rx="9" ry="6"/><ellipse cx="82" cy="78" rx="8" ry="5"/>
+<ellipse cx="96" cy="130" rx="9" ry="6"/><ellipse cx="168" cy="18" rx="8" ry="5"/><ellipse cx="186" cy="70" rx="9" ry="6"/>
+<ellipse cx="200" cy="122" rx="8" ry="5"/><ellipse cx="272" cy="16" rx="9" ry="6"/><ellipse cx="290" cy="68" rx="8" ry="5"/>
+<ellipse cx="306" cy="122" rx="9" ry="6"/></g>
+<g fill="#6E8A42" opacity="0.5"><circle cx="40" cy="70" r="3"/><circle cx="150" cy="60" r="3"/><circle cx="250" cy="112" r="3"/><circle cx="112" cy="18" r="3"/></g>
+</svg><div class="box ask" style="font-size:29px;max-width:1230px">ماذا أرى في الصورةِ؟ هلْ سبقَ أنْ شاهدتُهُ منْ قبلُ؟ كلُّ واحدٍ منْ هذهِ الصناديقِ صغيرٌ جدًّا، ولا أستطيعُ رؤيتَهُ إلا بالمجهرِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ماذا أعرفُ منْ قبلُ؟</h2><span class="src">تمهيد تربوي</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>المخلوقُ الحيُّ</h3><p style="font-size:26px">ينمو ويستجيبُ ويتكاثرُ</p></div><div class="card"><h3>الخلايا</h3><p style="font-size:23px">وحداتٌ بنائيةٌ تُكوِّنُ أجسامَ المخلوقاتِ</p></div><div class="card"><h3>المجهرُ</h3><p style="font-size:23px">أداةٌ تجعلُ الأشياءَ الصغيرةَ تبدو كبيرةً</p></div><div class="card"><h3>اليومَ</h3><p style="font-size:26px">كيفَ تنتظمُ الخلايا؟</p></div></div><div class="box note"><strong>توضيح إضافي:</strong> درسْنا الخلايا في الصفِّ الثالثِ، واليومَ نتعرَّفُ أجزاءَها ومستوياتِ تنظيمِها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>المفرداتُ العلميةُ (١)</h2><span class="src">ص ٢٨ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>الخليةُ</h3><p style="font-size:25px">أصغرُ وحدةٍ في بناءِ المخلوقاتِ الحيةِ.</p></div><div class="card"><h3>الأكسجينُ</h3><p style="font-size:23px">غازٌ موجودٌ في الهواءِ وفي الماءِ، تحتاجُ إليهِ المخلوقاتُ الحيةُ.</p></div></div><div class="cards"><div class="card"><h3>الوراثةُ</h3><p style="font-size:24px">انتقالُ الصفاتِ الوراثيةِ منَ الآباءِ إلى الأبناءِ.</p></div><div class="card"><h3>الصفاتُ الوراثيةُ</h3><p style="font-size:22px">الصفاتُ التي تنتقلُ منَ الآباءِ إلى الأبناءِ، ويتحكَّمُ في ظهورِها جينٌ واحدٌ أو أكثرُ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>المفرداتُ العلميةُ (٢)</h2><span class="src">ص ٢٨ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>الجينُ</h3><p style="font-size:23px">المادةُ المسؤولةُ عنْ نقلِ الصفاتِ الوراثيةِ منَ الآباءِ إلى الأبناءِ.</p></div><div class="card"><h3>الصفاتُ المكتسبةُ</h3><p style="font-size:22px">أيُّ سلوكٍ أو مهارةٍ يكتسبُها الإنسانُ أو الحيوانُ بالتعلُّمِ والتدريبِ والممارسةِ.</p></div></div><div class="cards"><div class="card"><h3>النسيجُ</h3><p style="font-size:22px">مجموعةٌ منَ الخلايا المتماثلةِ تجتمعُ وتتعاونُ معًا لتؤدِّيَ وظيفةً محدَّدةً.</p></div><div class="card"><h3>العضوُ</h3><p style="font-size:23px">تجتمعُ الأنسجةُ معًا لتكوِّنَ عضوًا يقومُ بوظيفةٍ محدَّدةٍ.</p></div></div><div class="cards"><div class="card"><h3>الجهازُ الحيويُّ</h3><p style="font-size:22px">تعملُ الأعضاءُ وتتآزرُ معًا لتكوِّنَ جهازًا يقومُ بوظائفَ محدَّدةٍ منْ وظائفِ الحياةِ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مهارة القراءة</span><h2>المقارنةُ</h2><span class="src">ص ٢٨ — مهارة القراءة في الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>تختلفُ</h3></div><div class="card center" style="text-align:center;background:#FDF2E1;border-color:#F3D9AE"><h3>تتشابهُ</h3></div><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>تختلفُ</h3></div></div><p class="t' style='font-size:29px">أُحدِّدُ أوجهَ الشبهِ في الوسطِ، وأوجهَ الاختلافِ على الجانبينِ.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>السؤالُ الأساسيُّ</h2><span class="src">ص ٢٨</span></div>
+<div class="body center"><div class="box idea" style="font-size:48px;max-width:1250px;text-align:center;border-right:none;border-top:12px solid var(--g)">كيفَ تُنظَّمُ المخلوقاتُ الحيةُ؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>ما المخلوقاتُ الحيةُ؟</h2><span class="src">ص ٢٨ — نص الكتاب</span></div>
+<div class="body center"><p class="big">النباتاتُ والحيواناتُ مخلوقاتٌ حيةٌ، خلقَها اللهُ تعالى منْ خلايا. فجسمي يتكوَّنُ منْ خلايا، وكذلكَ أجسامُ النملِ ونباتُ البصلِ.</p><div class="box idea" style="font-size:38px;max-width:1250px;text-align:center"><span class='hl'>الخليةُ</span> أصغرُ وحدةٍ في بناءِ المخلوقاتِ الحيةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>المخلوقاتُ الحيةُ لها حاجاتٌ</h2><span class="src">ص ٢٨ — نص الكتاب</span></div>
+<div class="body center"><p class="big">قدْ يتكوَّنُ المخلوقُ الحيُّ منْ <span class='hl'>ملايينِ الخلايا</span>، أوْ منْ <span class='hl'>خليةٍ واحدةٍ</span>، وفي كلِّ حالةٍ تحتاجُ جميعُ المخلوقاتِ الحيةِ إلى:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الماءِ</h3></div><div class="card center" style="text-align:center;"><h3>الغذاءِ</h3></div><div class="card center" style="text-align:center;"><h3>مكانٍ لتعيشَ فيهِ</h3></div></div><div class="box idea" style="font-size:32px;">كما أنَّها تحتاجُ إلى <span class='hl'>الأكسجينِ</span> وهوَ غازٌ موجودٌ في الهواءِ وفي الماءِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>المخلوقاتُ الحيةُ تتكاثرُ</h2><span class="src">ص ٢٨ — نص الكتاب</span></div>
+<div class="body"><p class="big">يقومُ المخلوقُ الحيُّ <span class='hl'>بخمسِ وظائفَ أساسيةٍ للحياةِ</span>، منها <span class='hl'>التكاثرُ</span>، وهوَ إنتاجُ مخلوقاتٍ حيةٍ جديدةٍ منَ النوعِ نفسِهِ، ويقومُ بهِ أبٌ واحدٌ أو يشتركُ فيهِ أبوانِ معًا.</p><div class="box idea" style="font-size:32px;">وكلمةُ <strong>النسلِ</strong> تعني الأفرادَ الجديدةَ التي تنتجُ عنْ تكاثرِ المخلوقاتِ الحيةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الوراثةُ والصفاتُ الوراثيةُ</h2><span class="src">ص ٢٨ — نص الكتاب</span></div>
+<div class="body"><p class="big">ويحملُ النسلُ الجديدُ صفاتٍ تنتقلُ <span class='hl'>بالوراثةِ</span> التي تعني انتقالَ الصفاتِ الوراثيةِ منَ الآباءِ إلى الأبناءِ:</p><div class="box note" style="font-size:26px;">كلونِ الجلدِ ولونِ الشعرِ ونوعِهِ، وألوانِ أو شكلِ العيونِ وشكلِ الأنفِ وملامحِ الوجهِ وحتى الغمَّازاتِ عندَ الإنسانِ، وعددِ البتلاتِ ولونِ البتلاتِ عندَ النباتِ.</div><div class="box idea" style="font-size:26px;"><span class='hl'>الصفاتُ الوراثيةُ</span> هيَ الصفاتُ التي تنتقلُ منَ الآباءِ إلى الأبناءِ ويتحكَّمُ في ظهورِها <strong>جينٌ</strong> واحدٌ أو أكثرُ، وهوَ المادةُ المسؤولةُ عنْ نقلِ الصفاتِ الوراثيةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>صفاتٌ جديدةٌ قابلةٌ للتوارثِ</h2><span class="src">ص ٢٩ — نص الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:26px;">كما أنَّ الأبناءَ في بعضِ أنواعِ الكائناتِ الحيةِ قدْ يحملونَ <strong>صفاتٍ جديدةً قابلةً للتوارثِ لا يأخذونَها منْ آبائِهم</strong> تجعلُهم يتكيفونَ بشكلٍ أفضلَ معَ تغيُّراتِ البيئةِ،</div><div class="box note" style="font-size:27px;">مثلَ قدرةِ بعضِ الحشراتِ على البقاءِ حيةً بشكلٍ طبيعيٍّ بعدَ المعاملةِ بجرعةٍ عاليةٍ منَ المبيداتِ. <span class='muted'>(ص ٢٩)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الصفاتُ المكتسبةُ</h2><span class="src">ص ٢٩ — نص الكتاب</span></div>
+<div class="body"><p class="big">أمَّا الأمثلةُ الآتيةُ فجميعُها أمثلةٌ على <span class='hl'>الصفاتِ غيرِ الموروثةِ (المكتسبةِ)</span>:</p><ul class="list"><li>إجادةُ السباحةِ، والرسمِ، ومهارةُ كرةِ القدمِ عندَ الإنسانِ.</li><li>وترويضُ الأسودِ منْ قِبَلِ الإنسانِ في عروضِ السيركِ.</li><li>وتجمُّعُ طيورِ البطريقِ في مجموعاتٍ كبيرةٍ ومتلاصقةٍ للحفاظِ على درجةِ حرارةِ أجسامِها في المناطقِ شديدةِ البرودةِ.</li><li>والأغصانُ المكسورةُ عندَ النباتِ.</li></ul><div class="box idea" style="font-size:26px;">وهيَ: <strong>أيُّ سلوكٍ أو مهارةٍ يكتسبُها الإنسانُ أو الحيوانُ بالتعلُّمِ والتدريبِ والممارسةِ خلالَ مراحلِ الحياةِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>صفةٌ وراثيةٌ أمْ مكتسبةٌ؟</h2><span class="src">تدريب تفاعلي على نص ص ٢٨ – ٢٩</span></div>
+<div class="body"><div class="sim" id="simA" style="flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+    <span class="simTag" id="aN">١ منْ ٦</span><span class="score" id="aSc">الإجاباتُ الصحيحةُ: ٠</span>
+  </div>
+  <div class="sortCard" style="width:100%"><div class="nm" id="aNm" style="text-align:center;font-size:29px"></div></div>
+  <div class="sortBtns">
+    <button class="simBtn" id="aA" type="button">صفةٌ وراثيةٌ</button>
+    <button class="simBtn ghost" id="aB" type="button">صفةٌ مكتسبةٌ</button>
+  </div>
+  <div class="simMsg neutral" id="aMsg">أختارُ، ثمَّ أعرفُ السببَ.</div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>وظائفُ أخرى</h2><span class="src">ص ٢٩ — نص الكتاب</span></div>
+<div class="body"><p class="big">عندَما تنمو السحليةُ وتكبرُ ينسلخُ عنها جلدُها، ولكنْ ليسَ كلُّ الحيواناتِ يحدثُ لها ذلكَ، رغمَ أنَّ جميعَها <span class='hl'>تنمو وتكبرُ</span>. ولكيْ تقومَ بذلكَ فإنَّها تحتاجُ إلى الطاقةِ.</p><div class="box idea" style="font-size:26px;">تحصلُ المخلوقاتُ الحيةُ على الطاقةِ منَ <strong>الغذاءِ</strong> الذي تأكلُهُ؛ فالماعزُ يتغذَّى على الحشائشِ. وبعضُ المخلوقاتِ الحيةِ ومنها <strong>النباتاتُ تصنعُ غذاءَها بنفسِها</strong>.</div><div class="box note" style="font-size:25px;">وبعدَ أنْ يتناولَ المخلوقُ الحيُّ غذاءَهُ لا بدَّ أنْ <strong>يتخلَّصَ منَ الفضلاتِ</strong>. ويمكنُ تعرُّفُ الغذاءِ الذي يتناولُهُ منَ الفضلاتِ التي يطرحُها. <span class='muted'>(ص ٢٩ – ٣٠)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الاستجابةُ للتغيراتِ</h2><span class="src">ص ٣٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">ومنَ الوظائفِ التي تُميِّزُ المخلوقاتِ الحيةَ أنَّها <span class='hl'>تستجيبُ لتغيُّراتِ البيئةِ</span> منْ حولِها.</p><div class="box note" style="font-size:26px;">تُرى، لماذا تأخذُ جميعُ نباتاتِ تبَّاعِ الشمسِ في الصورةِ الاتجاهَ نفسَهُ؟ نباتُ تبَّاعِ الشمسِ مثلُهُ مثلُ سائرِ النباتاتِ، ينمو في اتجاهِ الضوءِ.</div><div class="box idea" style="font-size:34px;">ويُسمَّى نموُّ النباتاتِ في اتجاهِ ضوءِ الشمسِ <span class='hl'>الانتحاءَ الضوئيَّ</span>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>أيُّها مخلوقٌ حيٌّ؟</h2><span class="src">محاكاة لجدول ص ٢٩</span></div>
+<div class="body"><div class="sim" id="simB" style="flex-direction:column;gap:14px">
+  <div style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap">
+    <button class="simBtn" type="button" data-k="liz">السحليةُ</button>
+    <button class="simBtn ghost" type="button" data-k="roc">الصخرُ</button>
+    <button class="simBtn ghost" type="button" data-k="car">السيارةُ</button>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <table style="width:100%;border-collapse:collapse;font-size:26px">
+      <tr style="background:var(--g)"><th style="color:#fff;padding:8px 12px;border:2px solid #fff;width:52%">وظيفةُ الحياةِ</th>
+        <th style="color:#fff;padding:8px 12px;border:2px solid #fff" id="bHead">السحليةُ</th></tr>
+      <tr><td style="padding:7px 12px;border:2px solid #DCE5D0">هلْ تنمو؟</td><td style="padding:7px 12px;border:2px solid #DCE5D0;text-align:center;font-size:30px" id="q0"></td></tr>
+      <tr><td style="padding:7px 12px;border:2px solid #DCE5D0">هلْ تحتاجُ إلى الغذاءِ؟</td><td style="padding:7px 12px;border:2px solid #DCE5D0;text-align:center;font-size:30px" id="q1"></td></tr>
+      <tr><td style="padding:7px 12px;border:2px solid #DCE5D0">هلْ تُخرجُ فضلاتٍ؟</td><td style="padding:7px 12px;border:2px solid #DCE5D0;text-align:center;font-size:30px" id="q2"></td></tr>
+      <tr><td style="padding:7px 12px;border:2px solid #DCE5D0">هلْ تتكاثرُ؟</td><td style="padding:7px 12px;border:2px solid #DCE5D0;text-align:center;font-size:30px" id="q3"></td></tr>
+      <tr><td style="padding:7px 12px;border:2px solid #DCE5D0">هلْ تستجيبُ لتغيراتِ البيئةِ؟</td><td style="padding:7px 12px;border:2px solid #DCE5D0;text-align:center;font-size:30px" id="q4"></td></tr>
+    </table>
+  </div>
+  <div class="simMsg good" id="bMsg"></div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال من الكتاب</span><h2>أقرأُ الجدولَ</h2><span class="src">ص ٢٩</span></div>
+<div class="body"><div class="qa"><p class="q">هلِ السيارةُ مخلوقٌ حيٌّ؟</p><p class="t muted" style="font-size:26px;margin-top:8px">إرشادُ الكتابِ: أبحثُ هلْ تقومُ السيارةُ بالوظائفِ الخمسِ التي تقومُ بها المخلوقاتُ الحيةُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>لا، السيارةُ ليستْ مخلوقًا حيًّا.</strong><br>فهيَ <strong>لا تنمو</strong>، وَ<strong>لا تتكاثرُ</strong>، وَ<strong>لا تستجيبُ لتغيراتِ البيئةِ</strong>.<br>وإنْ كانتْ تحتاجُ إلى وقودٍ وتُخرجُ عوادمَ، فإنَّها <strong>لا تقومُ بالوظائفِ الخمسِ</strong> التي تقومُ بها المخلوقاتُ الحيةُ. (ص ٢٩)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٢٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> كيفَ تختلفُ النباتاتُ عنِ الحاسوبِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>النباتاتُ مخلوقاتٌ حيةٌ</strong>؛ فهيَ مكوَّنةٌ منْ <strong>خلايا</strong>، وتقومُ <strong>بالوظائفِ الخمسِ</strong>: تنمو، وتحتاجُ إلى الغذاءِ وتصنعُهُ بنفسِها، وتتخلَّصُ منَ الفضلاتِ، وتتكاثرُ وتنقلُ صفاتِها بالوراثةِ، وتستجيبُ للبيئةِ (الانتحاءُ الضوئيُّ).<br><strong>أمَّا الحاسوبُ</strong> فشيءٌ غيرُ حيٍّ صنعَهُ الإنسانُ؛ لا يتكوَّنُ منْ خلايا، ولا ينمو، ولا يتكاثرُ، ولا يستجيبُ منْ تلقاءِ نفسِهِ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> هلْ مهارةُ ركوبِ الخيلِ صفةٌ موروثةٌ أمْ صفةٌ مكتسبةٌ؟ وضِّحْ إجابتَكَ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>هيَ <strong>صفةٌ مكتسبةٌ</strong>.<br><strong>التوضيحُ:</strong> الصفاتُ المكتسبةُ هيَ أيُّ سلوكٍ أو مهارةٍ يكتسبُها الإنسانُ أو الحيوانُ <strong>بالتعلُّمِ والتدريبِ والممارسةِ</strong>. وركوبُ الخيلِ لا ينتقلُ بالجيناتِ منَ الآباءِ إلى الأبناءِ، وإنَّما يتعلَّمُهُ الإنسانُ بالتدريبِ — مثلُهُ مثلُ السباحةِ والرسمِ ومهارةِ كرةِ القدمِ. (ص ٢٩)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>فيمَ تتشابهُ الخلايا وفيمَ تختلفُ؟</h2><span class="src">ص ٣٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">جميعُ الخلايا لها <span class='hl'>أجزاءٌ صغيرةٌ</span> تساعدُها على البقاءِ حيةً. لكنَّ هذهِ الأجزاءَ تختلفُ منْ خليةٍ إلى أخرى.</p><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center">فالخلايا النباتيةُ لها <strong>أجزاءٌ لا يوجدُ مثلُها في الخلايا الحيوانيةِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الخلايا النباتيةُ فيها كلوروفيل</h2><span class="src">ص ٣٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">تحتوي معظمُ الخلايا النباتيةِ على أجزاءَ خضراءَ تسمَّى <span class='hl'>البلاستيداتِ الخضراءَ</span>، وهيَ مملوءةٌ بمادةٍ خضراءَ تسمَّى <span class='hl'>الكلوروفيلَ</span>، تساعدُ النباتَ على صنعِ غذائِهِ باستخدامِ ضوءِ الشمسِ.</p><div class="box idea" style="font-size:34px;">أمَّا الخليةُ الحيوانيةُ <strong>فلا تحتوي على البلاستيداتِ أوِ الكلوروفيلِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الخلايا النباتيةُ لها جدارٌ خلويٌّ</h2><span class="src">ص ٣٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">هناكَ جدارٌ صلبٌ يحيطُ بالخليةِ النباتيةِ يُسمَّى <span class='hl'>الجدارَ الخلويَّ</span>، يوجدُ بداخلِهِ <span class='hl'>الغشاءُ الخلويُّ</span>،</p><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center">أمَّا الخلايا الحيوانيةُ <strong>فليسَ لها جدارٌ خلويٌّ؛ ولكنْ لها غشاءٌ خلويٌّ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>أجزاءُ الخليةِ النباتيةِ والحيوانيةِ</h2><span class="src">محاكاة لشكل ص ٣٠ – ٣١</span></div>
+<div class="body"><div class="sim" id="simC">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:25px">أضغطُ على الجزءِ:</p>
+    <button class="tgl on" type="button" data-k="wal"><span class="dot"></span>جدارُ الخليةِ</button>
+    <button class="tgl" type="button" data-k="mem"><span class="dot"></span>غشاءُ الخليةِ</button>
+    <button class="tgl" type="button" data-k="pla"><span class="dot"></span>البلاستيداتُ الخضراءُ</button>
+    <button class="tgl" type="button" data-k="nuc"><span class="dot"></span>النواةُ</button>
+    <button class="tgl" type="button" data-k="mit"><span class="dot"></span>الميتوكندريا</button>
+    <button class="tgl" type="button" data-k="vac"><span class="dot"></span>الفجوةُ العصاريةُ</button>
+    <button class="tgl" type="button" data-k="cyt"><span class="dot"></span>السيتوبلازمُ</button>
+    <button class="tgl" type="button" data-k="chr"><span class="dot"></span>الكروموسومُ</button>
+  </div>
+  <div class="simStage">
+    <div style="display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:8px">
+      <button class="simBtn" type="button" data-c="pl" style="min-width:150px">خليةٌ نباتيةٌ</button>
+      <button class="simBtn ghost" type="button" data-c="an" style="min-width:150px">خليةٌ حيوانيةٌ</button>
+    </div>
+    <svg width="360" height="215" viewBox="0 0 290 175" role="img" aria-label="رسم الخلية النباتية والخلية الحيوانية وأجزائهما">
+      <g id="gPl">
+        <rect id="pWall" x="14" y="12" width="262" height="150" rx="8" fill="#6FAE4F"/>
+        <rect id="pMem" x="24" y="22" width="242" height="130" rx="6" fill="#A9D98A"/>
+        <rect id="pCyt" x="32" y="30" width="226" height="114" rx="6" fill="#CFE9BC"/>
+        <ellipse id="pVac" cx="112" cy="98" rx="70" ry="34" fill="#8FCBE8"/>
+        <g id="pNuc"><circle cx="182" cy="66" r="26" fill="#E8C84A"/><circle cx="182" cy="66" r="9" fill="#C4483E"/></g>
+        <g id="pPla" fill="#3E7A32"><ellipse cx="66" cy="48" rx="18" ry="11"/><ellipse cx="238" cy="118" rx="18" ry="11"/>
+          <ellipse cx="118" cy="42" rx="14" ry="9"/></g>
+        <g id="pMit" fill="#3E6FA8"><ellipse cx="56" cy="132" rx="15" ry="9"/><ellipse cx="236" cy="46" rx="15" ry="9"/>
+          <ellipse cx="196" cy="132" rx="13" ry="8"/></g>
+        <g id="pChr" fill="#7A3B8E"><rect x="176" y="58" width="4" height="16" rx="2"/><rect x="186" y="60" width="4" height="14" rx="2"/></g></g>
+      <g id="gAn" style="opacity:0;display:none">
+        <path id="aMem" d="M40 60 q-22 -34 22 -42 q34 -8 62 6 q34 -14 66 0 q36 14 30 44 q10 34 -14 52 q-16 30 -56 26 q-40 12 -72 -6 q-34 -18 -38 -42 q-8 -22 0 -38z" fill="#B7BEC6"/>
+        <path id="aCyt" d="M52 62 q-16 -26 20 -32 q30 -6 54 6 q30 -12 58 0 q30 12 24 36 q10 28 -12 44 q-14 26 -48 22 q-34 10 -62 -6 q-30 -16 -34 -34 q-8 -20 0 -36z" fill="#8FCBE8"/>
+        <g id="aNuc"><circle cx="152" cy="72" r="26" fill="#E8C84A"/><circle cx="152" cy="72" r="9" fill="#C4483E"/></g>
+        <g id="aVac" fill="#CFE9F5"><circle cx="86" cy="106" r="9"/><circle cx="200" cy="112" r="8"/><circle cx="96" cy="60" r="7"/></g>
+        <g id="aMit" fill="#3E6FA8"><ellipse cx="72" cy="80" rx="14" ry="8"/><ellipse cx="208" cy="70" rx="14" ry="8"/>
+          <ellipse cx="146" cy="126" rx="13" ry="8"/></g>
+        <g id="aChr" fill="#7A3B8E"><rect x="146" y="64" width="4" height="16" rx="2"/><rect x="156" y="66" width="4" height="14" rx="2"/></g></g>
+    </svg>
+    <div class="simTag" id="cTag"></div>
+    <div class="simMsg good" id="cMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">جدول الكتاب</span><h2>أجزاءُ الخليةِ</h2><span class="src">ص ٣١ — جدول الكتاب</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:40%">الجزءُ</th><th>خلايا حيوانيةٌ</th><th>خلايا نباتيةٌ</th></tr><tr><td>جدارُ الخليةِ</td><td>✖</td><td>✔</td></tr><tr><td>غشاءُ الخليةِ</td><td>✔</td><td>✔</td></tr><tr><td>البلاستيداتُ</td><td>✖</td><td>✔</td></tr><tr><td>النواةُ</td><td>✔</td><td>✔</td></tr><tr><td>الفجوةُ العصاريةُ</td><td>صغيرةٌ</td><td>كبيرةٌ</td></tr><tr><td>السيتوبلازمُ</td><td>✔</td><td>✔</td></tr><tr><td>الميتوكندريا</td><td>✔</td><td>✔</td></tr><tr><td>الكروموسوماتُ</td><td>✔</td><td>✔</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال من الكتاب</span><h2>أقرأُ الجدولَ</h2><span class="src">ص ٣١</span></div>
+<div class="body"><div class="qa"><p class="q">فيمَ تتشابهُ الخلايا النباتيةُ معَ الخلايا الحيوانيةِ، وفيمَ تختلفُ؟</p><p class="t muted" style="font-size:26px;margin-top:8px">إرشادُ الكتابِ: أقرأُ أجزاءَ الخليةِ النباتيةِ، وأقارنُ بينَها وبينَ أجزاءِ الخليةِ الحيوانيةِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>تتشابهانِ:</strong> كلتاهُما لها <strong>غشاءُ خليةٍ</strong>، وَ<strong>نواةٌ</strong>، وَ<strong>سيتوبلازمٌ</strong>، وَ<strong>ميتوكندريا</strong>، وَ<strong>كروموسوماتٌ</strong>، وَ<strong>فجوةٌ عصاريةٌ</strong>.<br><strong>تختلفانِ:</strong> الخليةُ النباتيةُ لها <strong>جدارٌ خلويٌّ</strong> وَ<strong>بلاستيداتٌ</strong>، وليسَ في الخليةِ الحيوانيةِ مثلُهُما. كما أنَّ <strong>الفجوةَ العصاريةَ كبيرةٌ</strong> في الخليةِ النباتيةِ (فجوةٌ أو فجوتانِ)، أمَّا في الحيوانيةِ فَ<strong>صغيرةٌ</strong> وعديدةٌ. (ص ٣١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٣١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> فيمَ يختلفُ جدارُ الخليةِ عنْ غشاءِ الخليةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>جدارُ الخليةِ:</strong> تركيبٌ <strong>صلبٌ</strong> يدعمُ ويحمي الخليةَ النباتيةَ، ويوجدُ <strong>في الخلايا النباتيةِ فقطْ</strong>، وهوَ الطبقةُ الخارجيةُ.<br><strong>غشاءُ الخليةِ:</strong> غطاءٌ <strong>رقيقٌ جدًّا</strong> يحيطُ بالخليةِ، ويوجدُ <strong>في الخلايا النباتيةِ والحيوانيةِ معًا</strong>، وفي الخليةِ النباتيةِ يقعُ <strong>داخلَ جدارِ الخليةِ</strong>. (ص ٣٠ – ٣١)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> هلْ يمكنُ للخليةِ الحيوانيةِ أنْ تكونَ خضراءَ اللونِ؟ لماذا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>لا.</strong> لأنَّ اللونَ الأخضرَ يأتي منْ مادةِ <strong>الكلوروفيلِ</strong> الموجودةِ في <strong>البلاستيداتِ الخضراءِ</strong>، وَ<strong>الخليةُ الحيوانيةُ لا تحتوي على البلاستيداتِ أوِ الكلوروفيلِ</strong>. (ص ٣٠)<br>ولهذا أيضًا فإنَّ الخليةَ الحيوانيةَ <strong>لا تصنعُ غذاءَها بنفسِها</strong>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>كيفَ تنتظمُ الخلايا؟</h2><span class="src">ص ٣٢ — نص الكتاب</span></div>
+<div class="body center"><p class="big">تُرى! ما الذي يجعلُ قلبَ الإنسانِ مختلفًا عنْ جلدِهِ؟ هلِ الخلايا مختلفةٌ؟!</p><div class="box idea" style="font-size:32px;">عندَما يكونُ المخلوقُ الحيُّ مكوَّنًا منْ <strong>خلايا عديدةٍ</strong> يكونُ للخلايا <strong>وظائفُ مختلفةٌ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>أمثلةٌ على تنوُّعِ وظائفِ الخلايا</h2><span class="src">ص ٣٢ — نص الكتاب</span></div>
+<div class="body"><ul class="list"><li>خلايا <span class='hl'>جذورِ النباتِ</span> تمتصُّ الماءَ والأملاحَ المعدنيةَ، ولكنَّها لا تستطيعُ صنعَ الغذاءِ؛ لأنَّها لا تحتوي على الكلوروفيلِ.</li><li>وهناكَ <span class='hl'>خلايا أخرى تحتوي على الكلوروفيلِ</span>، وتقومُ بصنعِ الغذاءِ في النباتِ.</li><li>أمَّا في الحيواناتِ فتقومُ <span class='hl'>خلايا الدمِ الحمراءُ</span> بنقلِ الأكسجينِ وموادَّ أخرى داخلَ أجسامِها.</li><li>وهناكَ <span class='hl'>الخلايا العصبيةُ</span> التي تنقلُ إشاراتٍ (معلوماتٍ) بينَ أجزاءِ الجسمِ.</li></ul><div class="box note" style="font-size:25px;">فعندَ الحاجةِ إلى المشيِ يُعطي الدماغُ أوامرَ إلى الساقينِ، فتستجيبُ خلايا عضلاتِ الساقينِ، وتبدأُ في التحرُّكِ. <span class='muted'>(ص ٣٢)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الخلايا تكوِّنُ أنسجةً</h2><span class="src">ص ٣٣ — نص الكتاب</span></div>
+<div class="body center"><p class="big">في المخلوقِ المتعدِّدِ الخلايا، تنتظمُ الخلايا التي لها الوظيفةُ نفسُها لتشكِّلَ نسيجًا.</p><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center"><span class='hl'>النسيجُ</span> مجموعةٌ منَ الخلايا المتماثلةِ تجتمعُ وتتعاونُ معًا لتؤدِّيَ وظيفةً محدَّدةً.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الأنسجةُ تكوِّنُ أعضاءَ، والأعضاءُ تكوِّنُ أجهزةً</h2><span class="src">ص ٣٣ — نص الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:27px;">الأنسجةُ تجتمعُ معًا لتكوِّنَ <span class='hl'>عضوًا</span> يقومُ بوظيفةٍ محدَّدةٍ. فالقلبُ مثلًا يقومُ بضخِّ الدمِ، ويتكوَّنُ منْ أنسجةٍ مختلفةٍ.</div><div class="box note" style="font-size:25px;">تعملُ الأعضاءُ وتتآزرُ معًا لتكوِّنَ جهازًا يقومُ بوظائفَ محدَّدةٍ منْ وظائفِ الحياةِ، ويسمَّى <span class='hl'>الجهازَ الحيويَّ</span>. فالقلبُ عضوٌ منْ أعضاءِ <strong>الجهازِ الدورانيِّ</strong> الذي ينقلُ الدمَ إلى جميعِ أجزاءِ الجسمِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>مستوياتُ التنظيمِ</h2><span class="src">محاكاة لشكل ص ٣٢ – ٣٣</span></div>
+<div class="body"><div class="sim" id="simD" style="flex-direction:column;gap:14px">
+  <div style="display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap">
+    <button class="simBtn" type="button" id="dGo">أُشغِّلُ مستوياتِ التنظيمِ</button>
+    <button class="simBtn ghost" type="button" id="dRe">أُعيدُ</button>
+    <span class="simTag" id="dTag">١ منْ ٤</span>
+  </div>
+  <svg width="470" height="185" viewBox="0 0 470 145" role="img" aria-label="محاكاة مستويات التنظيم من الخلية إلى الجهاز الحيوي">
+    <g id="l0" transform="translate(410,58)"><circle r="30" fill="#EFF7E5" stroke="#5E9E1E" stroke-width="3"/>
+      <g fill="#E8A0B4" stroke="#C4788E" stroke-width="2">
+        <ellipse cx="-10" cy="-8" rx="13" ry="8"/><ellipse cx="10" cy="2" rx="13" ry="8"/><ellipse cx="-6" cy="12" rx="13" ry="8"/></g>
+      <g fill="#7A3B8E"><circle cx="-10" cy="-8" r="2.6"/><circle cx="10" cy="2" r="2.6"/><circle cx="-6" cy="12" r="2.6"/></g></g>
+    <g id="l1" transform="translate(300,58)" style="opacity:0.25"><circle r="30" fill="#EFF7E5" stroke="#5E9E1E" stroke-width="3"/>
+      <g fill="#D9788E"><rect x="-22" y="-20" width="44" height="7" rx="3"/><rect x="-22" y="-8" width="44" height="7" rx="3"/>
+        <rect x="-22" y="4" width="44" height="7" rx="3"/><rect x="-22" y="16" width="44" height="7" rx="3"/></g>
+      <g fill="#7A3B8E"><circle cx="-10" cy="-16" r="2.2"/><circle cx="8" cy="-4" r="2.2"/><circle cx="-4" cy="8" r="2.2"/><circle cx="12" cy="20" r="2.2"/></g></g>
+    <g id="l2" transform="translate(190,58)" style="opacity:0.25"><circle r="30" fill="#EFF7E5" stroke="#5E9E1E" stroke-width="3"/>
+      <path d="M-4 -18 q-20 -12 -22 8 q-2 18 26 26 q28 -8 26 -26 q-2 -20 -22 -8 q-4 4 -8 0z" fill="#C4483E"/>
+      <g stroke="#7A2C24" stroke-width="3" fill="none"><path d="M0 -14 v28 M-14 0 h28"/></g>
+      <rect x="-6" y="-30" width="6" height="14" rx="3" fill="#7A5FA8"/></g>
+    <g id="l3" transform="translate(74,58)" style="opacity:0.25"><circle r="30" fill="#EFF7E5" stroke="#5E9E1E" stroke-width="3"/>
+      <path d="M0 -20 q-14 -10 -18 4 q-2 12 18 20 q20 -8 18 -20 q-4 -14 -18 -4z" fill="#C4483E"/>
+      <g stroke="#C4483E" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M-12 6 q-12 12 -8 20 M12 6 q12 12 8 20 M-4 12 v14 M6 12 v14"/></g>
+      <g stroke="#3E6FA8" stroke-width="2.6" fill="none" stroke-linecap="round">
+        <path d="M-16 -4 q-10 10 -6 22 M16 -4 q10 10 6 22"/></g></g>
+    <g stroke="#5E9E1E" stroke-width="4" fill="none">
+      <path id="e1" d="M376 58 H336" style="opacity:0"/><path id="e2" d="M266 58 H226" style="opacity:0"/>
+      <path id="e3" d="M156 58 H112" style="opacity:0"/></g>
+    <g fill="#5E9E1E"><polygon id="h1" points="336,58 346,53 346,63" style="opacity:0"/>
+      <polygon id="h2" points="226,58 236,53 236,63" style="opacity:0"/>
+      <polygon id="h3" points="112,58 122,53 122,63" style="opacity:0"/></g>
+    <g font-size="15" font-family="sans-serif" fill="#3B650F" text-anchor="middle">
+      <text x="410" y="106">خلايا</text><text x="300" y="106">نسيجٌ</text><text x="190" y="106">عضوٌ</text><text x="74" y="106">جهازٌ حيويٌّ</text></g>
+  </svg>
+  <div class="simMsg good" id="dMsg"></div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>نشاطُ الكتابِ — الخلايا والأنسجةُ والأعضاءُ</h2><span class="src">ص ٣٣ — خطوات النشاط</span></div>
+<div class="body"><ul class="list num"><li><span>يقومُ كلُّ طالبٍ بذكرِ اسمِ خليةٍ منَ الخلايا التاليةِ: <strong>خليةِ دمٍ، خليةٍ عصبيةٍ، خليةٍ عضليةٍ</strong>، ثمَّ يكتبُ اسمَ الخليةِ التي ذكرَها على بطاقةٍ.</span></li><li><span><strong style='color:var(--g-dark)'>أعملُ نموذجًا.</strong> يقومُ الطلابُ بتشكيلِ نسيجٍ عنْ طريقِ تكوينِ مجموعاتٍ ثنائيةٍ، كلُّ فردٍ فيها يحملُ بطاقةً باسمِ الخليةِ نفسِها.</span></li><li><span>يقومُ الطلابُ بتشكيلِ ثلاثةِ أنواعٍ منَ الأنسجةِ المختلفةِ.</span></li><li><span>أجدُ طريقةً لتشكيلِ أحدِ أجهزةِ الجسمِ.</span></li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">إجابة النشاط</span><h2>الخطوةُ الرابعةُ</h2><span class="src">ص ٣٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٤.</b> أجدُ طريقةً لتشكيلِ أحدِ أجهزةِ الجسمِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>أُشكِّلُ <strong>الجهازَ الدورانيَّ</strong> على النحوِ الآتي:<br>١. تجتمعُ مجموعةُ الطلابِ الذينَ يحملونَ بطاقاتِ <strong>الخلايا العضليةِ</strong> لتكوِّنَ <strong>نسيجًا عضليًّا</strong>.<br>٢. تنضمُّ إليها مجموعةُ <strong>الخلايا العصبيةِ</strong> ومجموعةٌ أخرى لتكوِّنَ معًا <strong>عضوَ القلبِ</strong>؛ لأنَّ القلبَ عضوٌ يتكوَّنُ منْ أنسجةٍ مختلفةٍ.<br>٣. تقفُ مجموعةُ <strong>خلايا الدمِ</strong> في صفٍّ يمثِّلُ <strong>الأوعيةَ الدمويةَ</strong>.<br>٤. يتآزرُ القلبُ معَ الأوعيةِ الدمويةِ لتكوينِ <strong>الجهازِ الدورانيِّ</strong> الذي ينقلُ الدمَ إلى جميعِ أجزاءِ الجسمِ. (ص ٣٣)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٣٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> كيفَ يختلفُ العضوُ عنِ النسيجِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>النسيجُ</strong> مجموعةٌ منَ <strong>الخلايا المتماثلةِ</strong> تجتمعُ وتتعاونُ معًا لتؤدِّيَ <strong>وظيفةً محدَّدةً</strong>.<br><strong>أمَّا العضوُ</strong> فيتكوَّنُ منِ <strong>اجتماعِ أنسجةٍ مختلفةٍ</strong> معًا ليقومَ بوظيفةٍ محدَّدةٍ.<br>فالعضوُ إذنْ <strong>مستوًى أعلى في التنظيمِ منَ النسيجِ</strong>. مثالٌ: النسيجُ العضليُّ نسيجٌ، والقلبُ عضوٌ يتكوَّنُ منْ أنسجةٍ مختلفةٍ. (ص ٣٣)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> لماذا تحتاجُ المخلوقاتُ الحيةُ المختلفةُ إلى أعضاءَ مختلفةٍ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>لأنَّ لكلِّ مخلوقٍ <strong>بيئةً وحاجاتٍ وطريقةَ معيشةٍ تخصُّهُ</strong>، فيحتاجُ إلى أعضاءَ تناسبُها:<br>فَ<strong>السمكةُ</strong> تحتاجُ إلى <strong>خياشيمَ</strong> لتأخذَ الأكسجينَ منَ الماءِ، وَ<strong>الإنسانُ</strong> يحتاجُ إلى <strong>رئتينِ</strong> ليتنفَّسَ الهواءَ.<br>وَ<strong>النباتُ</strong> يحتاجُ إلى <strong>جذورٍ وأوراقٍ</strong> ليمتصَّ الماءَ ويصنعَ غذاءَهُ، أمَّا <strong>الحيوانُ</strong> فيحتاجُ إلى <strong>جهازٍ هضميٍّ</strong>؛ لأنَّهُ لا يصنعُ غذاءَهُ.<br>فاختلافُ الوظيفةِ يستلزمُ اختلافَ العضوِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>كيفَ يمكنُ مشاهدةُ الخلايا؟</h2><span class="src">ص ٣٤ — نص الكتاب</span></div>
+<div class="body"><p class="big">معظمُ الخلايا صغيرةٌ جدًّا، لا يمكنُ رؤيتُها بالعينِ المجرَّدةِ. ولكيْ نرى الخلايا فإنَّنا نحتاجُ إلى <span class='hl'>مجهرَ</span>.</p><div class="box idea" style="font-size:30px;"><strong>المجاهرُ</strong> التي نستعملُها <strong>تكبِّرُ الأشياءَ أكثرَ كثيرًا ممَّا تكبِّرُها العدسةُ اليدويةُ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>تختلفُ المجاهرُ في قوةِ تكبيرِها</h2><span class="src">ص ٣٤ — نص الكتاب</span></div>
+<div class="body"><p class="big">وتختلفُ المجاهرُ في قوةِ تكبيرِها؛</p><ul class="list"><li>فقوةُ تكبيرِ المجاهرِ التي يستخدمُها <span class='hl'>العلماءُ</span> <strong>أكبرُ كثيرًا</strong> منْ تلكَ التي نستخدمُها في المدرسةِ،</li><li>والتي قوةُ تكبيرِها <strong>أكبرُ كثيرًا</strong> منَ <span class='hl'>العدسةِ المكبِّرةِ اليدويةِ</span>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>المجاهرُ ومسبِّباتُ الأمراضِ</h2><span class="src">ص ٣٤ — نص الكتاب</span></div>
+<div class="body center"><p class="big">يستخدمُ العلماءُ المجاهرَ للكشفِ عنِ المخلوقاتِ الصغيرةِ التي لا تُرى بالعينِ المجردةِ، ومنها <span class='hl'>مسبِّباتُ الأمراضِ المعديةِ</span> كالبكتيريا والفيروساتِ:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>البكتيريا العصويةُ</h3><p style="font-size:25px">المسبِّبةُ لمرضِ الالتهابِ الرئويِّ.</p></div><div class="card center" style="text-align:center;"><h3>فيروسُ الأنفلونزا</h3><p style="font-size:25px">المسبِّبُ لمرضِ الأنفلونزا.</p></div></div><div class="box note" style="font-size:27px;">ويستخدمُ العلماءُ المجاهرَ للكشفِ عنْ مسبِّباتِ الأمراضِ. <span class='muted'>(ص ٣٤)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٣٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أقارنُ.</b> فيمَ تتشابهُ العدسةُ المكبرةُ اليدويةُ معَ المجهرِ، وفيمَ يختلفانِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>تتشابهانِ:</strong> كلتاهُما أداةٌ <strong>تُكبِّرُ الأشياءَ الصغيرةَ</strong> لتبدوَ أكبرَ ممَّا هيَ عليهِ، فنراها بوضوحٍ.<br><strong>يختلفانِ:</strong> <strong>قوةُ تكبيرِ المجهرِ أكبرُ كثيرًا</strong> منْ قوةِ تكبيرِ العدسةِ اليدويةِ؛ فالمجهرُ يُمكِّنُنا منْ رؤيةِ <strong>الخلايا والبكتيريا والفيروساتِ</strong>، أمَّا العدسةُ اليدويةُ فلا تكفي لذلكَ. كما أنَّ العدسةَ اليدويةَ عدسةٌ واحدةٌ سهلةُ الحملِ، أمَّا المجهرُ فجهازٌ فيهِ عدساتٌ وقوًى مختلفةٌ. (ص ٣٤)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> لماذا تستخدمُ المجاهرُ في المستشفياتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>لأنَّ المجاهرَ تكشفُ عنِ <strong>المخلوقاتِ الصغيرةِ التي لا تُرى بالعينِ المجردةِ</strong>، ومنها <strong>مسبِّباتُ الأمراضِ المعديةِ كالبكتيريا والفيروساتِ</strong>.<br>فبالمجهرِ يستطيعُ الأطباءُ <strong>معرفةَ سببِ المرضِ</strong> — كالبكتيريا العصويةِ المسبِّبةِ للالتهابِ الرئويِّ، وفيروسِ الأنفلونزا — ثمَّ <strong>وصفَ العلاجِ المناسبِ</strong>. كما تُفحَصُ بها عيناتُ الدمِ وخلايا الجسمِ. (ص ٣٤)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أستكشفُ — الهدفُ والأدواتُ</h2><span class="src">ص ٢٧ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:32px;"><strong>سؤال النشاط:</strong> ممَّ تتكوَّنُ المخلوقاتُ الحيةُ؟</div><div class="box note" style="font-size:28px;"><strong>الهدفُ:</strong> أستخدمُ أساليبَ ملاحظةٍ مختلفةٍ لاستكشافِ أجزاءِ النباتِ.</div><p class="t"><strong>أحتاجُ إلى:</strong></p><div class="cards"><div class="card center" style="text-align:center;"><h3>بصلةٍ</h3></div><div class="card center" style="text-align:center;"><h3>ورقةِ نباتٍ</h3></div><div class="card center" style="text-align:center;"><h3>عدسةٍ مكبِّرةٍ · مجهرٍ</h3></div><div class="card center" style="text-align:center;"><h3>شرائحَ محضَّرةٍ لبشرةِ ساقِ البصلِ وورقةِ نباتٍ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أستكشفُ — الخطواتُ</h2><span class="src">ص ٢٧ — الخطوات ١ – ٤</span></div>
+<div class="body"><ul class="list num"><li><span><strong style='color:var(--g-dark)'>أستنتجُ.</strong> أرسمُ نباتَ البصلِ، وأكتبُ أجزاءَهُ عليهِ، وأبيِّنُ كيفَ يساعدُ كلُّ جزءٍ منها النباتَ على العيشِ.</span></li><li><span>أطلبُ إلى معلِّمي أنْ يقطعَ النباتَ طوليًّا، وأرسمُ الأجزاءَ كما أشاهدُها، وأكتبُ أسماءَها.</span></li><li><span><strong style='color:var(--g-dark)'>ألاحظُ.</strong> أستخدمُ العدسةَ المكبِّرةَ لمشاهدةِ بشرةِ ساقِ البصلِ، والورقةِ، ثمَّ أرسمُ ما أشاهدُهُ.</span></li><li><span>أطلبُ إلى معلِّمي أنْ يحضرَ شريحةً لبشرةِ ساقِ البصلِ، وشريحةً أخرى لورقةِ نباتٍ، ثمَّ أشاهدُ الشريحتينِ تحتَ المجهرِ، وأرسمُ ما أشاهدُهُ مستخدمًا القوَّتينِ الصغرى والكبرى للمجهرِ.</span></li></ul><div class="box safe" style="font-size:25px;">لا أستخدمُ السكينَ بنفسي؛ أطلبُ منَ المعلِّمِ قطعَ النباتِ. وأتعاملُ معَ الشرائحِ الزجاجيةِ بحذرٍ. وأغسلُ يديَّ بعدَ النشاطِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستخلص النتائج</span><h2>الخطوتانِ ٥ وَ ٦</h2><span class="src">ص ٢٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٥. أتواصلُ.</b> كيفَ تغيَّرتْ ملاحظاتي عندَ استعمالِ القوةِ الكبرى للمجهرِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>عندَ <strong>القوةِ الصغرى</strong> أرى <strong>عددًا كبيرًا منَ الخلايا</strong> صغيرةً متجاورةً، ولكنَّ تفاصيلَها غيرُ واضحةٍ.<br>وعندَ <strong>القوةِ الكبرى</strong> يقلُّ عددُ الخلايا التي أراها، ولكنَّ <strong>حجمَ كلِّ خليةٍ يكبرُ وتظهرُ تفاصيلُها</strong>؛ فأرى <strong>جدارَ الخليةِ</strong> بوضوحٍ وَ<strong>النواةَ</strong>، وفي ورقةِ النباتِ أرى <strong>البلاستيداتِ الخضراءَ</strong>.</div></div><div class="qa"><p class="q"><b>٦. أفسِّرُ البياناتِ.</b> ممَّ تتركَّبُ كلٌّ منْ بشرةِ ساقِ البصلِ وبشرةِ ورقةِ النباتِ كما تبدو لي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>تتركَّبُ كلتاهُما منْ <strong>خلايا</strong> متجاورةٍ تشبهُ <strong>الصناديقَ</strong>، لكلِّ خليةٍ <strong>جدارٌ</strong> يحيطُ بها وَ<strong>نواةٌ</strong> بداخلِها.<br><strong>والفرقُ:</strong> خلايا <strong>ورقةِ النباتِ</strong> تحتوي على <strong>بلاستيداتٍ خضراءَ</strong> فيها الكلوروفيلُ فتبدو خضراءَ، أمَّا خلايا <strong>بشرةِ ساقِ البصلِ</strong> فتبدو <strong>شفافةً بلا لونٍ أخضرَ</strong>؛ لأنَّها لا تصنعُ الغذاءَ. (ص ٣٠ و ٣٢)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف أكثر</span><h2>أُجرِّبُ</h2><span class="src">ص ٢٧</span></div>
+<div class="body"><div class="qa"><p class="q">ماذا يمكنُ أنْ أشاهدَ إذا فحصتُ جذورَ البصلِ؟ أضعُ خطةً للتحقُّقِ منْ ذلكَ، ثمَّ أُجرِّبُها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>خطتي:</strong><br>١. أضعُ بصلةً فوقَ كوبٍ فيهِ ماءٌ حتى تنمو لها جذورٌ بيضاءُ.<br>٢. أقطعُ طرفَ جذرٍ رفيعٍ جدًّا (بمساعدةِ المعلِّمِ) وأضعُهُ على شريحةٍ زجاجيةٍ معَ قطرةِ ماءٍ.<br>٣. أفحصُهُ <strong>بالعدسةِ المكبِّرةِ</strong> أولًا ثمَّ <strong>بالمجهرِ</strong> بالقوَّتينِ الصغرى والكبرى.<br>٤. أرسمُ ما أشاهدُهُ وأُقارنُهُ برسمِ خلايا بشرةِ البصلِ وورقةِ النباتِ.<br><strong>توقُّعي:</strong> أشاهدُ <strong>خلايا متجاورةً لها جدارٌ ونواةٌ</strong>، ولكنَّها <strong>بلا بلاستيداتٍ خضراءَ</strong>؛ لأنَّ خلايا الجذورِ لا تحتوي على الكلوروفيلِ ولا تصنعُ الغذاءَ، وإنَّما تمتصُّ الماءَ والأملاحَ المعدنيةَ. (ص ٣٢)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ١ وَ ٢</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>١. أقارنُ.</b> فيمَ تتشابهُ الخلايا النباتيةُ والخلايا الحيوانيةُ، وفيمَ تختلفانِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>تتشابهانِ:</strong> غشاءُ الخليةِ · النواةُ · السيتوبلازمُ · الميتوكندريا · الكروموسوماتُ · الفجوةُ العصاريةُ.<br><strong>تختلفانِ:</strong> الخليةُ النباتيةُ لها <strong>جدارٌ خلويٌّ</strong> وَ<strong>بلاستيداتٌ خضراءُ</strong> فيها الكلوروفيلُ، وفجوتُها العصاريةُ <strong>كبيرةٌ</strong>.<br>والخليةُ الحيوانيةُ <strong>ليسَ لها جدارٌ خلويٌّ ولا بلاستيداتٌ</strong>، وفجواتُها <strong>صغيرةٌ</strong> وعديدةٌ. (ص ٣٠ – ٣١)</div></div><div class="qa"><p class="q"><b>٢. المفرداتُ.</b> أصغرُ تركيبٍ في المخلوقِ الحيِّ يسمَّى ...............</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>يسمَّى <strong>الخليةَ</strong>؛ فالخليةُ أصغرُ وحدةٍ في بناءِ المخلوقاتِ الحيةِ. (ص ٢٨)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ٣ وَ ٤</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٣. التفكيرُ الناقدُ.</b> هلْ يمكنُ أنْ يتكوَّنَ المخلوقُ الحيُّ منْ خليةٍ واحدةٍ؟ أفسِّرُ ذلكَ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>نعمْ.</strong> فقدْ يتكوَّنُ المخلوقُ الحيُّ منْ ملايينِ الخلايا، <strong>أوْ منْ خليةٍ واحدةٍ</strong>.<br><strong>والتفسيرُ:</strong> أنَّ هذهِ الخليةَ الواحدةَ <strong>تقومُ بجميعِ الوظائفِ الخمسِ للحياةِ</strong> بنفسِها: تنمو، وتحصلُ على الغذاءِ، وتتخلَّصُ منَ الفضلاتِ، وتتكاثرُ، وتستجيبُ لتغيراتِ البيئةِ. ومنْ أمثلتِها <strong>البكتيريا</strong>. (ص ٢٨)</div></div><div class="qa"><p class="q"><b>٤. أختارُ الإجابةَ الصحيحةَ.</b> أيُّ الأجزاءِ التاليةِ يوجدُ في الخليةِ النباتيةِ فقطْ؟<br>أ – الميتوكندريا &nbsp;|&nbsp; ب – البلاستيداتُ &nbsp;|&nbsp; جـ – الغشاءُ الخلويُّ &nbsp;|&nbsp; د – الكروموسومُ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الإجابةُ الصحيحةُ: <strong>ب – البلاستيداتُ</strong>؛ فهيَ لا توجدُ في الخليةِ الحيوانيةِ. أمَّا الميتوكندريا والغشاءُ الخلويُّ والكروموسومُ فتوجدُ في النوعينِ. (ص ٣١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ٥ وَ ٦</h2><span class="src">ص ٣٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٥. أختارُ الإجابةَ الصحيحةَ.</b> جميعُ الخلايا النباتيةِ:<br>أ – لها جدارٌ خلويٌّ &nbsp;|&nbsp; ب – تؤدِّي الوظيفةَ نفسَها &nbsp;|&nbsp; جـ – بيضيةُ الشكلِ &nbsp;|&nbsp; د – لا تحتوي على كلوروفيل</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الإجابةُ الصحيحةُ: <strong>أ – لها جدارٌ خلويٌّ</strong>؛ فهناكَ جدارٌ صلبٌ يحيطُ بالخليةِ النباتيةِ. (ص ٣٠)<br><span class='muted'>أمَّا (ب) فخطأٌ؛ لأنَّ للخلايا وظائفَ مختلفةً. وَ(د) خطأٌ؛ لأنَّ معظمَها يحتوي على الكلوروفيلِ.</span></div></div><div class="qa"><p class="q"><b>٦. السؤالُ الأساسيُّ.</b> كيفَ تُنظَّمُ المخلوقاتُ الحيةُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>تتكوَّنُ المخلوقاتُ الحيةُ منْ <strong>خلايا</strong>، وبعضُها يتكوَّنُ منْ خليةٍ واحدةٍ وبعضُها منْ خلايا كثيرةٍ جدًّا.<br>وفي المخلوقِ الحيِّ المتعدِّدِ الخلايا تنتظمُ الخلايا على مستوياتٍ:<br><strong>خلايا</strong> (لها الوظيفةُ نفسُها) ← <strong>نسيجٌ</strong> ← <strong>عضوٌ</strong> (منْ أنسجةٍ مختلفةٍ) ← <strong>جهازٌ حيويٌّ</strong> (منْ أعضاءَ تتآزرُ معًا).<br><strong>مثالٌ:</strong> الخلايا العضليةُ ← النسيجُ العضليُّ ← القلبُ ← الجهازُ الدورانيُّ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخَّصٌ مصوَّرٌ</h2><span class="src">ص ٣٥ — ملخص الكتاب</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:22%">المحورُ</th><th>الخلاصةُ</th></tr><tr><td>الخلايا والوظائفُ</td><td>تتكوَّنُ المخلوقاتُ الحيةُ منْ خلايا. هذهِ الخلايا تساعدُ المخلوقاتِ الحيةَ على أداءِ خمسِ وظائفَ حيويةٍ أساسيةٍ.</td></tr><tr><td>التراكيبُ</td><td>تحتوي الخلايا على تراكيبَ تساعدُها على أداءِ وظائفِها. الخلايا النباتيةُ بها تراكيبُ خاصةٌ لا توجدُ في الخلايا الحيوانيةِ.</td></tr><tr><td>التنظيمُ</td><td>بعضُ المخلوقاتِ الحيةِ يتكوَّنُ منْ خليةٍ واحدةٍ، وبعضُها يتكوَّنُ منْ خلايا كثيرةٍ جدًّا. تنتظمُ الخلايا في المخلوقِ الحيِّ المتعدِّدِ الخلايا لتكوِّنَ الأنسجةَ والأعضاءَ والأجهزةَ.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">المطويات</span><h2>أنظِّمُ أفكاري</h2><span class="src">ص ٣٥ — المطويات</span></div>
+<div class="body center"><div class="box idea" style="font-size:32px;max-width:1250px;text-align:center">أعملُ مطويةً كالمبيَّنةِ في الشكلِ ألخِّصُ فيها ما تعلَّمتُهُ عنِ الخلايا.</div><div class="cards"><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>المخلوقاتُ الحيةُ</h3></div><div class="card center" style="text-align:center;background:#FDF2E1;border-color:#F3D9AE"><h3>الخلايا النباتيةُ والخلايا الحيوانيةُ</h3></div><div class="card center" style="text-align:center;background:#E9F4FF;border-color:#A9CDEB"><h3>الأنسجةُ والأعضاءُ والأجهزةُ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">العلوم والكتابة والرياضيات</span><h2>أنشطةُ التوسُّعِ</h2><span class="src">ص ٣٥ — الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:24px;"><strong>العلومُ والكتابةُ — أكتبُ قصةً:</strong> أكتبُ قصةً عنْ مخلوقٍ حيٍّ شاهدتُهُ عنْ بُعدٍ، ثمَّ أصفُهُ وأنا أتخيَّلُ أنِّي أقتربُ منهُ أكثرَ فأكثرَ حتى أشاهدَ خلاياهُ. ماذا أشاهدُ في كلِّ مرةٍ أقتربُ فيها أكثرَ؟</div><div class="box note" style="font-size:24px;"><strong>العلومُ والرياضياتُ — التقديرُ:</strong> قامَ أحدُ العلماءِ بمشاهدةِ ٣٨ خليةً باستعمالِ المجهرِ، وعندَ استعمالِهِ قوةَ تكبيرٍ أصغرَ شاهدَ خمسةَ أضعافِ ما شاهدَهُ في المرةِ الأولى. فكمْ خليةً شاهدَ في المرةِ الثانيةِ تقريبًا؟</div><div class="qa"><p class="q">إجابةُ مسألةِ الرياضياتِ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span>٣٨ × ٥ = <strong>١٩٠ خليةً</strong> تقريبًا.<br><span class='muted'>وبالتقديرِ: ٤٠ × ٥ = ٢٠٠ خليةٍ تقريبًا.</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تدريب إضافي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ</h2><span class="src">من إعداد المعلم — ليست من الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. أذكرُ الوظائفَ الخمسَ الأساسيةَ للحياةِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>النموُّ</strong> · <strong>الحاجةُ إلى الغذاءِ</strong> · <strong>إخراجُ الفضلاتِ</strong> · <strong>التكاثرُ</strong> · <strong>الاستجابةُ لتغيراتِ البيئةِ</strong>. (ص ٢٩)</div></div><div class="qa"><p class="q">٢. ما وظيفةُ النواةِ وما وظيفةُ الميتوكندريا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>النواةُ:</strong> تركيبٌ يتحكَّمُ في جميعِ أنشطةِ الخليةِ.<br><strong>الميتوكندريا:</strong> يُحرَقُ الغذاءُ في هذا الجزءِ ليزوِّدَ الخليةَ بالطاقةِ اللازمةِ. (ص ٣٠)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الملخص</span><h2>ماذا تعلَّمتُ؟</h2><span class="src">خلاصة ص ٢٦ – ٣٥</span></div>
+<div class="body"><ul class="list"><li>الخليةُ أصغرُ وحدةٍ في بناءِ المخلوقاتِ الحيةِ.</li><li>يقومُ المخلوقُ الحيُّ بخمسِ وظائفَ: ينمو، ويحتاجُ للغذاءِ، ويُخرجُ الفضلاتِ، ويتكاثرُ، ويستجيبُ للبيئةِ.</li><li>الصفاتُ الوراثيةُ تنتقلُ منَ الآباءِ إلى الأبناءِ ويتحكَّمُ فيها الجينُ، أمَّا المكتسبةُ فتُنالُ بالتعلُّمِ والتدريبِ.</li><li>الخليةُ النباتيةُ لها جدارٌ خلويٌّ وبلاستيداتٌ خضراءُ لا توجدُ في الخليةِ الحيوانيةِ.</li><li>النسيجُ مجموعةُ خلايا متماثلةٍ، والأنسجةُ تكوِّنُ عضوًا، والأعضاءُ تكوِّنُ جهازًا حيويًّا.</li><li>نحتاجُ إلى المجهرِ لمشاهدةِ الخلايا ومسبِّباتِ الأمراضِ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة مفاهيم</span><h2>أرتِّبُ أفكاري</h2><span class="src">تنظيم لمحتوى الدرس</span></div>
+<div class="body center"><div class="map"><div class="node">الخلايا</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">أنواعُها وأجزاؤها</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">نباتيةٌ: جدارٌ وبلاستيداتٌ</span><span class="node leaf">حيوانيةٌ: غشاءٌ بلا جدارٍ</span><span class="node leaf">نواةٌ وسيتوبلازمٌ وميتوكندريا</span></div></div><div class="col"><div class="node sub" style="background:#FDF2E1;border-color:#8C5709;color:#8C5709">مستوياتُ التنظيمِ</div><div class="line" style="background:#8C5709"></div><div class="leaves"><span class="node leaf">خلايا ← نسيجٌ</span><span class="node leaf">نسيجٌ ← عضوٌ</span><span class="node leaf">أعضاءُ ← جهازٌ حيويٌّ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختارُ الإجابةَ الصحيحةَ</h2><span class="src">تفاعلي — أسئلة تدريبية</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">١. الجزءُ الذي يتحكَّمُ في جميعِ أنشطةِ الخليةِ هوَ:</p><div class="opts"><button class="opt" type="button">الميتوكندريا</button><button class="opt" type="button">النواةُ</button><button class="opt" type="button">الفجوةُ العصاريةُ</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">٢. مجموعةُ الخلايا المتماثلةِ التي تؤدِّي وظيفةً محدَّدةً تسمَّى:</p><div class="opts"><button class="opt" type="button">النسيجَ</button><button class="opt" type="button">العضوَ</button><button class="opt" type="button">الجهازَ</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">٣. المادةُ المسؤولةُ عنْ نقلِ الصفاتِ الوراثيةِ هيَ:</p><div class="opts"><button class="opt" type="button">الكلوروفيلُ</button><button class="opt" type="button">السيتوبلازمُ</button><button class="opt" type="button">الجينُ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبلَ أنْ أُغادرَ الصفَّ</h2><span class="src">تقويم ختامي</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;"><h3>١</h3><p style="font-size:30px">ما الخليةُ؟</p></div><div class="card center" style="text-align:center;"><h3>٢</h3><p style="font-size:25px">أذكرُ جزأينِ يوجدانِ في الخليةِ النباتيةِ فقطْ.</p></div><div class="card center" style="text-align:center;"><h3>٣</h3><p style="font-size:25px">أرتِّبُ: عضوٌ · خلايا · جهازٌ · نسيجٌ.</p></div></div><p class="t' style='font-size:32px">أكتبُ إجاباتي في بطاقةٍ صغيرةٍ وأُسلِّمُها للمعلِّمِ.</p></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: الخلية النباتية والحيوانية</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1420" height="580" viewBox="0 0 1420 580" xmlns="http://www.w3.org/2000/svg" role="img" id="g4l1aSvgHost"><rect x="0" y="0" width="1420" height="580" fill="#FBFCFD"/><rect x="760" y="100" width="400" height="300" rx="24" fill="#3F8E2E"/><rect x="774" y="114" width="372" height="272" rx="18" fill="#EAF7E2" stroke="#4E9A34" stroke-width="5"/><rect x="836" y="178" width="230" height="146" rx="18" fill="#CFE9F7" stroke="#2C7FB8" stroke-width="4"/><circle cx="838" cy="152" r="30" fill="#9C7BC4"/><circle cx="838" cy="152" r="13" fill="#6B4A92"/><ellipse cx="1088" cy="150" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="1092" cy="232" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="812" cy="354" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="1046" cy="356" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="912" cy="354" rx="21" ry="13" fill="#3F8E2E"/><ellipse cx="998" cy="140" rx="19" ry="10" fill="#E4718E" transform="rotate(18 998 140)"/><g><text x="960" y="452" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الخلية النباتية</text><text x="960" y="452" font-size="30" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الخلية النباتية</text></g><ellipse cx="470" cy="250" rx="200" ry="150" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="9"/><circle cx="440" cy="224" r="48" fill="#9C7BC4"/><circle cx="440" cy="224" r="21" fill="#6B4A92"/><ellipse cx="596" cy="292" rx="26" ry="13" fill="#E4718E" transform="rotate(24 596 292)"/><ellipse cx="352" cy="330" rx="26" ry="13" fill="#E4718E" transform="rotate(24 352 330)"/><ellipse cx="566" cy="178" rx="26" ry="13" fill="#E4718E" transform="rotate(24 566 178)"/><g><text x="470" y="452" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الخلية الحيوانية</text><text x="470" y="452" font-size="30" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الخلية الحيوانية</text></g><g class="eHot" data-k="nuc"><path d="M150 130 L400 210" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="400" cy="210" r="6.5" fill="#8A97A0"/><g><text x="150" y="138" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">النواة</text><text x="150" y="138" font-size="26" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">النواة</text></g><rect class="hitBox" x="30" y="104" width="240" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="150" y="172" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مركز التحكُّم</text><text x="150" y="172" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مركز التحكُّم</text></g><g class="eHot" data-k="memb"><path d="M150 254 L274 244" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="274" cy="244" r="6.5" fill="#8A97A0"/><g><text x="150" y="262" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الغشاء</text><text x="150" y="262" font-size="26" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الغشاء</text></g><rect class="hitBox" x="30" y="228" width="240" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="150" y="296" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ينظِّم دخول المواد</text><text x="150" y="296" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ينظِّم دخول المواد</text></g><g class="eHot" data-k="cyto"><path d="M150 380 L330 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="330" cy="300" r="6.5" fill="#8A97A0"/><g><text x="150" y="388" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">السيتوبلازم</text><text x="150" y="388" font-size="26" fill="#5F4275" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">السيتوبلازم</text></g><rect class="hitBox" x="20" y="354" width="260" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="150" y="422" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مادةٌ تملأ الخلية</text><text x="150" y="422" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مادةٌ تملأ الخلية</text></g><g class="eHot" data-k="wall"><path d="M1276 92 L768 118" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="768" cy="118" r="6.5" fill="#8A97A0"/><g><text x="1276" y="100" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الجدار الخلوي</text><text x="1276" y="100" font-size="26" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الجدار الخلوي</text></g><rect class="hitBox" x="1136" y="66" width="280" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1276" y="134" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">في النبات فقط</text><text x="1276" y="134" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">في النبات فقط</text></g><g class="eHot" data-k="chloro"><path d="M1276 216 L1108 190" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1108" cy="190" r="6.5" fill="#8A97A0"/><g><text x="1276" y="224" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">البلاستيدات</text><text x="1276" y="224" font-size="26" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">البلاستيدات</text></g><rect class="hitBox" x="1146" y="190" width="260" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1276" y="258" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">فيها البناء الضوئي</text><text x="1276" y="258" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">فيها البناء الضوئي</text></g><g class="eHot" data-k="vac"><path d="M1276 342 L1070 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="1070" cy="300" r="6.5" fill="#8A97A0"/><g><text x="1276" y="350" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الفجوة الكبيرة</text><text x="1276" y="350" font-size="26" fill="#0E4B67" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الفجوة الكبيرة</text></g><rect class="hitBox" x="1131" y="316" width="290" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1276" y="384" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تخزن الماء والغذاء</text><text x="1276" y="384" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تخزن الماء والغذاء</text></g><g class="eHot" data-k="mito"><path d="M700 514 L600 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="600" cy="300" r="6.5" fill="#8A97A0"/><g><text x="700" y="522" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الميتوكوندريا</text><text x="700" y="522" font-size="26" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الميتوكوندريا</text></g><rect class="hitBox" x="560" y="488" width="280" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="700" y="556" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تُطلِق الطاقة — في الخليتين</text><text x="700" y="556" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تُطلِق الطاقة — في الخليتين</text></g></svg><div class="eCap">مقارنةٌ مصوَّرة: ما يوجد في الخليتين، وما ينفرد به النبات.</div></div><div class="eSteps" id="g4l1aPills"><span class="eStepPill" data-s="0">الجدار الخلوي</span><span class="eStepPill" data-s="1">البلاستيدات الخضراء</span><span class="eStepPill" data-s="2">الفجوة</span><span class="eStepPill" data-s="3">النواة</span><span class="eStepPill" data-s="4">الغشاء البلازمي</span><span class="eStepPill" data-s="5">الميتوكوندريا</span><span class="eStepPill" data-s="6">السيتوبلازم</span></div><div class="eInfo" id="g4l1aInfo">اضغط على أيِّ عُضيٍّ في الرسم لتعرف وظيفته.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g4l1aPrev">◀ السابق</button><button class="simBtn" type="button" id="g4l1aNext">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: مستويات التنظيم</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1320" height="310" viewBox="0 0 1320 310" xmlns="http://www.w3.org/2000/svg" role="img" id="g4l1bSvgHost"><defs><marker id="g4l1bsq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><g class="eHot" data-k="cell"><circle cx="1188" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(1125.0,87.0) scale(1.05)"><circle cx="60" cy="60" r="44" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="5"/><circle cx="56" cy="54" r="16" fill="#9C7BC4"/><circle cx="56" cy="54" r="7" fill="#6B4A92"/><ellipse cx="82" cy="76" rx="13" ry="8" fill="#E4718E" transform="rotate(28 82 76)"/><ellipse cx="36" cy="84" rx="12" ry="7" fill="#E4718E" transform="rotate(-20 36 84)"/></g><g><text x="1188" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">خلية</text><text x="1188" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">خلية</text></g><circle cx="1244" cy="94" r="21" fill="#4A5568"/><text x="1244" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">١</text><rect class="hitBox" x="1114" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M1110 150 H 1002" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l1bsq)"/><g class="eHot" data-k="tis"><circle cx="924" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(861.0,87.0) scale(1.05)"><rect x="16" y="26" width="88" height="68" rx="12" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><ellipse cx="46" cy="52" rx="13" ry="9" fill="#3F8E2E"/><ellipse cx="76" cy="66" rx="13" ry="9" fill="#3F8E2E"/><ellipse cx="48" cy="76" rx="11" ry="8" fill="#57A83E"/><circle cx="80" cy="42" r="9" fill="#7A5AA8"/></g><g><text x="924" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">نسيج</text><text x="924" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">نسيج</text></g><circle cx="980" cy="94" r="21" fill="#4A5568"/><text x="980" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٢</text><rect class="hitBox" x="850" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M846 150 H 738" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l1bsq)"/><g class="eHot" data-k="org"><circle cx="660" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(597.0,87.0) scale(1.05)"><path d="M60 100 C 10 68 16 30 40 26 C 52 24 58 34 60 40 C 62 34 68 24 80 26 C 104 30 110 68 60 100z" fill="#C0392B"/><path d="M60 44 v34" stroke="#8E2018" stroke-width="5" opacity=".55"/></g><g><text x="660" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">عضو</text><text x="660" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">عضو</text></g><circle cx="716" cy="94" r="21" fill="#4A5568"/><text x="716" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٣</text><rect class="hitBox" x="586" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M582 150 H 474" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l1bsq)"/><g class="eHot" data-k="sys"><circle cx="396" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(333.0,87.0) scale(1.05)"><rect x="56" y="16" width="8" height="30" rx="4" fill="#B06A78"/><path d="M56 40 C 30 44 20 66 24 96 c 2 12 20 12 26 2 c 6 -12 8 -34 6 -58z" fill="#E4949E"/><path d="M64 40 C 90 44 100 66 96 96 c -2 12 -20 12 -26 2 c -6 -12 -8 -34 -6 -58z" fill="#E4949E"/></g><g><text x="396" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">جهاز</text><text x="396" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">جهاز</text></g><circle cx="452" cy="94" r="21" fill="#4A5568"/><text x="452" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٤</text><rect class="hitBox" x="322" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M318 150 H 210" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g4l1bsq)"/><g class="eHot" data-k="bod"><circle cx="132" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(69.0,87.0) scale(1.05)"><ellipse cx="62" cy="78" rx="32" ry="24" fill="#B9A78F"/><circle cx="38" cy="58" r="18" fill="#C9B8A2"/><ellipse cx="30" cy="30" rx="7" ry="22" fill="#C9B8A2" transform="rotate(-12 30 30)"/><ellipse cx="48" cy="28" rx="7" ry="22" fill="#C9B8A2" transform="rotate(8 48 28)"/><circle cx="30" cy="56" r="3.4" fill="#2A2118"/><circle cx="94" cy="72" r="10" fill="#E4DCD0"/></g><g><text x="132" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مخلوق حي</text><text x="132" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مخلوق حي</text></g><circle cx="188" cy="94" r="21" fill="#4A5568"/><text x="188" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٥</text><rect class="hitBox" x="58" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">من الخلية إلى المخلوق الحي: مستويات التنظيم.</div></div><div class="eSteps" id="g4l1bPills"><span class="eStepPill" data-s="0">خلية</span><span class="eStepPill" data-s="1">نسيج</span><span class="eStepPill" data-s="2">عضو</span><span class="eStepPill" data-s="3">جهاز</span><span class="eStepPill" data-s="4">مخلوق حي</span></div><div class="eInfo" id="g4l1bInfo">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g4l1bPrev">◀ السابق</button><button class="simBtn" type="button" id="g4l1bNext">التالي ▶</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — بداية كلِّ شيء</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>كلُّ مخلوقٍ حيٍّ — من النملة إلى النخلة — مبنيٌّ من <b>خلايا</b>؛ فهي وحدةُ البناء المشتركة بين الأحياء كلِّها.</p></div><div class="fFact"><div class="n">٢</div><p>بعض المخلوقات جسمُها <b>خليةٌ واحدةٌ فقط</b> تقوم بكلِّ وظائف الحياة: تتغذَّى وتتنفَّس وتتكاثر.</p></div><div class="fFact"><div class="n">٣</div><p>أنت لا ترى خلاياك بالعين، لكنك ترى أثرها: نموَّك، والتئام جروحك، وحركة عضلاتك.</p></div></div><div class="fCap">الخلية صغيرةٌ في حجمها، عظيمةٌ في عملها.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s4a1"><div class="fCard"><div class="fIn"><div class="fF"><span>الخليةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>أصغرُ وحدةٍ في بناءِ المخلوقاتِ الحيةِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الأكسجينُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>غازٌ موجودٌ في الهواءِ وفي الماءِ، تحتاجُ إليهِ المخلوقاتُ الحيةُ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الوراثةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>انتقالُ الصفاتِ الوراثيةِ منَ الآباءِ إلى الأبناءِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الصفاتُ الوراثيةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الصفاتُ التي تنتقلُ منَ الآباءِ إلى الأبناءِ، ويتحكَّمُ في ظهورِها جينٌ واحدٌ أو أكثرُ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4a1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب مستويات التنظيم</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s4a2P"><button class="fChip" type="button" data-i="2">عضو</button><button class="fChip" type="button" data-i="3">جهاز</button><button class="fChip" type="button" data-i="1">نسيج</button><button class="fChip" type="button" data-i="0">خلية</button></div><div class="fSlots" id="s4a2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div></div><div class="fFb" id="s4a2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4a2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب من الأصغر إلى الأكبر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>شاهد بنفسك</h4><p>قشرةُ البصل الداخلية رقيقةٌ جدًّا؛ إذا فُحصت بالمجهر ظهرت خلاياها مرصوفةً كالطُّوب.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا يحتاج جسمك إلى أنواعٍ كثيرةٍ من الخلايا لا نوعٍ واحد؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="4" aria-label="إثراء مصور: الخلايا">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">لماذا تبدو خلايا النبات مثل حجرات متجاورة عند فحص نسيج مناسب بالمجهر؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/cells.jpg" alt="صورة مجهرية لخلايا بشرة البصل المتجاورة" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>خلايا من بشرة البصل كما تظهر بالمجهر الضوئي؛ يمكن ملاحظة الجدران التي تحدد شكل الخلايا.</figcaption><p class="se-credit">الصورة: Mccloughlin · <a href="https://commons.wikimedia.org/wiki/File:Onion_epidermis_high_power.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>الخلية وحدة بناء المخلوق الحي؛ وتتعاون الخلايا المتخصصة في الأجسام العديدة الخلايا.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>يحيط بالخلية النباتية جدار خلوي خارج الغشاء، بينما تفتقر الخلية الحيوانية إلى هذا الجدار.</span></p>
+<p class="se-fact"><span aria-hidden="true">🔬</span><span>يكبّر المجهر صورة العينة؛ ولا يجعل الخلايا الحقيقية تنمو بمجرد تغيير العدسة.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/concepts-biology/pages/3-3-eukaryotic-cells" target="_blank" rel="noopener noreferrer">OpenStax: الخلايا النباتية والحيوانية</a></li><li><a href="https://openstax.org/books/college-physics-2e/pages/26-4-microscopes" target="_blank" rel="noopener noreferrer">OpenStax: المجهر ومجال المشاهدة</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="4" aria-label="رسم توضيحي: من خلية إلى جهاز">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>من خلية إلى جهاز</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="hierarchy" role="group" aria-label="من خلية إلى جهاز"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🔬</span><span class="se-node-label">خلية</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🧩</span><span class="se-node-label">نسيج</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🫀</span><span class="se-node-label">عضو</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🔄</span><span class="se-node-label">جهاز</span></button></div>
+
+<p class="se-diagram-caption">مستويات تنظيم في جسم حيوان عديد الخلايا؛ المخلوق الوحيد الخلية لا يملك هذه الأجهزة.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🔬</span><div><strong data-detail-title>خلية</strong><p data-detail-text>وحدة حية صغيرة</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="4" aria-label="محاكاة إثرائية: عدسة أكبر ومجال أصغر">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>عدسة أكبر ومجال أصغر</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير ما نراه عند زيادة التكبير مع بقاء شريحة الخلايا نفسها؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">تكبير صورة الشريحة الافتراضية</p><div class="se-options" role="group" aria-label="تكبير صورة الشريحة الافتراضية"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">أقل</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">متوسط</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">أكبر</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">الأعداد خاصة بالرسم وليست قانونًا لعدسات المجهر؛ التكبير يغير الصورة والمجال، ولا يغير عدد خلايا العينة.</p></div>
+ <div class="se-result"><p class="se-model-label">عدد الخلايا المرسومة داخل مجال المشاهدة الافتراضي</p><div class="se-model" role="img" data-model aria-label="مجال واسع"><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol se-active" aria-hidden="true">🔬</span><span class="se-symbol" aria-hidden="true">🔬</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>مجال واسع</p><p class="se-observation" data-observation>تسع علامات تمثل خلايا ظاهرة في المجال.</p></div><p class="se-explanation" data-explanation>تظهر مساحة أوسع من النسيج، فتدخل خلايا أكثر داخل نافذة المشاهدة في الرسم.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 هل قلة الخلايا التي تراها بالتكبير الأكبر دليل على موت خلايا؟ فسّر.</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الرابع الابتدائي — الجزء الأول من المقرر<br>الوحدة الأولى: المخلوقات الحية · الفصل الأول: ممالك المخلوقات الحية · الدرس الأول: الخلايا<br>المصدر: كتاب الطالب، صفحات ٢٦ – ٣٥ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var nm=document.getElementById('aNm'); if(!nm) return;
+    var msg=document.getElementById('aMsg'), cnt=document.getElementById('aN'), sc=document.getElementById('aSc');
+    var AR=['٠','١','٢','٣','٤','٥','٦'];
+    var Q=[{t:'لونُ العيونِ',k:true,r:'منَ الصفاتِ التي تنتقلُ منَ الآباءِ إلى الأبناءِ ويتحكَّمُ فيها الجينُ. (ص ٢٨)'},
+           {t:'إجادةُ السباحةِ',k:false,r:'مهارةٌ يكتسبُها الإنسانُ بالتعلُّمِ والتدريبِ والممارسةِ. (ص ٢٩)'},
+           {t:'عددُ بتلاتِ الزهرةِ',k:true,r:'منَ الصفاتِ الوراثيةِ عندَ النباتِ. (ص ٢٨)'},
+           {t:'ترويضُ الأسودِ في عروضِ السيركِ',k:false,r:'سلوكٌ يكتسبُهُ الحيوانُ بالتدريبِ. (ص ٢٩)'},
+           {t:'لونُ الشعرِ ونوعُهُ',k:true,r:'صفةٌ وراثيةٌ تنتقلُ منَ الآباءِ إلى الأبناءِ. (ص ٢٨)'},
+           {t:'الأغصانُ المكسورةُ عندَ النباتِ',k:false,r:'منَ الصفاتِ غيرِ الموروثةِ (المكتسبةِ). (ص ٢٩)'}];
+    var i=0, score=0, lock=false;
+    function show(){ nm.textContent=Q[i].t; cnt.textContent=AR[i+1]+' منْ ٦';
+      sc.textContent='الإجاباتُ الصحيحةُ: '+AR[score];
+      msg.className='simMsg neutral'; msg.textContent='أختارُ، ثمَّ أعرفُ السببَ.'; lock=false; }
+    function pick(v){
+      if(lock) return; lock=true;
+      if(Q[i].k===v){ score++; msg.className='simMsg good'; msg.textContent='✔ صحيحٌ. '+Q[i].r; }
+      else { msg.className='simMsg bad'; msg.textContent='✖ الصحيحُ: '+(Q[i].k?'صفةٌ وراثيةٌ':'صفةٌ مكتسبةٌ')+'. '+Q[i].r; }
+      sc.textContent='الإجاباتُ الصحيحةُ: '+AR[score];
+      setTimeout(function(){ i++;
+        if(i<Q.length) show();
+        else { msg.className='simMsg good'; msg.textContent='انتهى التدريبُ. نتيجتي: '+AR[score]+' منْ ٦.';
+               i=0; score=0; setTimeout(show,2600); } }, 2500);
+    }
+    document.getElementById('aA').addEventListener('click',function(){pick(true);});
+    document.getElementById('aB').addEventListener('click',function(){pick(false);});
+    show();
+  })();
+
+  (function(){
+    var box=document.getElementById('simB'); if(!box) return;
+    var msg=document.getElementById('bMsg'), head=document.getElementById('bHead');
+    var D={liz:['السحليةُ',[1,1,1,1,1],'السحليةُ مخلوقٌ حيٌّ؛ لأنَّها تقومُ بالوظائفِ الخمسِ جميعِها. (ص ٢٩)',true],
+           roc:['الصخرُ',[0,0,0,0,0],'الصخرُ شيءٌ غيرُ حيٍّ؛ فهوَ لا يقومُ بأيٍّ منَ الوظائفِ الخمسِ. (ص ٢٩)',false],
+           car:['السيارةُ',[0,1,1,0,0],'السيارةُ ليستْ مخلوقًا حيًّا؛ فهيَ لا تنمو ولا تتكاثرُ ولا تستجيبُ لتغيراتِ البيئةِ، وإنْ كانتْ تحتاجُ إلى وقودٍ وتُخرجُ عوادمَ. (ص ٢٩)',false]};
+    function show(k){
+      box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+        b.className='simBtn'+(b.getAttribute('data-k')===k?'':' ghost'); });
+      var d=D[k]; head.textContent=d[0];
+      for(var j=0;j<5;j++){
+        var c=document.getElementById('q'+j);
+        c.textContent = d[1][j] ? '✔' : '✖';
+        c.style.color = d[1][j] ? '#3B650F' : '#B24A3E';
+      }
+      msg.className='simMsg '+(d[3]?'good':'bad'); msg.textContent=d[2];
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('liz');
+  })();
+
+  (function(){
+    var box=document.getElementById('simC'); if(!box) return;
+    var tag=document.getElementById('cTag'), msg=document.getElementById('cMsg');
+    var cur='pl', part='wal';
+    var P={wal:['جدارُ الخليةِ','تركيبٌ صلبٌ يدعمُ ويحمي الخليةَ النباتيةَ.',['pWall'],[]],
+           mem:['غشاءُ الخليةِ','غطاءٌ رقيقٌ جدًّا يحيطُ بالخليةِ، أمَّا في الخليةِ النباتيةِ فهوَ موجودٌ داخلَ جدارِ الخليةِ.',['pMem'],['aMem']],
+           pla:['البلاستيداتُ الخضراءُ','تُعدُّ مصانعَ الغذاءِ في الخليةِ، وتحتوي على مادةِ الكلوروفيلِ.',['pPla'],[]],
+           nuc:['النواةُ','تركيبٌ يتحكَّمُ في جميعِ أنشطةِ الخليةِ.',['pNuc'],['aNuc']],
+           mit:['الميتوكندريا','يُحرَقُ الغذاءُ في هذا الجزءِ ليزوِّدَ الخليةَ بالطاقةِ اللازمةِ.',['pMit'],['aMit']],
+           vac:['الفجوةُ العصاريةُ','تركيبٌ في الخليةِ يخزنُ الماءَ والغذاءَ والفضلاتِ. الخلايا النباتيةُ تحتوي على فجوةٍ أو فجوتينِ، أمَّا الحيوانيةُ فتحتوي على العديدِ منَ الفجواتِ.',['pVac'],['aVac']],
+           cyt:['السيتوبلازمُ','مادةٌ شبهُ سائلةٍ، يتكوَّنُ معظمُها منَ الماءِ، وتحتوي على بعضِ الموادِّ الكيميائيةِ المهمةِ.',['pCyt'],['aCyt']],
+           chr:['الكروموسومُ','تركيبٌ يتحكَّمُ في تشكُّلِ ونموِّ الخليةِ.',['pChr'],['aChr']]};
+    var ALLP=['pWall','pMem','pCyt','pVac','pNuc','pPla','pMit','pChr'];
+    var ALLA=['aMem','aCyt','aNuc','aVac','aMit','aChr'];
+    function draw(){
+      document.getElementById('gPl').style.display = (cur==='pl')?'':'none';
+      document.getElementById('gPl').style.opacity = (cur==='pl')?1:0;
+      document.getElementById('gAn').style.display = (cur==='an')?'':'none';
+      document.getElementById('gAn').style.opacity = (cur==='an')?1:0;
+      box.querySelectorAll('.simBtn[data-c]').forEach(function(b){
+        b.className='simBtn'+(b.getAttribute('data-c')===cur?'':' ghost'); });
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===part); });
+      var ids = (cur==='pl') ? P[part][2] : P[part][3];
+      ALLP.forEach(function(x){ var e=document.getElementById(x); if(e) e.style.opacity=0.3; });
+      ALLA.forEach(function(x){ var e=document.getElementById(x); if(e) e.style.opacity=0.3; });
+      ids.forEach(function(x){ var e=document.getElementById(x); if(e) e.style.opacity=1; });
+      tag.textContent=P[part][0];
+      if(ids.length===0){ msg.className='simMsg bad';
+        msg.textContent='لا يوجدُ '+P[part][0]+' في الخليةِ الحيوانيةِ. '+P[part][1]; }
+      else { msg.className='simMsg good'; msg.textContent=P[part][1]; }
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ part=b.getAttribute('data-k'); draw(); }); });
+    box.querySelectorAll('.simBtn[data-c]').forEach(function(b){
+      b.addEventListener('click',function(){ cur=b.getAttribute('data-c'); draw(); }); });
+    draw();
+  })();
+
+  (function(){
+    var go=document.getElementById('dGo'); if(!go) return;
+    var re=document.getElementById('dRe'), tag=document.getElementById('dTag'), msg=document.getElementById('dMsg');
+    var AR=['١','٢','٣','٤'], i=0, t=null;
+    var D=['تُشكِّلُ الخلايا العضليةُ النسيجَ العضليَّ. والخليةُ أصغرُ وحدةٍ في بناءِ المخلوقاتِ الحيةِ. (ص ٢٨ و ٣٢)',
+           'النسيجُ مجموعةٌ منَ الخلايا المتماثلةِ تجتمعُ وتتعاونُ معًا لتؤدِّيَ وظيفةً محدَّدةً. (ص ٣٣)',
+           'القلبُ عضوٌ مكوَّنٌ منْ أنسجةٍ متنوعةٍ، وهوَ يضخُّ الدمَ. (ص ٣٢ – ٣٣)',
+           'تعملُ الأعضاءُ وتتآزرُ معًا لتكوِّنَ جهازًا حيويًّا؛ فالقلبُ عضوٌ منْ أعضاءِ الجهازِ الدورانيِّ الذي ينقلُ الدمَ إلى جميعِ أجزاءِ الجسمِ. (ص ٣٣)'];
+    function draw(){
+      for(var j=0;j<4;j++){ document.getElementById('l'+j).style.opacity=(j<=i)?1:0.25; }
+      for(var k=1;k<=3;k++){
+        var on=(i>=k)?1:0;
+        document.getElementById('e'+k).style.opacity=on;
+        document.getElementById('h'+k).style.opacity=on; }
+      tag.textContent=AR[i]+' منْ ٤'; msg.className='simMsg good'; msg.textContent=D[i];
+    }
+    function stop(){ if(t){ clearInterval(t); t=null; } go.textContent='أُشغِّلُ مستوياتِ التنظيمِ'; }
+    go.addEventListener('click',function(){
+      if(t){ stop(); return; } go.textContent='إيقافٌ';
+      t=setInterval(function(){ if(i<3){ i++; draw(); } else { stop(); } },1800); });
+    re.addEventListener('click',function(){ stop(); i=0; draw(); });
+    draw();
+  })();
+
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g4l1aSvgHost','g4l1aInfo',{'wall':'<span><b>الجدار الخلوي</b> — يوجد في <b>الخلية النباتية فقط</b>؛ يعطي الخلية شكلها ويحميها ويدعمها.</span>','chloro':'<span><b>البلاستيدات الخضراء</b> — في <b>الخلية النباتية فقط</b>؛ فيها يتم <b>البناء الضوئي</b> وتُعطي اللون الأخضر.</span>','vac':'<span><b>الفجوة</b> — كبيرةٌ في الخلية النباتية وتخزن الماء والغذاء؛ وصغيرةٌ في الخلية الحيوانية.</span>','nuc':'<span><b>النواة</b> — توجد في الخليتين؛ وهي <b>مركز التحكُّم</b> وتحوي المادة الوراثية.</span>','memb':'<span><b>الغشاء البلازمي</b> — يوجد في الخليتين؛ ينظِّم دخول المواد إلى الخلية وخروجها منها.</span>','mito':'<span><b>الميتوكوندريا</b> — توجد في الخليتين؛ وفيها تُطلَق <b>الطاقة</b> من الغذاء.</span>','cyto':'<span><b>السيتوبلازم</b> — مادةٌ هلاميةٌ تملأ الخلية وتسبح فيها العُضيَّات.</span>'},'');
+ERT.stepper({pills:'g4l1aPills', info:'g4l1aInfo', svg:'g4l1aSvgHost', next:'g4l1aNext', prev:'g4l1aPrev', stages:[['wall','الجدار الخلوي','يوجد في <b>الخلية النباتية فقط</b>؛ يعطي الخلية شكلها ويحميها ويدعمها.'],['chloro','البلاستيدات الخضراء','في <b>الخلية النباتية فقط</b>؛ فيها يتم <b>البناء الضوئي</b> وتُعطي اللون الأخضر.'],['vac','الفجوة','كبيرةٌ في الخلية النباتية وتخزن الماء والغذاء؛ وصغيرةٌ في الخلية الحيوانية.'],['nuc','النواة','توجد في الخليتين؛ وهي <b>مركز التحكُّم</b> وتحوي المادة الوراثية.'],['memb','الغشاء البلازمي','يوجد في الخليتين؛ ينظِّم دخول المواد إلى الخلية وخروجها منها.'],['mito','الميتوكوندريا','توجد في الخليتين؛ وفيها تُطلَق <b>الطاقة</b> من الغذاء.'],['cyto','السيتوبلازم','مادةٌ هلاميةٌ تملأ الخلية وتسبح فيها العُضيَّات.']]});
+ERT.hotspots('g4l1bSvgHost','g4l1bInfo',{'cell':'<span><b>خلية</b> — الوحدة الأساسية لبناء أجسام المخلوقات الحية.</span>','tis':'<span><b>نسيج</b> — خلايا متشابهة تعمل معًا لأداء وظيفةٍ واحدة.</span>','org':'<span><b>عضو</b> — أنسجةٌ تعمل معًا، مثل القلب والورقة.</span>','sys':'<span><b>جهاز</b> — أعضاءٌ تتكامل لأداء وظيفةٍ كبرى.</span>','bod':'<span><b>مخلوق حي</b> — تتكامل الأجهزة كلُّها ليعيش المخلوق.</span>'},'');
+ERT.stepper({pills:'g4l1bPills', info:'g4l1bInfo', svg:'g4l1bSvgHost', next:'g4l1bNext', prev:'g4l1bPrev', stages:[['cell','خلية','الوحدة الأساسية لبناء أجسام المخلوقات الحية.'],['tis','نسيج','خلايا متشابهة تعمل معًا لأداء وظيفةٍ واحدة.'],['org','عضو','أنسجةٌ تعمل معًا، مثل القلب والورقة.'],['sys','جهاز','أعضاءٌ تتكامل لأداء وظيفةٍ كبرى.'],['bod','مخلوق حي','تتكامل الأجهزة كلُّها ليعيش المخلوق.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s4a1');
+EG.order({pool:'s4a2P', slots:'s4a2S', fb:'s4a2Fb', reset:'s4a2R', n:4});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"04_الصف_الرابع_الابتدائي/01_المخلوقات_الحية/01_ممالك_المخلوقات_الحية/01_الخلايا/علوم_رابع_ابتدائي_ف1_الدرس_الأول_الخلايا.html","title":"الخلايا","grade":4,"emoji":"🔬","photoTopic":"cells","observeQuestion":"لماذا تبدو خلايا النبات مثل حجرات متجاورة عند فحص نسيج مناسب بالمجهر؟","facts":["الخلية وحدة بناء المخلوق الحي؛ وتتعاون الخلايا المتخصصة في الأجسام العديدة الخلايا.","يحيط بالخلية النباتية جدار خلوي خارج الغشاء، بينما تفتقر الخلية الحيوانية إلى هذا الجدار.","يكبّر المجهر صورة العينة؛ ولا يجعل الخلايا الحقيقية تنمو بمجرد تغيير العدسة."],"diagram":{"title":"من خلية إلى جهاز","relation":"hierarchy","nodes":[{"emoji":"🔬","label":"خلية","detail":"وحدة حية صغيرة"},{"emoji":"🧩","label":"نسيج","detail":"خلايا تؤدي وظيفة مشتركة"},{"emoji":"🫀","label":"عضو","detail":"أنسجة تعمل معًا، مثل القلب"},{"emoji":"🔄","label":"جهاز","detail":"أعضاء تتعاون، مثل جهاز الدوران"}],"caption":"مستويات تنظيم في جسم حيوان عديد الخلايا؛ المخلوق الوحيد الخلية لا يملك هذه الأجهزة."},"lab":{"title":"عدسة أكبر ومجال أصغر","question":"كيف يتغير ما نراه عند زيادة التكبير مع بقاء شريحة الخلايا نفسها؟","controlLabel":"تكبير صورة الشريحة الافتراضية","options":["أقل","متوسط","أكبر"],"states":[{"label":"مجال واسع","emoji":"🔬","amount":9,"explanation":"تظهر مساحة أوسع من النسيج، فتدخل خلايا أكثر داخل نافذة المشاهدة في الرسم.","observation":"تسع علامات تمثل خلايا ظاهرة في المجال."},{"label":"مجال أضيق","emoji":"🔬","amount":4,"explanation":"تبدو صور الخلايا أكبر، لكن نافذة المشاهدة تشمل جزءًا أصغر من الشريحة نفسها.","observation":"أربع علامات لخلايا ظاهرة، دون نقص خلايا الشريحة."},{"label":"تفاصيل خلية","emoji":"🔬","amount":1,"explanation":"نقترب من خلية واحدة في الرسم، فنفحص تفاصيلها بينما تقع الخلايا الأخرى خارج مجال المشاهدة.","observation":"علامة واحدة لخلية داخل المجال المختار."}],"quantityLabel":"عدد الخلايا المرسومة داخل مجال المشاهدة الافتراضي","modelNote":"الأعداد خاصة بالرسم وليست قانونًا لعدسات المجهر؛ التكبير يغير الصورة والمجال، ولا يغير عدد خلايا العينة.","tryPrompt":"هل قلة الخلايا التي تراها بالتكبير الأكبر دليل على موت خلايا؟ فسّر."},"sources":[{"title":"OpenStax: الخلايا النباتية والحيوانية","url":"https://openstax.org/books/concepts-biology/pages/3-3-eukaryotic-cells"},{"title":"OpenStax: المجهر ومجال المشاهدة","url":"https://openstax.org/books/college-physics-2e/pages/26-4-microscopes"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

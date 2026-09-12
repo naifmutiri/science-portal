@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – ثالث ابتدائي – ف1 – الدرس الثاني: التجوية والتعرية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#DD8E22;--g-dark:#8C5709;--g-light:#FDF2E1}
+.card{border-color:#F3D9AE}
+.cover{background:linear-gradient(140deg,#8C5709 0%,#DD8E22 55%,#F0B65E 100%)}
+.endS{background:linear-gradient(140deg,#8C5709,#DD8E22)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>التَّجْوِيَةُ وَالتَّعْرِيَةُ</h1><div class="rule"></div>
+<div class="meta">الصف الثالث الابتدائي<br>الوحدة الثالثة: الأرض ومواردها<br>الفصل الخامس: الأرض تتغير — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أَيْنَ نَحْنُ فِي الْكِتَابِ؟</h2><span class="src">صفحات ١٤٢ – ١٤٨</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الصف</h3><p>الثالث الابتدائي</p></div><div class="card"><h3>الوحدة الثالثة</h3><p style="font-size:27px">الأرض ومواردها</p></div><div class="card"><h3>الفصل الخامس</h3><p style="font-size:27px">الأرض تتغير</p></div><div class="card"><h3>الدرس الثاني</h3><p style="font-size:26px">التجوية والتعرية<br><span class='muted' style='font-size:22px'>صفحات ١٤٢ – ١٤٨</span></p></div></div><div class="box idea" style="font-size:31px;"><strong>السُّؤَالُ الْأَسَاسِيُّ:</strong> كَيْفَ يَتَغَيَّرُ سَطْحُ الْأَرْضِ بِبُطْءٍ؟ &nbsp;<span class='muted' style='font-size:25px'>(ص ١٤٤)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأهداف</span><h2>أَهْدَافُ التَّعَلُّمِ</h2><span class="src">مستخلصة من ص ١٤٢ – ١٤٨</span></div>
+<div class="body"><p class="t">فِي نِهَايَةِ الدَّرْسِ أَكُونُ قَادِرًا عَلَى أَنْ:</p><ul class="list num"><li>أُعَرِّفَ التَّجْوِيَةَ وَأَذْكُرَ أَسْبَابَهَا.</li><li>أُوَضِّحَ دَوْرَ الْمَاءِ الْمُتَجَمِّدِ فِي تَفَتُّتِ الصُّخُورِ.</li><li>أُبَيِّنَ كَيْفَ تُسَبِّبُ الْمَخْلُوقَاتُ الْحَيَّةُ التَّجْوِيَةَ.</li><li>أُعَرِّفَ التَّعْرِيَةَ وَأَذْكُرَ عَوَامِلَهَا.</li><li>أُعَرِّفَ التَّرْسِيبَ وَأَصِفَ الْكُثْبَانَ الرَّمْلِيَّةَ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">التهيئة</span><h2>أَنْظُرُ وَأَتَسَاءَلُ</h2><span class="src">ص ١٤٢ — سؤال الكتاب</span></div>
+<div class="body center"><svg width="440" height="205" viewBox="0 0 340 158" role="img" aria-label="رسم وادٍ صخري بين جبلين في منطقة جازان">
+<rect x="0" y="0" width="340" height="66" fill="#8FC4E4"/>
+<path d="M0 66 L54 14 L104 66z" fill="#7A6E62"/>
+<path d="M236 66 L296 8 L340 66 z" fill="#6E6256"/>
+<path d="M92 66 L150 26 L206 66z" fill="#8A7E70"/>
+<g fill="#4E7B3A"><ellipse cx="34" cy="62" rx="20" ry="9"/><ellipse cx="128" cy="58" rx="18" ry="8"/>
+ <ellipse cx="266" cy="60" rx="22" ry="9"/><ellipse cx="200" cy="64" rx="16" ry="7"/></g>
+<rect x="0" y="66" width="340" height="92" fill="#C9BCA4"/>
+<g fill="#DED3BC"><ellipse cx="42" cy="94" rx="42" ry="18"/><ellipse cx="150" cy="86" rx="50" ry="20"/>
+ <ellipse cx="268" cy="98" rx="46" ry="19"/><ellipse cx="90" cy="126" rx="52" ry="21"/><ellipse cx="220" cy="132" rx="56" ry="22"/></g>
+<g fill="#B0A48C"><ellipse cx="24" cy="112" rx="18" ry="8"/><ellipse cx="196" cy="106" rx="16" ry="7"/><ellipse cx="312" cy="124" rx="20" ry="9"/></g>
+<path d="M0 108 q60 -14 120 -2 q70 14 220 -6" stroke="#9E9280" stroke-width="3" fill="none"/>
+<g fill="#5A7A3E"><ellipse cx="72" cy="72" rx="12" ry="6"/><ellipse cx="238" cy="76" rx="14" ry="6"/></g>
+</svg><div class="box ask" style="font-size:38px;max-width:1220px">كَانَ هَذَا الْوَادِي أَرْضًا مُنْبَسِطَةً. مَا الَّذِي يُسَبِّبُ تَشَكُّلَ الْأَوْدِيَةِ؟</div><p class="t muted' style='font-size:25px">وَادِي لَجَبٍ – جَازَانُ</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>مَاذَا أَعْرِفُ مِنْ قَبْلُ؟</h2><span class="src">تمهيد تربوي</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الزَّلَازِلُ وَالْبَرَاكِينُ</h3><p style="font-size:24px">تُغَيِّرُ سَطْحَ الْأَرْضِ بِسُرْعَةٍ</p></div><div class="card"><h3>الصُّخُورُ</h3><p style="font-size:26px">مِنْهَا الْكَبِيرُ وَمِنْهَا الصَّغِيرُ</p></div><div class="card"><h3>التُّرْبَةُ</h3><p style="font-size:26px">فِيهَا حُبَيْبَاتٌ صَغِيرَةٌ</p></div><div class="card"><h3>الْيَوْمَ</h3><p style="font-size:25px">كَيْفَ تَتَغَيَّرُ الْأَرْضُ بِبُطْءٍ؟</p></div></div><div class="box note"><strong>توضيح إضافي:</strong> بَعْضُ تَغَيُّرَاتِ الْأَرْضِ تَحْتَاجُ إِلَى مَلَايِينِ السِّنِينَ، وَلَكِنَّهَا جَبَّارَةٌ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>الْمُفْرَدَاتُ الْعِلْمِيَّةُ</h2><span class="src">ص ١٤٤ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>التَّجْوِيَةُ</h3><p style="font-size:25px">تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ.</p></div><div class="card"><h3>التَّعْرِيَةُ</h3><p style="font-size:24px">عَمَلِيَّةُ نَقْلِ الْفُتَاتِ الصَّخْرِيِّ النَّاتِجِ عَنْ عَمَلِيَّاتِ التَّجْوِيَةِ.</p></div></div><div class="cards"><div class="card"><h3>التَّرْسِيبُ</h3><p style="font-size:25px">عَمَلِيَّةُ تَجْمِيعِ لِفُتَاتِ الصُّخُورِ فِي أَمَاكِنَ مُخْتَلِفَةٍ.</p></div></div><p class="t muted' style='font-size:25px">الْمُفْرَدَاتُ الثَّلَاثُ كَمَا وَرَدَتْ فِي صَفْحَةِ «أَقْرَأُ وَأَتَعَلَّمُ» ص ١٤٤.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">مهارة القراءة</span><h2>اسْتِخْلَاصُ النَّتَائِجِ</h2><span class="src">ص ١٤٤ — مهارة القراءة في الكتاب</span></div>
+<div class="body center"><table class="cmp"><tr><th style="width:50%">إِرْشَادَاتُ النَّصِّ</th><th>الِاسْتِنْتَاجَاتُ</th></tr><tr><td>مَا الَّذِي يَذْكُرُهُ النَّصُّ؟</td><td>مَا الْفِكْرَةُ الَّتِي أَصِلُ إِلَيْهَا؟</td></tr></table><p class="t' style='font-size:29px">سَأَجْمَعُ إِرْشَادَاتِ النَّصِّ لِأَصِلَ إِلَى اسْتِنْتَاجٍ صَحِيحٍ.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>السُّؤَالُ الْأَسَاسِيُّ</h2><span class="src">ص ١٤٤</span></div>
+<div class="body center"><div class="box idea" style="font-size:46px;max-width:1250px;text-align:center;border-right:none;border-top:12px solid var(--g)">كَيْفَ يَتَغَيَّرُ سَطْحُ الْأَرْضِ بِبُطْءٍ؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>مَا التَّجْوِيَةُ؟</h2><span class="src">ص ١٤٤ — نص الكتاب</span></div>
+<div class="body"><p class="big">قَدْ يَظُنُّ الْبَعْضُ أَنَّ الصُّخُورَ لَا تَتَحَطَّمُ وَلَا تَتَفَتَّتُ. وَلَكِنَّ الْحَقِيقَةَ أَنَّ:</p><ul class="list"><li>الصُّخُورَ الْكَبِيرَةَ <span class='hl'>تَتَفَتَّتُ إِلَى أَجْزَاءٍ أَصْغَرَ</span>.</li><li>كَمَا أَنَّ الْأَجْزَاءَ الصَّغِيرَةَ <span class='hl'>تَتَفَتَّتُ إِلَى حُبَيْبَاتٍ أَصْغَرَ</span> وَتَصِيرُ <span class='hl'>جُزْءًا مِنَ التُّرْبَةِ</span>.</li></ul><div class="box idea" style="font-size:34px;">وَيُسَمَّى تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ عَمَلِيَّةَ <strong>التَّجْوِيَةِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>التَّجْوِيَةُ بَطِيئَةٌ جِدًّا</h2><span class="src">ص ١٤٤ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:30px;max-width:1250px;text-align:center">وَتَحْدُثُ التَّجْوِيَةُ عَادَةً <strong>بِبُطْءٍ شَدِيدٍ</strong>، وَتَصْعُبُ مُلَاحَظَتُهَا؛ فَتَجْوِيَةُ الصُّخُورِ يُمْكِنُ أَنْ تَحْتَاجَ إِلَى <strong>مَلَايِينِ السِّنِينَ</strong>.</div><p class="big">مَا أَسْبَابُ حُدُوثِ التَّجْوِيَةِ؟</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الْمِيَاهُ الْجَارِيَةُ</h3></div><div class="card center" style="text-align:center;"><h3>الرِّيَاحُ</h3></div><div class="card center" style="text-align:center;"><h3>الْأَمْطَارُ</h3></div><div class="card center" style="text-align:center;"><h3>تَغَيُّرَاتُ دَرَجَةِ الْحَرَارَةِ</h3></div></div><div class="box note" style="font-size:28px;">تَفَتَّتَتْ هَذِهِ الصُّخُورُ بِفِعْلِ الرِّيَاحِ. <span class='muted'>(ص ١٤٤)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>عَوَامِلُ التَّجْوِيَةِ</h2><span class="src">محاكاة لنص ص ١٤٤ – ١٤٥</span></div>
+<div class="body"><div class="sim" id="simA">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:26px">أَخْتَارُ عَامِلَ التَّجْوِيَةِ:</p>
+    <button class="tgl on" type="button" data-k="win"><span class="dot"></span>الرِّيَاحُ</button>
+    <button class="tgl" type="button" data-k="wat"><span class="dot"></span>الْمِيَاهُ الْجَارِيَةُ</button>
+    <button class="tgl" type="button" data-k="ice"><span class="dot"></span>تَجَمُّدُ الْمَاءِ</button>
+    <button class="tgl" type="button" data-k="liv"><span class="dot"></span>الْمَخْلُوقَاتُ الْحَيَّةُ</button>
+  </div>
+  <div class="simStage">
+    <svg width="400" height="235" viewBox="0 0 320 185" role="img" aria-label="محاكاة عوامل تجوية الصخور المختلفة">
+      <rect x="0" y="0" width="320" height="120" fill="#CDE7F7"/>
+      <rect x="0" y="120" width="320" height="65" fill="#C9BCA4"/>
+      <path id="tRock" d="M70 120 L84 62 L136 40 L204 54 L240 96 L252 120z" fill="#9A8C76"/>
+      <g id="tShade" fill="#877A66"><path d="M136 40 L204 54 L240 96 L188 96z"/></g>
+      <g id="tWind" style="opacity:0">
+        <g stroke="#8FA8BC" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M8 52 h52 q14 0 12 -10"/><path d="M8 72 h74 q16 0 14 -12"/><path d="M8 92 h44"/></g>
+        <g fill="#B0A48C"><circle cx="258" cy="60" r="4"/><circle cx="276" cy="74" r="3"/><circle cx="290" cy="56" r="3.4"/>
+          <circle cx="268" cy="92" r="3"/><circle cx="300" cy="84" r="4"/></g></g>
+      <g id="tWater" style="opacity:0">
+        <path d="M0 120 q40 -14 80 -4 q44 12 92 -2 q50 -14 148 6 v65 H0z" fill="#5E9AC4" opacity="0.8"/>
+        <path d="M0 126 q42 -10 84 0 q42 10 86 -2 q52 -14 150 6" stroke="#A9CFE4" stroke-width="4" fill="none"/>
+        <g fill="#B0A48C"><circle cx="60" cy="146" r="5"/><circle cx="150" cy="152" r="4"/><circle cx="240" cy="144" r="5"/></g></g>
+      <g id="tIce" style="opacity:0">
+        <path d="M150 40 L146 120" stroke="#7FBEE0" stroke-width="8" fill="none"/>
+        <path d="M186 52 L196 118" stroke="#7FBEE0" stroke-width="6" fill="none"/>
+        <g fill="#DCEFF8"><circle cx="150" cy="62" r="6"/><circle cx="148" cy="86" r="6"/><circle cx="190" cy="76" r="5"/></g>
+        <g stroke="#5E5244" stroke-width="3" fill="none"><path d="M150 40 L142 120 M186 52 L200 118"/></g></g>
+      <g id="tLiv" style="opacity:0">
+        <path d="M156 46 q-6 -20 4 -30" stroke="#6E5535" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <g fill="#4E8A3A"><ellipse cx="142" cy="16" rx="24" ry="11"/><ellipse cx="180" cy="10" rx="22" ry="10"/><ellipse cx="162" cy="0" rx="20" ry="10"/></g>
+        <g stroke="#8A7A5E" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M158 48 q-10 24 -14 46"/><path d="M158 48 q12 26 18 46"/></g>
+        <path d="M156 40 L150 120" stroke="#6E6256" stroke-width="5" fill="none"/></g>
+      <g id="tPieces" style="opacity:0" fill="#9A8C76">
+        <circle cx="52" cy="150" r="6"/><circle cx="96" cy="160" r="5"/><circle cx="272" cy="154" r="6"/><circle cx="300" cy="164" r="5"/></g>
+    </svg>
+    <div class="simTag" id="aTag"></div>
+    <div class="simMsg good" id="aMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>تَجَمُّدُ الْمَاءِ وَانْصِهَارُهُ</h2><span class="src">ص ١٤٥ — نص الكتاب</span></div>
+<div class="body"><p class="big">كَمَا أَنَّ مِيَاهَ الْأَمْطَارِ وَالثُّلُوجِ الْمُنْصَهِرَةِ <span class='hl'>تَتَخَلَّلُ الشُّقُوقَ وَمَسَامَاتِ الصُّخُورِ</span>،</p><ul class="list"><li>وَعِنْدَمَا <span class='hl'>يَتَجَمَّدُ الْمَاءُ</span> دَاخِلَهَا يَزِيدُ مِنْ تَشَقُّقِهَا.</li><li>وَعِنْدَمَا يُصْبِحُ الْجَوُّ دَافِئًا <span class='hl'>تَنْصَهِرُ الْمِيَاهُ الْمُتَجَمِّدَةُ</span>.</li></ul><div class="box idea" style="font-size:30px;">وَمَعَ مُرُورِ الزَّمَنِ يُؤَدِّي تَكْرَارُ تَجَمُّدِ الْمِيَاهِ وَانْصِهَارِهَا إِلَى <strong>تَفَتُّتِ الصُّخُورِ</strong>.</div><div class="box note" style="font-size:27px;">تَتَكَسَّرُ الصُّخُورُ عِنْدَمَا يَتَجَمَّدُ الْمَاءُ فِي شُقُوقِهَا. <span class='muted'>(ص ١٤٥)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الْمَخْلُوقَاتُ الْحَيَّةُ وَالتَّجْوِيَةُ</h2><span class="src">ص ١٤٥ — نص الكتاب</span></div>
+<div class="body center"><p class="big">وَيُمْكِنُ لِلْمَخْلُوقَاتِ الْحَيَّةِ أَنْ تُسَبِّبَ التَّجْوِيَةَ:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>النَّبَاتَاتُ</h3><p style="font-size:25px">فَقَدْ تَنْمُو فِي شُقُوقِ الصَّخْرِ، فَتُفَكِّكُهُ.</p></div><div class="card center" style="text-align:center;"><h3>الْحَيَوَانَاتُ</h3><p style="font-size:23px">وَعِنْدَمَا تَحْفِرُ الْأَرْضَ فَإِنَّهَا تَكْشِفُ الصُّخُورَ الْمَدْفُونَةَ، فَتَتَعَرَّضُ الصُّخُورُ لِلتَّجْوِيَةِ.</p></div></div><div class="box note" style="font-size:27px;">نَمَتْ هَذِهِ الشَّجَرَةُ فِي شِقٍّ دَاخِلَ الصَّخْرَةِ، وَقَسَمَتْهَا إِلَى جُزْأَيْنِ. <span class='muted'>(ص ١٤٥)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال من الكتاب</span><h2>أَقْرَأُ الصُّورَةَ</h2><span class="src">ص ١٤٥</span></div>
+<div class="body"><div class="qa"><p class="q">مَا سَبَبُ تَجْوِيَةِ هَذِهِ الصُّخُورِ؟</p><p class="t muted" style="font-size:26px;margin-top:8px">إِرْشَادُ الْكِتَابِ: النَّظَرُ إِلَى الصُّخُورِ فِي الصُّورَةِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>الصُّخُورُ فِي الصُّورَةِ <strong>مُتَشَقِّقَةٌ وَمُقَسَّمَةٌ إِلَى كُتَلٍ</strong> وَبَيْنَهَا شُقُوقٌ وَاسِعَةٌ.<br><strong>وَالسَّبَبُ:</strong> أَنَّ مِيَاهَ الْأَمْطَارِ تَتَخَلَّلُ شُقُوقَ الصُّخُورِ وَمَسَامَاتِهَا، وَعِنْدَمَا <strong>يَتَجَمَّدُ الْمَاءُ</strong> دَاخِلَهَا يَزِيدُ مِنْ تَشَقُّقِهَا، ثُمَّ <strong>يَنْصَهِرُ</strong> إِذَا دَفِئَ الْجَوُّ. وَمَعَ مُرُورِ الزَّمَنِ يُؤَدِّي تَكْرَارُ ذَلِكَ إِلَى <strong>تَفَتُّتِ الصُّخُورِ</strong>. (ص ١٤٥)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أَخْتَبِرُ نَفْسِي</h2><span class="src">ص ١٤٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أَسْتَخْلِصُ النَّتَائِجَ.</b> لِمَاذَا تَتَّسِعُ الشُّقُوقُ أَحْيَانًا فِي الصُّخُورِ فِي الْأَجْوَاءِ الْبَارِدَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>لِأَنَّ مِيَاهَ الْأَمْطَارِ وَالثُّلُوجِ <strong>تَتَخَلَّلُ الشُّقُوقَ وَمَسَامَاتِ الصُّخُورِ</strong>، وَفِي الْجَوِّ الْبَارِدِ <strong>يَتَجَمَّدُ الْمَاءُ دَاخِلَهَا فَيَزِيدُ مِنْ تَشَقُّقِهَا</strong>؛ لِأَنَّ الْمَاءَ الْمُتَجَمِّدَ يَدْفَعُ جَوَانِبَ الشِّقِّ وَيُوَسِّعُهُ. وَمَعَ تَكْرَارِ التَّجَمُّدِ وَالِانْصِهَارِ تَتَّسِعُ الشُّقُوقُ حَتَّى تَتَفَتَّتَ الصُّخُورُ. (ص ١٤٥)</div></div><div class="qa"><p class="q"><b>التَّفْكِيرُ النَّاقِدُ.</b> أُوَضِّحُ كَيْفَ يُسْهِمُ الْإِنْسَانُ فِي حُدُوثِ التَّجْوِيَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>يُسْهِمُ الْإِنْسَانُ فِي التَّجْوِيَةِ عِنْدَمَا:<br><strong>يَحْفِرُ الْأَرْضَ</strong> لِبِنَاءِ الطُّرُقِ وَالْمَنَازِلِ، <strong>فَيَكْشِفُ الصُّخُورَ الْمَدْفُونَةَ</strong> فَتَتَعَرَّضُ لِلْمَاءِ وَالرِّيَاحِ وَالْحَرَارَةِ.<br><strong>يُفَجِّرُ الصُّخُورَ وَيُكَسِّرُهَا</strong> فِي الْمَحَاجِرِ وَشَقِّ الْجِبَالِ.<br><strong>يُلَوِّثُ الْهَوَاءَ</strong> فَتَنْزِلُ الْأَمْطَارُ حَامِلَةً مَوَادَّ تُسْرِعُ تَفَتُّتَ الصُّخُورِ.<br><strong>يُزِيلُ النَّبَاتَاتِ</strong> فَتَنْكَشِفُ الْأَرْضُ وَتَزْدَادُ تَجْوِيَتُهَا.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>مَا التَّعْرِيَةُ؟</h2><span class="src">ص ١٤٦ — نص الكتاب</span></div>
+<div class="body center"><p class="big">عِنْدَمَا تَتَفَتَّتُ الصُّخُورُ بِفِعْلِ التَّجْوِيَةِ <span class='hl'>يَنْتَقِلُ الْفُتَاتُ الصَّخْرِيُّ إِلَى أَمَاكِنَ أُخْرَى</span>؛ بِفِعْلِ التَّعْرِيَةِ.</p><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center">وَ<span class='hl'>التَّعْرِيَةُ</span> عَمَلِيَّةُ نَقْلِ الْفُتَاتِ الصَّخْرِيِّ النَّاتِجِ عَنْ عَمَلِيَّاتِ التَّجْوِيَةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>التَّجْوِيَةُ وَالتَّعْرِيَةُ مَعًا</h2><span class="src">ص ١٤٦ — نص الكتاب</span></div>
+<div class="body"><p class="big">فَالتَّجْوِيَةُ وَالتَّعْرِيَةُ عَمَلِيَّتَانِ <span class='hl'>تَعْمَلَانِ مَعًا وَبِبُطْءٍ</span>،</p><div class="box idea" style="font-size:26px;">حَيْثُ أَثْبَتَتِ <strong>الْهَيْئَةُ الْمَلَكِيَّةُ لِمُحَافَظَةِ الْعُلَا</strong> أَنَّهُ قَدْ يَسْتَغْرِقُ تَفْتِيتُ الصُّخُورِ <strong>مَلَايِينَ السِّنِينَ</strong>، فَالتَّعْرِيَةُ عَمَلِيَّةٌ بَطِيئَةٌ لَكِنَّهَا <strong>جَبَّارَةٌ</strong>.</div><p class="big">وَتَعْمَلُ <span class='hl'>قُوَّةُ الْجَاذِبِيَّةِ</span> عَلَى نَقْلِ الْأَجْزَاءِ الصَّغِيرَةِ إِلَى أَسْفَلِ الْجِبَالِ.</p><div class="box note" style="font-size:27px;">سَقَطَتْ هَذِهِ الصُّخُورُ إِلَى الْأَسْفَلِ بِفِعْلِ قُوَّةِ الْجَاذِبِيَّةِ. <span class='muted'>(ص ١٤٦)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الْمِيَاهُ تَنْقُلُ الْفُتَاتَ</h2><span class="src">ص ١٤٧ — نص الكتاب</span></div>
+<div class="body center"><p class="big">وَتَحْمِلُ <span class='hl'>مِيَاهُ الْأَنْهَارِ وَالسُّيُولِ وَالْأَمْوَاجِ الْبَحْرِيَّةِ</span> فُتَاتَ الصُّخُورِ، وَتَنْقُلُهُ لِيَتَجَمَّعَ فِي أَمَاكِنَ أُخْرَى.</p><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center">فَ<span class='hl'>التَّرْسِيبُ</span> عَمَلِيَّةُ تَجْمِيعٍ لِفُتَاتِ الصُّخُورِ فِي أَمَاكِنَ مُخْتَلِفَةٍ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الرِّيَاحُ وَالْكُثْبَانُ الرَّمْلِيَّةُ</h2><span class="src">ص ١٤٧ — نص الكتاب</span></div>
+<div class="body"><p class="big">وَتَنْقُلُ <span class='hl'>الرِّيَاحُ</span> الْحُبَيْبَاتِ الصَّغِيرَةَ مِنَ الرَّمْلِ أَوِ الصَّخْرِ؛</p><div class="box idea" style="font-size:32px;">وَتَتَرَسَّبُ مُشَكِّلَةً <strong>الْكُثْبَانَ الرَّمْلِيَّةَ</strong>، وَهِيَ مِنَ الظَّوَاهِرِ الَّتِي <strong>تُمَيِّزُ الصَّحْرَاءَ</strong>.</div><div class="box note" style="font-size:28px;">تَتَرَسَّبُ حُبَيْبَاتُ الرَّمْلِ مُشَكِّلَةً الْكُثْبَانَ الرَّمْلِيَّةَ. <span class='muted'>(ص ١٤٧)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>تَجْوِيَةٌ ← تَعْرِيَةٌ ← تَرْسِيبٌ</h2><span class="src">محاكاة لنص ص ١٤٤ – ١٤٧</span></div>
+<div class="body"><div class="sim" id="simB" style="flex-direction:column;gap:14px">
+  <div style="display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap">
+    <button class="simBtn" type="button" id="bGo">أُشَغِّلُ الْعَمَلِيَّاتِ</button>
+    <button class="simBtn ghost" type="button" id="bRe">أُعِيدُ</button>
+    <span class="simTag" id="bTag">١ مِنْ ٣</span>
+  </div>
+  <svg width="460" height="205" viewBox="0 0 350 158" role="img" aria-label="محاكاة التجوية ثم التعرية ثم الترسيب">
+    <rect x="0" y="0" width="350" height="72" fill="#CDE7F7"/>
+    <rect x="0" y="72" width="350" height="86" fill="#C9BCA4"/>
+    <path d="M0 72 L48 22 L104 72z" fill="#8A7E70"/>
+    <path id="wRock" d="M40 72 L58 30 L92 44 L104 72z" fill="#9A8C76"/>
+    <g id="wCrack" style="opacity:0" stroke="#5E5244" stroke-width="3" fill="none">
+      <path d="M58 30 L64 54 L54 68 M76 38 L70 60 M84 42 L88 66"/></g>
+    <g id="wFrag" style="opacity:0" fill="#9A8C76">
+      <circle cx="118" cy="86" r="6"/><circle cx="140" cy="94" r="5"/><circle cx="106" cy="98" r="4"/></g>
+    <g id="wFlow" style="opacity:0">
+      <path d="M104 76 q60 20 130 12 q60 -8 116 10" stroke="#5E9AC4" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <path d="M104 76 q60 20 130 12 q60 -8 116 10" stroke="#A9CFE4" stroke-width="4" fill="none"/>
+      <g fill="#9A8C76"><circle cx="170" cy="88" r="5"/><circle cx="214" cy="86" r="4"/><circle cx="258" cy="82" r="5"/></g></g>
+    <g id="wDune" style="opacity:0">
+      <path d="M212 130 q40 -34 82 -8 q28 18 56 8 v28 H212z" fill="#E0C88E"/>
+      <path d="M212 130 q40 -34 82 -8" stroke="#C9AE74" stroke-width="3" fill="none"/>
+      <g fill="#CDB37C"><ellipse cx="256" cy="146" rx="26" ry="5"/><ellipse cx="312" cy="150" rx="24" ry="5"/></g></g>
+    <g font-size="14" font-family="sans-serif" fill="#5F4A2A" text-anchor="middle">
+      <text id="wLab" x="175" y="20"></text></g>
+  </svg>
+  <div class="simMsg good" id="bMsg"></div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>تَجْوِيَةٌ أَمْ تَعْرِيَةٌ أَمْ تَرْسِيبٌ؟</h2><span class="src">تدريب تفاعلي على نص ص ١٤٤ – ١٤٧</span></div>
+<div class="body"><div class="sim" id="simC" style="flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+    <span class="simTag" id="cN">١ مِنْ ٦</span><span class="score" id="cSc">الْإِجَابَاتُ الصَّحِيحَةُ: ٠</span>
+  </div>
+  <div class="sortCard" style="width:100%"><div class="nm" id="cNm" style="text-align:center;font-size:28px"></div></div>
+  <div class="sortBtns">
+    <button class="simBtn" data-v="0" type="button">تَجْوِيَةٌ</button>
+    <button class="simBtn ghost" data-v="1" type="button">تَعْرِيَةٌ</button>
+    <button class="simBtn ghost" data-v="2" type="button">تَرْسِيبٌ</button>
+  </div>
+  <div class="simMsg neutral" id="cMsg">أَخْتَارُ الْعَمَلِيَّةَ، ثُمَّ أَعْرِفُ السَّبَبَ.</div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أَخْتَبِرُ نَفْسِي</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أَسْتَخْلِصُ النَّتَائِجَ.</b> مَا أَسْبَابُ حُدُوثِ عَمَلِيَّةِ التَّعْرِيَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>قُوَّةُ الْجَاذِبِيَّةِ:</strong> تَنْقُلُ الْأَجْزَاءَ الصَّغِيرَةَ إِلَى أَسْفَلِ الْجِبَالِ.<br><strong>الْمِيَاهُ:</strong> مِيَاهُ الْأَنْهَارِ وَالسُّيُولِ وَالْأَمْوَاجِ الْبَحْرِيَّةِ تَحْمِلُ فُتَاتَ الصُّخُورِ وَتَنْقُلُهُ.<br><strong>الرِّيَاحُ:</strong> تَنْقُلُ الْحُبَيْبَاتِ الصَّغِيرَةَ مِنَ الرَّمْلِ أَوِ الصَّخْرِ. (ص ١٤٦ – ١٤٧)</div></div><div class="qa"><p class="q"><b>التَّفْكِيرُ النَّاقِدُ.</b> مَتَى تَحْدُثُ عَمَلِيَّةُ التَّعْرِيَةِ بِسُرْعَةٍ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>تَحْدُثُ التَّعْرِيَةُ بِسُرْعَةٍ عِنْدَمَا <strong>تَشْتَدُّ الْقُوَّةُ النَّاقِلَةُ</strong>:<br>عِنْدَ <strong>السُّيُولِ وَالْأَمْطَارِ الْغَزِيرَةِ وَالْفَيَضَانَاتِ</strong>؛ فَالْمَاءُ السَّرِيعُ يَحْمِلُ فُتَاتًا أَكْثَرَ.<br>عِنْدَ <strong>الرِّيَاحِ الشَّدِيدَةِ</strong> وَالْعَوَاصِفِ الرَّمْلِيَّةِ.<br>عَلَى <strong>الْمُنْحَدَرَاتِ الشَّدِيدَةِ</strong>؛ لِأَنَّ الْجَاذِبِيَّةَ تَسْحَبُ الْفُتَاتَ بِسُرْعَةٍ.<br>وَعِنْدَمَا تَكُونُ الْأَرْضُ <strong>خَالِيَةً مِنَ النَّبَاتَاتِ</strong>؛ فَجُذُورُ النَّبَاتَاتِ تُمْسِكُ التُّرْبَةَ وَتَحْفَظُهَا مِنَ الِانْجِرَافِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>نَشَاطُ الْكِتَابِ — تَرْسِيبُ الْمَوَادِّ</h2><span class="src">ص ١٤٧ — خطوات النشاط</span></div>
+<div class="body"><ul class="list num"><li><span><strong style='color:var(--g-dark)'>أَعْمَلُ نَمُوذَجًا.</strong> أَضَعُ كُوبًا مِنْ كُلٍّ مِنَ الرَّمْلِ، وَالطِّينِ وَالْحَصَى فِي وِعَاءٍ، وَأَمْلَأُ الْوِعَاءَ تَمَامًا بِالْمَاءِ، ثُمَّ أُغْلِقُهُ جَيِّدًا.</span></li><li><span>أَرُجُّ الْوِعَاءَ حَوَالَيْ ١٠ مَرَّاتٍ، وَأَدَعُهُ حَتَّى يَصْفُوَ، وَأَرْسُمُ مَا أُشَاهِدُهُ.</span></li></ul><div class="box safe" style="font-size:27px;">أُغْلِقُ الْوِعَاءَ جَيِّدًا قَبْلَ الرَّجِّ، وَأَرُجُّهُ بَعِيدًا عَنْ وَجْهِي، وَأَغْسِلُ يَدَيَّ بَعْدَ النَّشَاطِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">إجابة النشاط</span><h2>الْخُطُوَتَانِ ٣ وَ ٤</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٣. أُفَسِّرُ الْبَيَانَاتِ.</b> مَا التَّرْتِيبُ الَّذِي حَدَثَ لِلْمَوَادِّ عِنْدَمَا تَرَسَّبَتْ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>تَرَسَّبَتِ الْمَوَادُّ فِي <strong>طَبَقَاتٍ</strong> مِنْ أَسْفَلَ إِلَى أَعْلَى:<br><strong>الْحَصَى</strong> فِي الْأَسْفَلِ؛ لِأَنَّهُ الْأَثْقَلُ وَالْأَكْبَرُ حَجْمًا فَتَرَسَّبَ أَوَّلًا.<br>ثُمَّ <strong>الرَّمْلُ</strong> فَوْقَهُ.<br>ثُمَّ <strong>الطِّينُ</strong> فِي الْأَعْلَى؛ لِأَنَّ حُبَيْبَاتِهِ الْأَصْغَرُ وَالْأَخَفُّ فَتَرَسَّبَتْ أَخِيرًا.</div></div><div class="qa"><p class="q"><b>٤. أَسْتَنْتِجُ.</b> مَاذَا يَحْدُثُ لِفُتَاتِ الصُّخُورِ الْمَنْقُولَةِ إِلَى الْأَنْهَارِ عِنْدَمَا تَقِلُّ سُرْعَةُ الْمَاءِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>عِنْدَمَا تَقِلُّ سُرْعَةُ الْمَاءِ <strong>لَا يَسْتَطِيعُ حَمْلَ الْفُتَاتِ</strong>، فَ<strong>يَتَرَسَّبُ فِي الْقَاعِ</strong>.<br>وَيَتَرَسَّبُ <strong>الْأَكْبَرُ وَالْأَثْقَلُ أَوَّلًا</strong> (الْحَصَى)، ثُمَّ الرَّمْلُ، ثُمَّ الطِّينُ الْأَخَفُّ.<br>وَبِتَكْرَارِ ذَلِكَ تَتَجَمَّعُ الرَّوَاسِبُ فِي أَمَاكِنَ مُخْتَلِفَةٍ — وَهَذِهِ عَمَلِيَّةُ <strong>التَّرْسِيبِ</strong>. (ص ١٤٧)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أَسْتَكْشِفُ — الْفَرَضِيَّةُ وَالْأَدَوَاتُ</h2><span class="src">ص ١٤٣ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:29px;"><strong>سؤال النشاط:</strong> كَيْفَ تَتَغَيَّرُ الصُّخُورُ بِفِعْلِ الْمِيَاهِ الْجَارِيَةِ؟</div><div class="box note" style="font-size:24px;"><strong>أُكَوِّنُ فَرَضِيَّةً:</strong> مَاذَا يَحْدُثُ لِلصُّخُورِ عِنْدَمَا تَتَحَرَّكُ فِي الْمَاءِ؟ أَكْتُبُ فَرَضِيَّةً عَلَى النَّحْوِ الْآتِي: «إِذَا حَرَّكْتُ الصُّخُورَ بِقُوَّةٍ فِي الْمَاءِ فَإِنَّ .........».</div><p class="t"><strong>أَحْتَاجُ إِلَى:</strong></p><div class="cards"><div class="card center" style="text-align:center;"><h3>كَأْسٍ مُدَرَّجَةٍ</h3></div><div class="card center" style="text-align:center;"><h3>صُخُورٍ رَمْلِيَّةٍ</h3></div><div class="card center" style="text-align:center;"><h3>ثَلَاثَةِ أَوْعِيَةٍ بِلَاسْتِيكِيَّةٍ مُغَطَّاةٍ</h3></div><div class="card center" style="text-align:center;"><h3>سَاعَةِ إِيقَافٍ · عَدَسَةٍ مُكَبِّرَةٍ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أَسْتَكْشِفُ — الْخُطُوَاتُ</h2><span class="src">ص ١٤٣ — الخطوات ١ – ٣</span></div>
+<div class="body"><ul class="list num"><li><span><strong style='color:var(--g-dark)'>أَقِيسُ.</strong> أَضَعُ مُلْصَقًا عَلَى كُلِّ وِعَاءٍ يَحْمِلُ أَحَدَ الْحُرُوفِ (أ، ب، ج)، ثُمَّ أَضَعُ فِي كُلٍّ مِنْهَا قِطَعًا مُتَسَاوِيَةً مِنَ الصَّخْرِ. أَمْلَأُ الْأَوْعِيَةَ بِالْكَمِّيَّةِ نَفْسِهَا مِنَ الْمَاءِ، وَأَضَعُ عَلَيْهَا الْأَغْطِيَةَ.</span></li><li><span><strong style='color:var(--g-dark)'>أَتَعَامَلُ مَعَ الْمُتَغَيِّرَاتِ.</strong><br>— أَتْرُكُ الْوِعَاءَ (أ) وَلَا أُحَرِّكُهُ.<br>— أَرُجُّ الْوِعَاءَ (ب) بِقُوَّةٍ مُدَّةَ دَقِيقَتَيْنِ، ثُمَّ أَتْرُكُهُ حَتَّى يَصْفُوَ.<br>— أَرُجُّ الْوِعَاءَ (ج) بِقُوَّةٍ مُدَّةَ خَمْسِ دَقَائِقَ، ثُمَّ أَتْرُكُهُ حَتَّى يَصْفُوَ.</span></li><li><span><strong style='color:var(--g-dark)'>أُلَاحِظُ.</strong> أَسْتَخْدِمُ عَدَسَةً مُكَبِّرَةً، وَأُلَاحِظُ الصُّخُورَ فِي الْأَوْعِيَةِ كُلِّهَا. مَاذَا حَدَثَ؟</span></li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أستخلص النتائج</span><h2>الْخُطُوَتَانِ ٣ وَ ٤</h2><span class="src">ص ١٤٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٣. أُلَاحِظُ.</b> مَاذَا حَدَثَ لِلصُّخُورِ فِي الْأَوْعِيَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>الْوِعَاءُ (أ):</strong> بَقِيَتِ الصُّخُورُ كَمَا هِيَ، وَالْمَاءُ صَافٍ.<br><strong>الْوِعَاءُ (ب):</strong> صَارَ الْمَاءُ <strong>عَكِرًا قَلِيلًا</strong>، وَظَهَرَ فُتَاتٌ رَمْلِيٌّ فِي الْقَاعِ، وَبَدَتْ حَوَافُّ الصُّخُورِ أَقَلَّ حِدَّةً.<br><strong>الْوِعَاءُ (ج):</strong> صَارَ الْمَاءُ <strong>أَشَدَّ عَكَارَةً</strong>، وَازْدَادَ الْفُتَاتُ فِي الْقَاعِ، وَصَارَتِ الصُّخُورُ <strong>أَمْلَسَ وَأَصْغَرَ</strong>.</div></div><div class="qa"><p class="q"><b>٤. أَسْتَنْتِجُ.</b> كَيْفَ تَتَغَيَّرُ الصُّخُورُ بِفِعْلِ الْمِيَاهِ الْجَارِيَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>الْمِيَاهُ الْجَارِيَةُ <strong>تُحَرِّكُ الصُّخُورَ فَتَصْطَدِمُ بَعْضُهَا بِبَعْضٍ</strong>، فَ<strong>تَتَفَتَّتُ إِلَى أَجْزَاءٍ أَصْغَرَ</strong> وَ<strong>تَنْعَمُ حَوَافُّهَا</strong>. وَ<strong>كُلَّمَا زَادَتْ مُدَّةُ الْحَرَكَةِ وَقُوَّتُهَا زَادَ التَّفَتُّتُ</strong>. وَهَذِهِ هِيَ عَمَلِيَّةُ <strong>التَّجْوِيَةِ</strong> بِفِعْلِ الْمِيَاهِ الْجَارِيَةِ. (ص ١٤٤)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف أكثر</span><h2>أُجَرِّبُ</h2><span class="src">ص ١٤٣</span></div>
+<div class="body"><div class="qa"><p class="q">هَلْ أَحْصُلُ عَلَى النَّتَائِجِ نَفْسِهَا لَوِ اسْتَخْدَمْتُ أَنْوَاعًا أُخْرَى مِنَ الصُّخُورِ؟ أَضَعُ خُطَّةً لِلْإِجَابَةِ عَنْ ذَلِكَ، ثُمَّ أُجَرِّبُهَا عَمَلِيًّا.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>خُطَّتِي:</strong><br>١. أُجَهِّزُ ثَلَاثَةَ أَوْعِيَةٍ فِي كُلٍّ مِنْهَا <strong>نَوْعٌ مُخْتَلِفٌ مِنَ الصُّخُورِ</strong> (رَمْلِيٌّ · جِيرِيٌّ · جْرَانِيتٌ صُلْبٌ) بِالْكَتْلَةِ نَفْسِهَا.<br>٢. أُضِيفُ إِلَى كُلٍّ مِنْهَا <strong>الْكَمِّيَّةَ نَفْسَهَا مِنَ الْمَاءِ</strong>، وَأُغْلِقُهَا.<br>٣. أَرُجُّ كُلَّ وِعَاءٍ <strong>بِالْقُوَّةِ نَفْسِهَا وَالْمُدَّةِ نَفْسِهَا</strong> (٥ دَقَائِقَ).<br>٤. أُلَاحِظُ بِالْعَدَسَةِ الْمُكَبِّرَةِ وَأُقَارِنُ كَمِّيَّةَ الْفُتَاتِ فِي كُلِّ وِعَاءٍ.<br><strong>تَوَقُّعِي:</strong> <strong>لَا أَحْصُلُ عَلَى النَّتَائِجِ نَفْسِهَا</strong>؛ فَالصُّخُورُ الرَّمْلِيَّةُ اللَّيِّنَةُ تَتَفَتَّتُ أَسْرَعَ، أَمَّا الصُّخُورُ الصُّلْبَةُ فَتَحْتَاجُ إِلَى وَقْتٍ أَطْوَلَ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السُّؤَالَانِ ١ وَ ٢</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="qa"><p class="q"><b>١. الْمُفْرَدَاتُ.</b> مَا الْمَقْصُودُ بِالتَّعْرِيَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>التَّعْرِيَةُ <strong>عَمَلِيَّةُ نَقْلِ الْفُتَاتِ الصَّخْرِيِّ النَّاتِجِ عَنْ عَمَلِيَّاتِ التَّجْوِيَةِ</strong> إِلَى أَمَاكِنَ أُخْرَى. (ص ١٤٦)</div></div><div class="qa"><p class="q"><b>٢. أَسْتَخْلِصُ النَّتَائِجَ.</b> مَاذَا يَحْدُثُ لِفُتَاتِ الصُّخُورِ النَّاتِجَةِ عَنِ التَّعْرِيَةِ عِنْدَ حُدُوثِ عَمَلِيَّةِ التَّرْسِيبِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>إِرْشَادَاتُ النَّصِّ:</strong> تَحْمِلُ مِيَاهُ الْأَنْهَارِ وَالسُّيُولِ وَالْأَمْوَاجِ الْبَحْرِيَّةِ فُتَاتَ الصُّخُورِ وَتَنْقُلُهُ لِيَتَجَمَّعَ فِي أَمَاكِنَ أُخْرَى. وَتَنْقُلُ الرِّيَاحُ الْحُبَيْبَاتِ الصَّغِيرَةَ.<br><strong>الِاسْتِنْتَاجُ:</strong> يَتَوَقَّفُ الْفُتَاتُ عَنِ الْحَرَكَةِ وَ<strong>يَتَجَمَّعُ فِي أَمَاكِنَ مُخْتَلِفَةٍ</strong>؛ فَيَتَرَسَّبُ الْأَكْبَرُ وَالْأَثْقَلُ أَوَّلًا ثُمَّ الْأَصْغَرُ، وَتَتَكَوَّنُ مِنْهُ مَعَالِمُ جَدِيدَةٌ مِثْلُ <strong>الْكُثْبَانِ الرَّمْلِيَّةِ</strong>. (ص ١٤٧)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السُّؤَالَانِ ٣ وَ ٤</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٣. التَّفْكِيرُ النَّاقِدُ.</b> كَيْفَ تَعْمَلُ كُلٌّ مِنَ التَّجْوِيَةِ وَالتَّعْرِيَةِ مَعًا عَلَى تَغْيِيرِ مَعَالِمِ سَطْحِ الْأَرْضِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>أَوَّلًا التَّجْوِيَةُ:</strong> تُفَتِّتُ الصُّخُورَ الْكَبِيرَةَ إِلَى أَجْزَاءٍ أَصْغَرَ بِفِعْلِ الْمِيَاهِ وَالرِّيَاحِ وَالْأَمْطَارِ وَتَغَيُّرَاتِ الْحَرَارَةِ وَالْمَخْلُوقَاتِ الْحَيَّةِ.<br><strong>ثُمَّ التَّعْرِيَةُ:</strong> تَنْقُلُ هَذَا الْفُتَاتَ إِلَى أَمَاكِنَ أُخْرَى بِفِعْلِ الْجَاذِبِيَّةِ وَالْمِيَاهِ وَالرِّيَاحِ.<br><strong>ثُمَّ التَّرْسِيبُ:</strong> يَتَجَمَّعُ الْفُتَاتُ فِي أَمَاكِنَ جَدِيدَةٍ.<br>وَبِتَكْرَارِ ذَلِكَ <strong>مَلَايِينَ السِّنِينَ</strong> تَتَشَكَّلُ <strong>الْأَوْدِيَةُ</strong> وَتَنْخَفِضُ الْجِبَالُ وَتَتَكَوَّنُ <strong>الْكُثْبَانُ الرَّمْلِيَّةُ</strong>؛ فَالتَّعْرِيَةُ عَمَلِيَّةٌ بَطِيئَةٌ لَكِنَّهَا <strong>جَبَّارَةٌ</strong>. (ص ١٤٦)</div></div><div class="qa"><p class="q"><b>٤. أَخْتَارُ الْإِجَابَةَ الصَّحِيحَةَ.</b> أَيُّ الْعَوَامِلِ الْآتِيَةِ لَيْسَ مِنْ عَوَامِلِ التَّجْوِيَةِ؟<br>أ – الْمِيَاهُ &nbsp;|&nbsp; ب – الضَّوْءُ &nbsp;|&nbsp; ج – الرِّيَاحُ &nbsp;|&nbsp; د – النَّبَاتَاتُ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الْإِجَابَةُ الصَّحِيحَةُ: <strong>ب – الضَّوْءُ</strong>. فَعَوَامِلُ التَّجْوِيَةِ هِيَ الْمِيَاهُ الْجَارِيَةُ وَالرِّيَاحُ وَالْأَمْطَارُ وَتَغَيُّرَاتُ دَرَجَةِ الْحَرَارَةِ، وَكَذَلِكَ الْمَخْلُوقَاتُ الْحَيَّةُ كَالنَّبَاتَاتِ. (ص ١٤٤ – ١٤٥)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السُّؤَالُ الْأَسَاسِيُّ</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٥. السُّؤَالُ الْأَسَاسِيُّ.</b> كَيْفَ يَتَغَيَّرُ سَطْحُ الْأَرْضِ بِبُطْءٍ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>يَتَغَيَّرُ سَطْحُ الْأَرْضِ بِبُطْءٍ بِثَلَاثِ عَمَلِيَّاتٍ مُتَتَابِعَةٍ:<br><strong>١. التَّجْوِيَةُ:</strong> تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ بِفِعْلِ الْمِيَاهِ الْجَارِيَةِ وَالرِّيَاحِ وَالْأَمْطَارِ وَتَغَيُّرَاتِ الْحَرَارَةِ وَتَجَمُّدِ الْمَاءِ وَالْمَخْلُوقَاتِ الْحَيَّةِ.<br><strong>٢. التَّعْرِيَةُ:</strong> نَقْلُ الْفُتَاتِ الصَّخْرِيِّ إِلَى أَمَاكِنَ أُخْرَى بِفِعْلِ الْجَاذِبِيَّةِ وَالْمِيَاهِ وَالرِّيَاحِ.<br><strong>٣. التَّرْسِيبُ:</strong> تَجْمِيعُ الْفُتَاتِ فِي أَمَاكِنَ مُخْتَلِفَةٍ، وَمِنْ ذَلِكَ تَكَوُّنُ الْكُثْبَانِ الرَّمْلِيَّةِ.<br>وَهَذِهِ الْعَمَلِيَّاتُ تَحْتَاجُ إِلَى <strong>مَلَايِينِ السِّنِينَ</strong>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>مُلَخَّصٌ مُصَوَّرٌ</h2><span class="src">ص ١٤٨ — ملخص الكتاب</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:26%">الْمِحْوَرُ</th><th>الْخُلَاصَةُ</th></tr><tr><td>التَّجْوِيَةُ</td><td>التَّجْوِيَةُ نَاتِجَةٌ عَنْ تَفَتُّتِ الصُّخُورِ الْكَبِيرَةِ إِلَى أَجْزَاءٍ صَغِيرَةٍ.</td></tr><tr><td>التَّعْرِيَةُ</td><td>تَحْدُثُ التَّعْرِيَةُ عِنْدَمَا يَنْتَقِلُ الْفُتَاتُ الصَّخْرِيُّ مِنْ مَكَانٍ إِلَى آخَرَ.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">المطويات</span><h2>أُنَظِّمُ أَفْكَارِي</h2><span class="src">ص ١٤٨ — المطويات</span></div>
+<div class="body center"><div class="box idea" style="font-size:31px;max-width:1250px;text-align:center">أَعْمَلُ مَطْوِيَّةً كَالْمُبَيَّنَةِ فِي الشَّكْلِ، أُلَخِّصُ فِيهَا مَا تَعَلَّمْتُهُ عَنِ التَّجْوِيَةِ وَالتَّعْرِيَةِ.</div><div class="cards"><div class="card center" style="text-align:center;background:#FDF2E1;border-color:#F3D9AE"><h3>التَّجْوِيَةُ</h3></div><div class="card center" style="text-align:center;background:#EAF6F0;border-color:#A9D9C3"><h3>التَّعْرِيَةُ</h3></div><div class="card center" style="text-align:center;background:#E9F4FF;border-color:#A9CDEB"><h3>كَيْفَ يُغَيِّرُ التَّرْسِيبُ سَطْحَ الْأَرْضِ؟</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">العلوم والكتابة والمجتمع</span><h2>أَنْشِطَةُ التَّوَسُّعِ</h2><span class="src">ص ١٤٨ — الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:27px;"><strong>الْعُلُومُ وَالْكِتَابَةُ — أَكْتُبُ قِصَّةً:</strong> أَكْتُبُ قِصَّةً عَلَى لِسَانِ حَجَرٍ فِي نَهْرٍ جَارٍ. أُبَيِّنُ فِيهَا تَأْثِيرَ التَّجْوِيَةِ وَالتَّعْرِيَةِ فِيهِ.</div><div class="box note" style="font-size:25px;"><strong>الْعُلُومُ وَالْمُجْتَمَعُ — أُلَخِّصُ:</strong> أَكْتُبُ بَحْثًا حَوْلَ الْكُثْبَانِ الرَّمْلِيَّةِ، أُضَمِّنُهُ مَعْلُومَاتٍ عَنْ كَيْفِيَّةِ تَشَكُّلِهَا وَأَشْكَالِهَا وَعَلَاقَتِهَا بِتَعْرِيَةِ الصُّخُورِ. وَأَتَوَاصَلُ مَعَ زُمَلَائِي بِمَا تَوَصَّلْتُ إِلَيْهِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">تدريب إضافي</span><h2>أَسْئِلَةٌ تَدْرِيبِيَّةٌ إِضَافِيَّةٌ</h2><span class="src">من إعداد المعلم — ليست من الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. مَا الْفَرْقُ بَيْنَ التَّجْوِيَةِ وَالتَّعْرِيَةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>التَّجْوِيَةُ</strong> تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ فِي مَكَانِهَا، أَمَّا <strong>التَّعْرِيَةُ</strong> فَهِيَ <strong>نَقْلُ</strong> هَذَا الْفُتَاتِ إِلَى أَمَاكِنَ أُخْرَى. (ص ١٤٤ و ١٤٦)</div></div><div class="qa"><p class="q">٢. كَيْفَ تَتَكَوَّنُ الْكُثْبَانُ الرَّمْلِيَّةُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span>تَنْقُلُ <strong>الرِّيَاحُ</strong> الْحُبَيْبَاتِ الصَّغِيرَةَ مِنَ الرَّمْلِ أَوِ الصَّخْرِ، ثُمَّ <strong>تَتَرَسَّبُ</strong> مُشَكِّلَةً الْكُثْبَانَ الرَّمْلِيَّةَ، وَهِيَ مِنَ الظَّوَاهِرِ الَّتِي تُمَيِّزُ الصَّحْرَاءَ. (ص ١٤٧)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الملخص</span><h2>مَاذَا تَعَلَّمْتُ؟</h2><span class="src">خلاصة ص ١٤٢ – ١٤٨</span></div>
+<div class="body"><ul class="list"><li>التَّجْوِيَةُ تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ، وَتَحْدُثُ بِبُطْءٍ شَدِيدٍ.</li><li>أَسْبَابُ التَّجْوِيَةِ: الْمِيَاهُ الْجَارِيَةُ وَالرِّيَاحُ وَالْأَمْطَارُ وَتَغَيُّرَاتُ دَرَجَةِ الْحَرَارَةِ.</li><li>تَكْرَارُ تَجَمُّدِ الْمِيَاهِ فِي شُقُوقِ الصُّخُورِ وَانْصِهَارِهَا يُؤَدِّي إِلَى تَفَتُّتِهَا.</li><li>الْمَخْلُوقَاتُ الْحَيَّةُ تُسَبِّبُ التَّجْوِيَةَ؛ فَالنَّبَاتَاتُ تَنْمُو فِي الشُّقُوقِ فَتُفَكِّكُ الصَّخْرَ.</li><li>التَّعْرِيَةُ نَقْلُ الْفُتَاتِ الصَّخْرِيِّ بِفِعْلِ الْجَاذِبِيَّةِ وَالْمِيَاهِ وَالرِّيَاحِ.</li><li>التَّرْسِيبُ تَجْمِيعُ فُتَاتِ الصُّخُورِ فِي أَمَاكِنَ مُخْتَلِفَةٍ، وَمِنْهُ الْكُثْبَانُ الرَّمْلِيَّةُ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة مفاهيم</span><h2>أُرَتِّبُ أَفْكَارِي</h2><span class="src">تنظيم لمحتوى الدرس</span></div>
+<div class="body center"><div class="map"><div class="node">تَغَيُّرُ سَطْحِ الْأَرْضِ بِبُطْءٍ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#FDF2E1;border-color:#8C5709;color:#8C5709">التَّجْوِيَةُ</div><div class="line" style="background:#8C5709"></div><div class="leaves"><span class="node leaf">مِيَاهٌ وَرِيَاحٌ وَأَمْطَارٌ</span><span class="node leaf">تَغَيُّرَاتُ الْحَرَارَةِ وَالتَّجَمُّدُ</span><span class="node leaf">الْمَخْلُوقَاتُ الْحَيَّةُ</span></div></div><div class="col"><div class="node sub" style="background:#EAF6F0;border-color:#3F9E78;color:#3F9E78">التَّعْرِيَةُ وَالتَّرْسِيبُ</div><div class="line" style="background:#3F9E78"></div><div class="leaves"><span class="node leaf">الْجَاذِبِيَّةُ تَنْقُلُ إِلَى أَسْفَلَ</span><span class="node leaf">الْمِيَاهُ وَالرِّيَاحُ تَحْمِلُ الْفُتَاتَ</span><span class="node leaf">تَرْسِيبٌ ← كُثْبَانٌ رَمْلِيَّةٌ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أَخْتَارُ الْإِجَابَةَ الصَّحِيحَةَ</h2><span class="src">تفاعلي — أسئلة تدريبية</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">١. تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ يُسَمَّى:</p><div class="opts"><button class="opt" type="button">التَّعْرِيَةَ</button><button class="opt" type="button">التَّجْوِيَةَ</button><button class="opt" type="button">التَّرْسِيبَ</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">٢. الْقُوَّةُ الَّتِي تَنْقُلُ الْأَجْزَاءَ الصَّغِيرَةَ إِلَى أَسْفَلِ الْجِبَالِ هِيَ:</p><div class="opts"><button class="opt" type="button">قُوَّةُ الْجَاذِبِيَّةِ</button><button class="opt" type="button">ضَوْءُ الشَّمْسِ</button><button class="opt" type="button">الْبَرَاكِينُ</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">٣. تَتَشَكَّلُ الْكُثْبَانُ الرَّمْلِيَّةُ بِفِعْلِ:</p><div class="opts"><button class="opt" type="button">الزَّلَازِلِ</button><button class="opt" type="button">الْبَرَاكِينِ</button><button class="opt" type="button">تَرْسِيبِ الرِّيَاحِ لِلرَّمْلِ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قَبْلَ أَنْ أُغَادِرَ الصَّفَّ</h2><span class="src">تقويم ختامي</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;"><h3>١</h3><p style="font-size:30px">مَا التَّجْوِيَةُ؟</p></div><div class="card center" style="text-align:center;"><h3>٢</h3><p style="font-size:26px">أَذْكُرُ عَامِلَيْنِ مِنْ عَوَامِلِ التَّعْرِيَةِ.</p></div><div class="card center" style="text-align:center;"><h3>٣</h3><p style="font-size:30px">مَا التَّرْسِيبُ؟</p></div></div><p class="t' style='font-size:32px">أَكْتُبُ إِجَابَاتِي فِي بِطَاقَةٍ صَغِيرَةٍ وَأُسَلِّمُهَا لِلْمُعَلِّمِ.</p></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: التجوية والتعرية والترسيب</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1320" height="310" viewBox="0 0 1320 310" xmlns="http://www.w3.org/2000/svg" role="img" id="g3l10SvgHost"><defs><marker id="g3l10sq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><g class="eHot" data-k="break"><circle cx="1155" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(1092.0,87.0) scale(1.05)"><path d="M18 96 L34 52 L62 40 L92 56 L104 96z" fill="#8C9AA2"/><path d="M34 52 L62 40 L64 96 L34 96z" fill="#A6B2B9"/><circle cx="52" cy="70" r="5" fill="#78868E"/><circle cx="80" cy="76" r="4" fill="#78868E"/></g><g><text x="1155" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التجوية</text><text x="1155" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التجوية</text></g><circle cx="1211" cy="94" r="21" fill="#4A5568"/><text x="1211" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">١</text><rect class="hitBox" x="1081" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M1077 150 H 903" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g3l10sq)"/><g class="eHot" data-k="carry"><circle cx="825" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(762.0,87.0) scale(1.05)"><ellipse cx="60" cy="48" rx="38" ry="22" fill="#E8EEF3"/><ellipse cx="34" cy="56" rx="22" ry="15" fill="#E8EEF3"/><ellipse cx="86" cy="56" rx="22" ry="15" fill="#E8EEF3"/><path d="M38 78 l-6 18 M60 78 l-6 18 M82 78 l-6 18" stroke="#2C7FB8" stroke-width="7" stroke-linecap="round"/></g><g><text x="825" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التعرية</text><text x="825" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التعرية</text></g><circle cx="881" cy="94" r="21" fill="#4A5568"/><text x="881" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٢</text><rect class="hitBox" x="751" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M747 150 H 573" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g3l10sq)"/><g class="eHot" data-k="drop"><circle cx="495" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(432.0,87.0) scale(1.05)"><rect x="12" y="34" width="96" height="24" rx="6" fill="#5A3E23"/><rect x="12" y="58" width="96" height="22" fill="#8A6636"/><rect x="12" y="80" width="96" height="26" rx="6" fill="#A08768"/><circle cx="34" cy="90" r="7" fill="#7C6A54"/><circle cx="72" cy="94" r="9" fill="#7C6A54"/><path d="M46 34 v-16 M60 34 v-22 M74 34 v-14" stroke="#4E9A34" stroke-width="5" stroke-linecap="round"/></g><g><text x="495" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الترسيب</text><text x="495" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الترسيب</text></g><circle cx="551" cy="94" r="21" fill="#4A5568"/><text x="551" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٣</text><rect class="hitBox" x="421" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M417 150 H 243" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g3l10sq)"/><g class="eHot" data-k="shape"><circle cx="165" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(102.0,87.0) scale(1.05)"><rect x="0" y="70" width="120" height="40" fill="#E5CE9B"/><path d="M0 76 q 30 -14 60 0 t 60 0" fill="#D8BE85"/><circle cx="94" cy="34" r="17" fill="#F6C445"/><g><rect x="52" y="46" width="14" height="46" rx="7" fill="#4E9A34"/><rect x="34" y="58" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="34" y="58" width="10" height="24" rx="5" fill="#4E9A34"/><rect x="72" y="52" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="74" y="52" width="10" height="28" rx="5" fill="#4E9A34"/></g></g><g><text x="165" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">شكلٌ جديد</text><text x="165" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">شكلٌ جديد</text></g><circle cx="221" cy="94" r="21" fill="#4A5568"/><text x="221" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٤</text><rect class="hitBox" x="91" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">كيف يتغيَّر شكل الأرض ببطء؟</div></div><div class="eSteps" id="g3l10Pills"><span class="eStepPill" data-s="0">التجوية</span><span class="eStepPill" data-s="1">التعرية</span><span class="eStepPill" data-s="2">الترسيب</span><span class="eStepPill" data-s="3">شكلٌ جديد</span></div><div class="eInfo" id="g3l10Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g3l10Prev">◀ السابق</button><button class="simBtn" type="button" id="g3l10Next">التالي ▶</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>الماء يشقُّ الصخر ببطء؛ فما لا تقدر عليه القوةُ تفعله <b>المداومة</b> مع الزمن.</p></div><div class="fFact"><div class="n">٢</div><p>الرياح تنقل حبيبات الرمل فتنحت الصخور وتكوِّن أشكالًا عجيبة.</p></div><div class="fFact"><div class="n">٣</div><p>الحصى المستديرة في الوادي استدارت لأن الماء دحرجها زمنًا طويلًا.</p></div></div><div class="fCap">التجوية تفتِّت، والتعرية تنقل، والترسيب يُرسِي.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s3j"><div class="fCard"><div class="fIn"><div class="fF"><span>التَّجْوِيَةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تَفَتُّتُ الصُّخُورِ إِلَى أَجْزَاءٍ أَصْغَرَ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التَّعْرِيَةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عَمَلِيَّةُ نَقْلِ الْفُتَاتِ الصَّخْرِيِّ النَّاتِجِ عَنْ عَمَلِيَّاتِ التَّجْوِيَةِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التَّرْسِيبُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عَمَلِيَّةُ تَجْمِيعِ لِفُتَاتِ الصُّخُورِ فِي أَمَاكِنَ مُخْتَلِفَةٍ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s3jAll">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب بالترتيب الصحيح</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s3jgP"><button class="fChip" type="button" data-i="1">التعرية</button><button class="fChip" type="button" data-i="0">التجوية</button><button class="fChip" type="button" data-i="2">الترسيب</button></div><div class="fSlots" id="s3jgS"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div></div><div class="fFb" id="s3jgFb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s3jgR">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب العمليات الثلاث.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>تجربةٌ آمنة</h4><p>ضع حصًى صغيرةً في علبةٍ مغلقةٍ مع قليلٍ من الماء ورُجَّها دقيقتين، ثم لاحظ حوافَّها.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا تكون حصى النهر ملساءَ ومستديرة؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="3" aria-label="إثراء مصور: التجوية والتعرية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">ما الفرق بين تفتيت صخرة ونقل فتاتها إلى مكان آخر؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/erosion.jpg" alt="مياه نهر عند قاعدة جروف صخرية" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>نهر ياكيما بين جوانب الوادي؛ تسهم المياه الجارية في نحت سطح الأرض عبر الزمن.</figcaption><p class="se-credit">الصورة: Michael Campbell / Bureau of Land Management · <a href="https://commons.wikimedia.org/wiki/File:Yakima_River_Canyon_(26386474994).jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://commons.wikimedia.org/wiki/File:Yakima_River_Canyon_(26386474994).jpg#Licensing" target="_blank" rel="noopener noreferrer">Public domain</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>تفكك التجوية الصخور أو تغيرها في مكانها؛ وتنقل التعرية الفتات بالماء أو الرياح أو الجليد.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>قد يسهم الماء المتجمد في شقوق الصخور في توسيعها عند تكرار التجمد والذوبان.</span></p>
+<p class="se-fact"><span aria-hidden="true">🏞️</span><span>يحدث الترسيب عندما تستقر مواد منقولة؛ فقد تجمع المياه رملًا وحصى في مواضع جديدة.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.nps.gov/common/uploads/teachers/lessonplans/ErosionWeatheringChangeActivityGuideADA.pdf" target="_blank" rel="noopener noreferrer">NPS: التجوية والتعرية وتغير الأرض</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="3" aria-label="رسم توضيحي: من الصخرة إلى تجمع فتات جديد">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>من الصخرة إلى تجمع فتات جديد</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="من الصخرة إلى تجمع فتات جديد"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🪨</span><span class="se-node-label">صخرة</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🧩</span><span class="se-node-label">تجوية</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🌊</span><span class="se-node-label">تعرية</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🏖️</span><span class="se-node-label">ترسيب</span></button></div>
+
+<p class="se-diagram-caption">قد تتكرر هذه العمليات وتتداخل في الطبيعة.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🪨</span><div><strong data-detail-title>صخرة</strong><p data-detail-text>مادة صلبة في موضعها.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="3" aria-label="محاكاة إثرائية: غيّر سرعة الماء وراقب نقل الفتات">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>غيّر سرعة الماء وراقب نقل الفتات</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف تتغير قدرة الماء على حمل رمل متماثل إذا تغيرت سرعته وحدها؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">سرعة الجريان</p><div class="se-options" role="group" aria-label="سرعة الجريان"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">بطيئة</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">متوسطة</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">أسرع</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">ليس المؤشر عدد حبيبات حقيقيًا؛ يؤثر حجمها وتماسكها وعمق الماء أيضًا في التعرية.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي للفتات الذي ينقله الماء</p><div class="se-model" role="img" data-model aria-label="حمل أقل"><span class="se-symbol se-active" aria-hidden="true">🟤</span><span class="se-symbol se-active" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span><span class="se-symbol" aria-hidden="true">🟤</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>حمل أقل</p><p class="se-observation" data-observation>حبيبات منقولة أقل.</p></div><p class="se-explanation" data-explanation>نثبت حجم الحبيبات وشكل القناة وزمن المقارنة. ينقل الماء البطيء كمية أقل من الرمل في النموذج.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 أين تتوقع أن يترسب الرمل عندما يصل الماء إلى مكان أبطأ؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الثالث الابتدائي — الجزء الأول من المقرر<br>الوحدة الثالثة: الأرض ومواردها · الفصل الخامس: الأرض تتغير · الدرس الثاني: التجوية والتعرية<br>المصدر: كتاب الطالب، صفحات ١٤٢ – ١٤٨ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg');
+    var EL={win:'tWind',wat:'tWater',ice:'tIce',liv:'tLiv'};
+    var D={win:['الرِّيَاحُ','تَحْمِلُ الرِّيَاحُ حُبَيْبَاتٍ صَغِيرَةً تَحُتُّ سَطْحَ الصَّخْرِ فَتَتَفَتَّتُ. تَفَتَّتَتْ هَذِهِ الصُّخُورُ بِفِعْلِ الرِّيَاحِ. (ص ١٤٤)'],
+           wat:['الْمِيَاهُ الْجَارِيَةُ','تُحَرِّكُ الْمِيَاهُ الْجَارِيَةُ الصُّخُورَ فَيَصْطَدِمُ بَعْضُهَا بِبَعْضٍ وَتَتَفَتَّتُ وَتَنْعَمُ حَوَافُّهَا. (ص ١٤٤)'],
+           ice:['تَجَمُّدُ الْمَاءِ','تَتَخَلَّلُ مِيَاهُ الْأَمْطَارِ شُقُوقَ الصُّخُورِ، وَعِنْدَمَا يَتَجَمَّدُ الْمَاءُ دَاخِلَهَا يَزِيدُ مِنْ تَشَقُّقِهَا. وَتَكْرَارُ التَّجَمُّدِ وَالِانْصِهَارِ يُفَتِّتُ الصُّخُورَ. (ص ١٤٥)'],
+           liv:['الْمَخْلُوقَاتُ الْحَيَّةُ','تَنْمُو النَّبَاتَاتُ فِي شُقُوقِ الصَّخْرِ فَتُفَكِّكُهُ. وَعِنْدَمَا تَحْفِرُ الْحَيَوَانَاتُ الْأَرْضَ تَكْشِفُ الصُّخُورَ الْمَدْفُونَةَ فَتَتَعَرَّضُ لِلتَّجْوِيَةِ. (ص ١٤٥)']};
+    function show(k){
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===k); });
+      for(var j in EL){ document.getElementById(EL[j]).style.opacity=(j===k)?1:0; }
+      document.getElementById('tPieces').style.opacity=1;
+      tag.textContent=D[k][0]; msg.className='simMsg good'; msg.textContent=D[k][1];
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('win');
+  })();
+
+  (function(){
+    var go=document.getElementById('bGo'); if(!go) return;
+    var re=document.getElementById('bRe'), tag=document.getElementById('bTag'), msg=document.getElementById('bMsg');
+    var AR=['١','٢','٣'], i=0, t=null;
+    var D=[['التَّجْوِيَةُ','تَتَفَتَّتُ الصُّخُورُ الْكَبِيرَةُ إِلَى أَجْزَاءٍ أَصْغَرَ بِفِعْلِ الْمِيَاهِ وَالرِّيَاحِ وَالْأَمْطَارِ وَتَغَيُّرَاتِ الْحَرَارَةِ. (ص ١٤٤)'],
+           ['التَّعْرِيَةُ','يَنْتَقِلُ الْفُتَاتُ الصَّخْرِيُّ إِلَى أَمَاكِنَ أُخْرَى بِفِعْلِ الْجَاذِبِيَّةِ وَالْمِيَاهِ وَالرِّيَاحِ. (ص ١٤٦)'],
+           ['التَّرْسِيبُ','يَتَجَمَّعُ فُتَاتُ الصُّخُورِ فِي أَمَاكِنَ مُخْتَلِفَةٍ؛ وَتَتَرَسَّبُ حُبَيْبَاتُ الرَّمْلِ مُشَكِّلَةً الْكُثْبَانَ الرَّمْلِيَّةَ. (ص ١٤٧)']];
+    function draw(){
+      document.getElementById('wCrack').style.opacity=(i>=0)?1:0;
+      document.getElementById('wFrag').style.opacity=(i>=0)?1:0;
+      document.getElementById('wFlow').style.opacity=(i>=1)?1:0;
+      document.getElementById('wDune').style.opacity=(i>=2)?1:0;
+      document.getElementById('wLab').textContent=D[i][0];
+      tag.textContent=AR[i]+' مِنْ ٣'; msg.className='simMsg good'; msg.textContent=D[i][1];
+    }
+    function stop(){ if(t){ clearInterval(t); t=null; } go.textContent='أُشَغِّلُ الْعَمَلِيَّاتِ'; }
+    go.addEventListener('click',function(){
+      if(t){ stop(); return; } go.textContent='إِيقَافٌ';
+      t=setInterval(function(){ if(i<2){ i++; draw(); } else { stop(); } },1900); });
+    re.addEventListener('click',function(){ stop(); i=0; draw(); });
+    draw();
+  })();
+
+  (function(){
+    var box=document.getElementById('simC'); if(!box) return;
+    var nm=document.getElementById('cNm'), msg=document.getElementById('cMsg');
+    var cnt=document.getElementById('cN'), sc=document.getElementById('cSc');
+    var AR=['٠','١','٢','٣','٤','٥','٦'], LB=['تَجْوِيَةٌ','تَعْرِيَةٌ','تَرْسِيبٌ'];
+    var Q=[{t:'نَمَتْ شَجَرَةٌ فِي شِقِّ صَخْرَةٍ فَقَسَمَتْهَا إِلَى جُزْأَيْنِ',k:0,r:'الْمَخْلُوقَاتُ الْحَيَّةُ تُسَبِّبُ التَّجْوِيَةَ. (ص ١٤٥)'},
+           {t:'سَقَطَتْ صُخُورٌ إِلَى أَسْفَلِ الْجَبَلِ بِفِعْلِ الْجَاذِبِيَّةِ',k:1,r:'تَعْمَلُ قُوَّةُ الْجَاذِبِيَّةِ عَلَى نَقْلِ الْأَجْزَاءِ الصَّغِيرَةِ إِلَى أَسْفَلِ الْجِبَالِ. (ص ١٤٦)'},
+           {t:'تَجَمَّعَتْ حُبَيْبَاتُ الرَّمْلِ مُشَكِّلَةً كُثْبَانًا رَمْلِيَّةً',k:2,r:'التَّرْسِيبُ تَجْمِيعٌ لِفُتَاتِ الصُّخُورِ فِي أَمَاكِنَ مُخْتَلِفَةٍ. (ص ١٤٧)'},
+           {t:'تَجَمَّدَ الْمَاءُ فِي شُقُوقِ الصَّخْرِ فَاتَّسَعَتْ',k:0,r:'تَكْرَارُ تَجَمُّدِ الْمِيَاهِ وَانْصِهَارِهَا يُؤَدِّي إِلَى تَفَتُّتِ الصُّخُورِ. (ص ١٤٥)'},
+           {t:'حَمَلَتْ مِيَاهُ السَّيْلِ فُتَاتَ الصُّخُورِ بَعِيدًا',k:1,r:'التَّعْرِيَةُ نَقْلُ الْفُتَاتِ الصَّخْرِيِّ إِلَى أَمَاكِنَ أُخْرَى. (ص ١٤٦ – ١٤٧)'},
+           {t:'اسْتَقَرَّ الْحَصَى فِي قَاعِ النَّهْرِ عِنْدَ ضَعْفِ التَّيَّارِ',k:2,r:'عِنْدَمَا تَقِلُّ سُرْعَةُ الْمَاءِ يَتَرَسَّبُ الْفُتَاتُ فِي الْقَاعِ. (ص ١٤٧)'}];
+    var i=0, score=0, lock=false;
+    function show(){ nm.textContent=Q[i].t; cnt.textContent=AR[i+1]+' مِنْ ٦';
+      sc.textContent='الْإِجَابَاتُ الصَّحِيحَةُ: '+AR[score];
+      msg.className='simMsg neutral'; msg.textContent='أَخْتَارُ الْعَمَلِيَّةَ، ثُمَّ أَعْرِفُ السَّبَبَ.'; lock=false; }
+    function pick(v){
+      if(lock) return; lock=true;
+      if(Q[i].k===v){ score++; msg.className='simMsg good'; msg.textContent='✔ صَحِيحٌ. '+Q[i].r; }
+      else { msg.className='simMsg bad'; msg.textContent='✖ الصَّحِيحُ: '+LB[Q[i].k]+'. '+Q[i].r; }
+      sc.textContent='الْإِجَابَاتُ الصَّحِيحَةُ: '+AR[score];
+      setTimeout(function(){ i++;
+        if(i<Q.length) show();
+        else { msg.className='simMsg good'; msg.textContent='انْتَهَى التَّدْرِيبُ. نَتِيجَتِي: '+AR[score]+' مِنْ ٦.';
+               i=0; score=0; setTimeout(show,2600); } }, 2500);
+    }
+    box.querySelectorAll('.simBtn[data-v]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(parseInt(b.getAttribute('data-v'),10)); }); });
+    show();
+  })();
+
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g3l10SvgHost','g3l10Info',{'break':'<span><b>التجوية</b> — تتفتَّت الصخور إلى قطعٍ صغيرة.</span>','carry':'<span><b>التعرية</b> — الماء والرياح تنقل الفتات.</span>','drop':'<span><b>الترسيب</b> — يستقرُّ الفتات في مكانٍ جديد.</span>','shape':'<span><b>شكلٌ جديد</b> — يتغيَّر شكل الأرض مع الزمن.</span>'},'');
+ERT.stepper({pills:'g3l10Pills', info:'g3l10Info', svg:'g3l10SvgHost', next:'g3l10Next', prev:'g3l10Prev', stages:[['break','التجوية','تتفتَّت الصخور إلى قطعٍ صغيرة.'],['carry','التعرية','الماء والرياح تنقل الفتات.'],['drop','الترسيب','يستقرُّ الفتات في مكانٍ جديد.'],['shape','شكلٌ جديد','يتغيَّر شكل الأرض مع الزمن.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s3j');
+EG.order({pool:'s3jgP', slots:'s3jgS', fb:'s3jgFb', reset:'s3jgR', n:3});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"03_الصف_الثالث_الابتدائي/03_الأرض_ومواردها/05_الأرض_تتغير/02_التجوية_والتعرية/علوم_ثالث_ابتدائي_ف1_الدرس_الثاني_التجوية_والتعرية.html","title":"التجوية والتعرية","grade":3,"emoji":"🏞️","photoTopic":"erosion","observeQuestion":"ما الفرق بين تفتيت صخرة ونقل فتاتها إلى مكان آخر؟","facts":["تفكك التجوية الصخور أو تغيرها في مكانها؛ وتنقل التعرية الفتات بالماء أو الرياح أو الجليد.","قد يسهم الماء المتجمد في شقوق الصخور في توسيعها عند تكرار التجمد والذوبان.","يحدث الترسيب عندما تستقر مواد منقولة؛ فقد تجمع المياه رملًا وحصى في مواضع جديدة."],"diagram":{"title":"من الصخرة إلى تجمع فتات جديد","relation":"sequence","nodes":[{"emoji":"🪨","label":"صخرة","detail":"مادة صلبة في موضعها."},{"emoji":"🧩","label":"تجوية","detail":"تتشقق أو تتفتت."},{"emoji":"🌊","label":"تعرية","detail":"يحمل الماء بعض الفتات."},{"emoji":"🏖️","label":"ترسيب","detail":"يستقر الفتات في مكان آخر."}],"caption":"قد تتكرر هذه العمليات وتتداخل في الطبيعة."},"lab":{"title":"غيّر سرعة الماء وراقب نقل الفتات","question":"كيف تتغير قدرة الماء على حمل رمل متماثل إذا تغيرت سرعته وحدها؟","controlLabel":"سرعة الجريان","options":["بطيئة","متوسطة","أسرع"],"states":[{"label":"حمل أقل","emoji":"🟤","amount":2,"explanation":"نثبت حجم الحبيبات وشكل القناة وزمن المقارنة. ينقل الماء البطيء كمية أقل من الرمل في النموذج.","observation":"حبيبات منقولة أقل."},{"label":"حمل متوسط","emoji":"🟤","amount":5,"explanation":"عندما يزداد الجريان، تستطيع المياه تحريك مزيد من الحبيبات المتماثلة في المجرى الافتراضي.","observation":"نقل أوضح للرمل."},{"label":"حمل أكبر","emoji":"🟤","amount":9,"explanation":"يساعد الجريان الأسرع على تحريك كمية أكبر من هذا الرمل، مع بقاء المقارنة ضمن ظروف النموذج.","observation":"أكبر مؤشر نقل."}],"quantityLabel":"مؤشر وصفي للفتات الذي ينقله الماء","modelNote":"ليس المؤشر عدد حبيبات حقيقيًا؛ يؤثر حجمها وتماسكها وعمق الماء أيضًا في التعرية.","tryPrompt":"أين تتوقع أن يترسب الرمل عندما يصل الماء إلى مكان أبطأ؟"},"sources":[{"title":"NPS: التجوية والتعرية وتغير الأرض","url":"https://www.nps.gov/common/uploads/teachers/lessonplans/ErosionWeatheringChangeActivityGuideADA.pdf"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

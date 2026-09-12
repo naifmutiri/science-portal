@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – خامس ابتدائي – ف1 – التغيرات في الأنظمة البيئية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#3E9A8A;--g-dark:#245F55;--g-light:#E9F5F2}
+.card{border-color:#B9DED6}
+.cover{background:linear-gradient(140deg,#245F55 0%,#3E9A8A 55%,#7CC2B6 100%)}
+.endS{background:linear-gradient(140deg,#245F55,#3E9A8A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>التغيرات في الأنظمة البيئية</h1><div class="rule"></div>
+<div class="meta">الصف الخامس الابتدائي<br>الوحدة الثانية: الأنظمة البيئية<br>الفصل الرابع: الدورات والتغيرات في الأنظمة البيئية — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ١٢٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الثانية</h3><p>الأنظمة البيئية</p></div><div class="card"><h3>الفصل الرابع</h3><p>الدورات والتغيرات في الأنظمة البيئية</p></div><div class="card"><h3>الدرس الثاني</h3><p>التغيرات في الأنظمة البيئية</p></div></div><div class="box idea" style="font-size:30px;">السؤال الأساسي: كيف تغيِّر الأحداث الطبيعية والإنسان النظام البيئي؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:26px"><li>أذكر أسباب تغيُّر الأنظمة البيئية.</li><li>أُميِّز الكوارث الطبيعية وأثرها في النظام البيئي.</li><li>أُبيِّن كيف يغيِّر الإنسان وغيره من المخلوقات النظام البيئي.</li><li>أُفرِّق بين النوع المنقرض والنوع المهدَّد بالانقراض.</li><li>أذكر جهود المملكة في حماية البيئة والأنواع.</li><li>أُعرِّف التعاقب وأُفرِّق بين الأوَّلي والثانوي.</li><li>أَصِف مراحل التعاقب الأوَّلي حتى مجتمع الذَّروة.</li><li>أُوظِّف مهارة <b>السبب والنتيجة</b>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:33px;">صخور جرداء لا حياة فيها… كيف تتحوَّل بعد سنين إلى غابة كثيفة؟</div><p class="c">هذا ما نسمِّيه <b>التعاقب</b>. ولنتعرَّف أولًا ما الذي يغيِّر الأنظمة البيئية.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>العوامل المحدِّدة</h3><p>تتحكَّم في نمو الجماعات الحيوية.</p></div><div class="card center" style="text-align:center;"><h3>التكيُّف</h3><p>صفات تساعد المخلوقات على البقاء في بيئاتها.</p></div><div class="card center" style="text-align:center;"><h3>التلوُّث</h3><p>إضافة أشياء ضارَّة إلى الماء أو الهواء أو التربة.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١٢٨</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(4,1fr)"><div class="card"><h3>نوع منقرض</h3><p style="font-size:25px">نوع لم يعد له وجود على الأرض بعد موت آخر فرد منه.</p></div><div class="card"><h3>نوع مهدَّد بالانقراض</h3><p style="font-size:25px">نوع يتعرَّض لخطر موت أعداد كبيرة منه.</p></div><div class="card"><h3>التعاقب</h3><p style="font-size:25px">عملية تغيُّر النظام البيئي إلى نظام بيئي جديد ومختلف.</p></div><div class="card"><h3>تعاقب أوَّلي</h3><p style="font-size:25px">يظهر في مجتمع حيوي يعيش فيه عدد قليل من المخلوقات، أو في منطقة ماتت مخلوقاتها.</p></div><div class="card"><h3>الأنواع الرائدة</h3><p style="font-size:25px">مخلوقات حية مكوَّنة من الأشنات وبعض النباتات التي تنمو فوق الصخور.</p></div><div class="card"><h3>مجتمع الرُّوَّاد الحيوي</h3><p style="font-size:25px">ما تبنيه الأنواع الرائدة مع المخلوقات المجهرية الدقيقة.</p></div><div class="card"><h3>مجتمع الذَّروة</h3><p style="font-size:25px">المرحلة الأخيرة من التعاقب؛ حين تملأ الأشجار المنطقة فتصبح غابة.</p></div><div class="card"><h3>تعاقب ثانوي</h3><p style="font-size:25px">بدء تكوُّن مجتمع جديد بدل مجتمع قائم قبله لم تدمَّر عناصره تمامًا.</p></div></div><div class="box note" style="font-size:28px;">مهارة القراءة في هذا الدرس: <b>السبب والنتيجة</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>ماذا يحدث عندما يتغيَّر النظام البيئيُّ؟</h2><span class="src">ص ١٢٧ — نشاط الكتاب</span></div>
+<div class="body"><div class="box ask" style="font-size:24px;"><b>أتوقَّع:</b> تنمو الأشجار بمرور الزمن، ويزداد سُمك ساقها وفروعها؛ حيث يضاف إلى ساقها حلقة جديدة من الخشب كلَّ عام. يستند العلماء إلى تلك الحلقات في دراسة التغيُّرات في الأنظمة البيئية. كيف تغيَّرت الأنظمة البيئية للأشجار؟ أضع إجابة متوقعة.</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:1 1 0"><p class="c"><b>أختبر توقُّعي:</b></p><ul class="list num" style="font-size:25px"><li>أعدُّ الحلقات في النموذج. ما عمر هذه الشجرة؟</li><li><b>أقيس.</b> أستخدم المسطرة لقياس سُمك كل حلقة، وأسجِّل قياساتي.</li><li><b>أفسِّر البيانات.</b> أستعمل المعلومات في الجدول لأفسِّر بيانات الحلقات السنويَّة.</li></ul></div><div style="flex:0 0 440px"><table class="cmp"><tr><th style="width:35%">نوع الحلقة</th><th>الأحداث التي أثَّرت في الشجرة</th></tr><tr><td>حلقة سميكة</td><td>ظروف نموٍّ جيدة: دفء، أمطار جيدة</td></tr><tr><td>حلقة رقيقة</td><td>ظروف نموٍّ غير مناسبة: بَرْد، جفاف</td></tr><tr><td>ندوب سوداء</td><td>حريق</td></tr><tr><td>ندوب طويلة رقيقة</td><td>الإصابة بالأمراض أو التعرُّض لأذى الحشرات</td></tr></table></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ١٢٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. في أيِّ السنوات كانت الحلقات أكثر سُمكًا؟ وفي أيِّها كانت أقلَّ سُمكًا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٢٧</span>إجابة نموذجية مقترحة: تكون الحلقات أكثر سُمكًا في السنوات التي توافرت فيها <b>ظروف نموٍّ جيدة</b>: دفء وأمطار جيدة. وتكون أقلَّ سُمكًا في السنوات التي كانت فيها <b>ظروف نموٍّ غير مناسبة</b>: بَرْد وجفاف. ويحدِّد الطالب أرقام السنوات من قياساته في النموذج.</div></div><div class="qa"><p class="q">٥. <b>أتوقَّع.</b> ماذا حدث للشجرة عندَما كان عمرها ثماني سنوات؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٢٧</span>إجابة نموذجية مقترحة: أنظر إلى الحلقة الثامنة من المركز؛ فإن كانت فيها <b>ندوب سوداء</b> فقد تعرَّضت الشجرة لحريق، وإن كانت فيها <b>ندوب طويلة رقيقة</b> فقد أصيبت بمرض أو تعرَّضت لأذى الحشرات، وإن كانت رقيقة فقد كانت السنة باردة أو جافَّة.</div></div><div class="qa"><p class="q">٦. <b>أستنتج.</b> ما التغيرات البيئية التي شهدَتْها الشجرة؟ كيف أعرف ذلك؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٢٧</span>أعرفها من <b>حلقات النموِّ</b>؛ فسُمك الحلقة يدلُّ على ظروف الطقس في تلك السنة (دفء وأمطار أم بَرْد وجفاف)، والندوب السوداء تدلُّ على حريق، والندوب الطويلة الرقيقة تدلُّ على مرض أو أذى الحشرات. فكل حلقة سجلٌّ لسنة من حياة النظام البيئي حول الشجرة.</div></div><div class="box ask" style="font-size:24px;"><b>أستكشف أكثر:</b> ابحث في الإنترنت أو الصحف عن أخبار حرائق كبيرة. أيُّ أجزاء النظام البيئي عاد إلى وضعه الطبيعي بمعدل أسرع؟ ولماذا؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف تتغيَّر الأنظمة البيئية؟</h2><span class="src">ص ١٢٨</span></div>
+<div class="body"><p class="c">تتغيَّر الأنظمة البيئيَّة بسبب الأحداث الطبيعية أو بفعل الإنسان. والمقصود بالأحداث الطبيعية الكوارثُ الطبيعيةُ التي لا دخل للإنسان في حدوثها.</p><div class="box idea" style="font-size:25px;">من الكوارث الطبيعية <b>الزلازل والفيضانات والعواصف والبراكين والجفاف</b>. وهي تؤثِّر كثيرًا في النظام البيئيِّ. وقد يستطيع الإنسان إصلاح بعض الضَّرر الناتج عن هذه الكوارث، لكنَّه لا يستطيع بالتأكيد منع وقوعها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تغيُّرات بفعل المخلوقات الحية</h2><span class="src">ص ١٢٨ — ١٢٩</span></div>
+<div class="body"><p class="c">أمَّا النَّوع الآخر من التَّغيُّرات الطَّبيعية فيحدث بفعل الإنسان وغيره من المخلوقات الحيَّة.</p><div class="cards"><div class="card"><h3>القندس</h3><p style="font-size:25px">يقوم ببناء حواجز تُشبه السُّدود باستعمال الطين والحجارة وأشياء أخرى ليكوِّن بركةً ويهيِّئَ مواطنَ ومصادرَ غذاء جديدة لمخلوقات حيَّة أخرى. وقد تسبِّب هذه الحواجز الفيضان إذا انهارت.</p></div><div class="card"><h3>المرجان</h3><p style="font-size:25px">يغيِّر النظام البيئيُّ المائيُّ أيضًا بفعل المخلوقات الحية؛ فيغيِّر المرجان من نظامه البيئيِّ ببناء الشعب المرجانيَّة التي تشكِّل مواطنَ جديدةً للعديد من المخلوقات الحيَّة المائيَّة الأخرى.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>سؤال الكتاب</h2><span class="src">ص ١٢٩</span></div>
+<div class="body"><div class="qa"><p class="q">كيف غيَّر هذا القندس من نظامه البيئيِّ؟ <br><span class="muted" style="font-size:24px">إرشاد: ماذا يحمل القندس؟</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٢٩</span>يحمل القندس <b>جذوع الأشجار والأغصان</b>، ويستعملها مع الطين والحجارة في بناء حواجز تُشبه السُّدود، فيكوِّن بركةً. وبذلك يهيِّئ مواطنَ ومصادرَ غذاء جديدة لمخلوقات حيَّة أخرى. وقد تسبِّب هذه الحواجز الفيضان إذا انهارت.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف يغيِّر الإنسان النظام البيئيَّ؟</h2><span class="src">ص ١٢٩</span></div>
+<div class="body"><p class="c">ويتسبَّب الإنسان في حدوث تغيُّرات في النظام البيئيِّ، وذلك بإعادة تشكيل هذا النظام بما يناسب احتياجاته. وهذه التغيرات عادةً ما تدمِّر المواطنَ أو تغيِّرها، ممَّا يؤثر في المخلوقات الحيَّة التي تعيش فيها.</p><ul class="list num" style="font-size:26px"><li>يقوم بقطع الأشجار لبناء البيوت، أو تفجير الجبال لشقِّ الطرق.</li><li>الغازات الناتجة عن السيارات والمصانع تُلوِّث الهواء، واستعمال المبيدات يلوِّث الماء والتربة.</li><li>ويخلُّ الإنسان بتوازن النظام البيئيِّ بإدخال أنواع محددة من المخلوقات الحية فيه، وإقصاء أوْ إزالة أنواع أخرى منه.</li></ul><div class="box note" style="font-size:23px;">ولقد نهانا الله عزَّ وجلَّ عن العبث بالبيئة وإفسادها؛ قال تعالى: ﴿وَلَا تُفْسِدُوا فِي الْأَرْضِ بَعْدَ إِصْلَاحِهَا وَادْعُوهُ خَوْفًا وَطَمَعًا ۚ إِنَّ رَحْمَتَ اللَّهِ قَرِيبٌ مِّنَ الْمُحْسِنِينَ﴾ <span class="muted" style="font-size:23px">سورة الأعراف: الآية ٥٦</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٢٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>السبب والنتيجة.</b> كيف يؤثِّر الإنسان في النظام البيئيِّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٢٩</span><b>السبب:</b> إعادة تشكيل النظام البيئي بما يناسب احتياجاته — قطع الأشجار لبناء البيوت، وتفجير الجبال لشقِّ الطرق، والغازات الناتجة عن السيارات والمصانع، واستعمال المبيدات، وإدخال أنواع محددة أو إزالة أنواع أخرى.<br><b>النتيجة:</b> تدمير المواطن أو تغيُّرها، فتتأثَّر المخلوقات الحية التي تعيش فيها، ويتلوَّث الهواء والماء والتربة، ويختلُّ توازن النظام البيئي.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> هل يمكن أن تؤثِّر التغيرات الطبيعيَّة في النظام البيئي أكثر من تأثير الإنسان؟ أعطي مثالًا على ذلك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٢٩</span>نعم؛ فالكوارث الطبيعية قد تُحدث تغيُّرًا واسعًا وسريعًا لا يستطيع الإنسان منع وقوعه. <b>مثال:</b> ثوران بركان يغطِّي منطقة كاملة باللابة والرَّماد فيقضي على كل المخلوقات الحية فيها ويحوِّلها إلى صخور جرداء، وكذلك الزلازل والفيضانات والجفاف. وقد يستطيع الإنسان إصلاح بعض الضرر، لكنه لا يستطيع بالتأكيد منع وقوعها.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ماذا يحدث عندما تتغيَّر الأنظمة البيئية؟</h2><span class="src">ص ١٣٠</span></div>
+<div class="body"><p class="c">تتغيَّر بعض الأنظمة البيئية تغيُّرًا دائمًا. وهذا التغيُّر يؤثِّر في المخلوقات الحيَّة؛ ممَّا يجعلها تستجيب لتلك التغيُّرات لكي تعيش.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الهجرة</h3><p style="font-size:26px">بعض المخلوقات الحيَّة تستجيب بالهجرة إلى مواطنَ أخرى.</p></div><div class="card center" style="text-align:center;"><h3>التكيُّف</h3><p style="font-size:26px">وبعضها الآخر يستجيب بالتكيُّف مع التغيرات.</p></div><div class="card center" style="text-align:center;"><h3>الانقراض</h3><p style="font-size:26px">ولكن عندما لا تتمكَّن أنواع من الاستجابة تأخذ في الانقراض.</p></div></div><div class="box idea" style="font-size:24px;"><b>الأنواع المنقرضة:</b> يكون معدَّل موت أفرادها أعلى من الولادات الجديدة. وعندَما يموت آخر فرد منها تصبح أنواعًا منقرضةً؛ أيْ لم يعد لها وجود على الأرض، مثلَما حدث للدَّيناصورات.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>أسباب الانقراض</h2><span class="src">ص ١٣٠</span></div>
+<div class="body"><p class="c">ويسبِّب <b>التلوُّث، والامتداد العمرانيُّ، وتدمير المواطن، والصيد الجائر</b> انقراضَ الآلاف من أنواع المخلوقات الحيَّة.</p><div class="box note" style="font-size:27px;">وهذا ما حدث للثعلب التسمانيِّ الذي انقرض تمامًا منذ حوالَي <b>٦٥ عامًا</b> بفعل صيد الإنسان له؛ ليحميَ ماشيتَه التي كان يفترسها هذا الثعلب.</div><div class="box idea" style="font-size:24px;">وقد اهتمت السُّنَّة النَّبويَّة المطهَّرة بالحفاظ على البيئة. فقال رسول الله ﷺ: «ما من مسلم يغرِس غرسًا أو يزرعُ زرعًا فيأكلُ منه إنسانٌ أو طيرٌ أو بهيمةٌ إلَّا كانت له صدقةٌ» <span class="muted" style="font-size:23px">رواه البخاريُّ ومسلم</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>لعبة الانقراض</h2><span class="src">ص ١٣٠ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:24px"><li>أعدُّ ٢٠ قطعة نقد معدنية لتمثِّل فوجًا من غزلان الرِّيم.</li><li><b>أعمل نموذجًا.</b> ألصق قطعة من الورق المقوَّى على الطاولة، وأقسِّمها إلى ستة أجزاء، بحيث يمثِّل الجزآن ١ و٣ الغزلانَ التي تموت، وتمثِّل الأجزاء ٢ و٤ و٦ الغزلانَ الحية. أمَّا الجزء ٥ فيمثِّل الأبناء الجدد.</li><li>أرمي القطع النقدية على الورقة.</li><li>أزيل القطع النقدية التي استقرَّت فوق الأجزاء ١ أو ٣ (تمثِّل الغزلان التي ماتت)، وأضيف قطعة نقدية جديدة مقابل كل قطعة وقعت في الجزء ٥ (أفراد الجيل الثاني من الغزلان). أسجِّل في جدول المعلومات العدد الناتج لغزلان الرِّيم.</li><li>أكرِّر اللعب ٢٠ مرة أخرى (كل مرة تمثِّل سنةً) وبعد كل مرة أسجِّل عدد الغزلان المتبقية.</li><li><b>أتواصل.</b> هل انقرضت الغزلان؟ إذا كان الجواب نعم، فكم سنة انقضت قبل أن تنقرض؟</li></ul><div class="box safe" style="font-size:25px;">أتعامل مع القطع النقدية بحذر ولا أضعها في فمي، وأغسل يديَّ بعد النشاط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>إجابة سؤال النشاط</h2><span class="src">ص ١٣٠ — سؤال الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٦. <b>أتواصل.</b> هل انقرضت الغزلان؟ إذا كان الجواب نعم، فكم سنة انقضت قبل أن تنقرض؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٠</span>إجابة نموذجية مقترحة: تختلف النتيجة من مجموعة إلى أخرى؛ فقد تنقرض الغزلان قبل انتهاء العشرين مرة وقد تبقى. والمهم أن نلاحظ أن <b>النوع يأخذ في الانقراض عندما يكون معدَّل موت أفراده أعلى من الولادات الجديدة</b>، وأنه يصبح منقرضًا عند موت آخر فرد منه. وأسجِّل عدد المرات (السنوات) التي مرَّت حتى وصل العدد إلى الصفر.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الأنواع المهدَّدة بالانقراض</h2><span class="src">ص ١٣١</span></div>
+<div class="body"><div class="box idea" style="font-size:29px;">تسمَّى أنواع المخلوقات الحية التي تتعرَّض لخطر موت أعداد كبيرة منها <b>الأنواع المهدَّدة بالانقراض</b>.</div><div class="cards"><div class="card"><h3>سلحفاة منقار الصَّقر المائيَّة</h3><p style="font-size:24px"><b>الموطن:</b> الشُّعب المرجانية والشواطئ الضَّحلة للخليج العربيِّ.<br><b>الوضع الحالي:</b> مهدَّدة بالانقراض.<br><b>الخطر الحقيقيُّ:</b> الصيد، تلوُّث الماء، فَقْد الموطن الطبيعي.</p></div><div class="card"><h3>الأرطي</h3><p style="font-size:24px"><b>الموطن:</b> صحراء الدهناء وصحراء الربع الخالي والمنطقة الشرقية من المملكة العربية السعودية.<br><b>الوضع الحالي:</b> مهدَّد بالانقراض.<br><b>الخطر الحقيقي:</b> الاحتطاب.</p></div></div><div class="box note" style="font-size:24px;">ومن الأنواع المهدَّدة أيضًا: الحوت المستقيم الذي لم يبقَ منه سوى بضع مئات فقط، وأنواع من نباتات الصبَّار بسبب زيادة الإقبال عليها لاستخراج زيوتها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>جهود المملكة في حماية البيئة</h2><span class="src">ص ١٣١</span></div>
+<div class="body"><p class="c">وتبذل المملكة العربية السعودية جهودًا حثيثةً للحفاظ على البيئة بعناصرها المختلفة؛ حيث أُنشئت عدة مراكز وطنية من أهدافها المحافظة على الموارد الطبيعية والمخلوقات الحية في مواطنها الطبيعية وإنماؤها، وحماية تنوُّعها.</p><div class="cards"><div class="card"><h3>من الأنواع المحميَّة</h3><p style="font-size:25px">المها العربيُّ (الوضيحي) · بعض أنواع الغزلان كالريم وغزال الجبال · النمر العربيُّ · الأرنب البرِّيُّ · طيور الحبارى.</p></div><div class="card"><h3>المحميات الطبيعية</h3><p style="font-size:25px">وقد أطلقت هذه الحيوانات في محميات طبيعية، كمحمية الوعول ومحمية الإمام سعود بن عبدالعزيز (محازة الصيد سابقًا) وغيرها.</p></div></div><div class="box note" style="font-size:25px;"><b>الربط مع رؤية ٢٠٣٠:</b> من أهداف الرؤية: ٢.٤.٣ حماية وتهيئة المناطق الطبيعية (مثل الشواطئ والجزر والمحميات الطبيعية).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٣١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>السبب والنتيجة.</b> ما الذي يجعل المخلوق الحيَّ مهدَّدًا بالانقراض؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣١</span><b>الأسباب:</b> التلوُّث، والامتداد العمرانيُّ، وتدمير المواطن (فَقْد الموطن الطبيعي)، والصيد الجائر، والاحتطاب، وزيادة الإقبال على بعض النباتات لاستخراج زيوتها.<br><b>النتيجة:</b> يتعرَّض النوع لخطر موت أعداد كبيرة منه فيصبح <b>مهدَّدًا بالانقراض</b>، وإن استمرَّ ذلك أصبح منقرضًا.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> لماذا يحتاج أحد أنواع الثدييات المهدَّدة بالانقراض إلى ذكر وأنثى على الأقلِّ للمحافظة على البقاء؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣١</span>لأن الثدييات تتكاثر <b>تكاثرًا جنسيًّا</b>؛ فلا بدَّ من اتحاد مشيج مذكَّر من الأب مع مشيج مؤنث من الأم في عملية الإخصاب حتى تنتج بيضة مخصَّبة تنمو إلى فرد جديد. فإذا لم يوجد إلا جنس واحد توقَّف التكاثر، وارتفع معدَّل الموت على الولادات الجديدة، فينقرض النوع.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف تتعاقب الأنظمة البيئية؟</h2><span class="src">ص ١٣٢</span></div>
+<div class="body"><div class="box idea" style="font-size:27px;">تسمَّى عملية تغيُّر النظام البيئيِّ إلى نظام بيئيٍّ جديد ومختلف <b>التعاقُب</b>؛ حيث تَحُلُّ أنواع من المخلوقات الحيَّة في منطقة معينة مَحَلَّ الأنواع التي كانت تعيش فيها.</div><p class="c">ويظهر التعاقب في صورتين، هما: <b>التعاقُب الأوَّليُّ</b>، و<b>التعاقب الثانويُّ</b>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التعاقُب الأوَّليُّ</h2><span class="src">ص ١٣٢</span></div>
+<div class="body"><p class="c"><b>التعاقُب الأوَّليُّ</b> هو التعاقب الذي يظهر عادةً في مجتمع حيويٍّ يعيش فيه عدد قليل من المخلوقات الحيَّة، أو في منطقة كانت تعيش فيها سابقًا مخلوقات حيَّة ثمَّ ماتت.</p><p class="c">لقد تكوَّن النظام البيئيُّ أوَّل الأمر من الصُّخور ودقائق الغبار، وبعض البذور التي جاءت من بيئة أخرى مجاورة. وتلا ذلك ظهور <b>الأنواع الرائدة</b>، وهي مخلوقات حيَّة مكوَّنة من الأشنات وبعض النباتات التي تنمو فوق الصخور؛ حيث تتمكَّن هذه المخلوقات مع المخلوقات المجهريَّة الدقيقة من بناء <b>مجتمع الرُّوَّاد الحيويِّ</b>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>من الصخور إلى التربة</h2><span class="src">ص ١٣٢</span></div>
+<div class="body"><p class="c">ثم تكسَّرت الصُّخور في أثناء نموِّ مخلوقات الأنواع الرائدة، فتكوَّنت التُّربة. وبعد موت هذه المخلوقات عملت البكتيريا الموجودة في التُّربة على تحليلها. وبذلك توافرت كميات إضافية من الموادِّ الضَّرورية للتربة، ممَّا أدَّى إلى نموِّ النباتات بشكل أفضل.</p><div class="map"><div class="node">مراحل التعاقب الأوَّليِّ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">المجتمع الأوَّليُّ</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">صخور جرداء</span><span class="node leaf">أشنات وحزازيات</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">المجتمع الوسيط</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">نباتات صغيرة وأعشاب وشجيرات</span><span class="node leaf">أشجار وشجيرات صغيرة</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">مجتمع الذَّروة</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">أشجار الغابة</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>من النباتات إلى مجتمع الذَّروة</h2><span class="src">ص ١٣٢ — ١٣٣</span></div>
+<div class="body"><p class="c">ويؤدِّي التَّغيُّر في أنواع النباتات في مجتمع إلى التَّغيُّر في أنواع الحيوانات. وسرعان ما تجذب النباتات الزهريَّة ناقلي حبوب اللقاح إلى المنطقة، ومنها الحشرات والطيور والثدييات الصغيرة، والتي تجذب بدورها المخلوقات المفترسة.</p><p class="c">وإذا كانت المنطقة رطبةً بشكل كافٍ فإنَّ الأشجار الصَّغيرة تأخذ في النموِّ. وبعد مدة تحجب أوراقُها أشعةَ الشمس، ممَّا يسمح بنموِّ النباتات الصَّغيرة التي تحتاج إلى كمية أقلَّ من ضوء الشَّمس.</p><div class="box idea" style="font-size:24px;">وعندَما تملأ الأشجارُ المنطقةَ تصبح غابةً أو <b>مجتمعَ الذَّروة</b>، وهي المرحلة الأخيرة من التَّعاقب. وما لم تحدث كارثة طبيعية أو تدخُّل جائر من قِبل الإنسان فإنَّ المجتمع الحيويَّ يحافظ على ذروته.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ١٣٣</span></div>
+<div class="body"><div class="qa"><p class="q">قارن بين المُجتمع الأوَّليِّ، ومُجتمع الذَّروة؟ <br><span class="muted" style="font-size:24px">إرشاد: أنظر إلى الشَّكل، وأقارن مجتمع الذَّروة مع الصُّور.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٣</span><b>المجتمع الأوَّليُّ:</b> صخور جرداء لا تربة فيها، ثم أشنات وحزازيات فقط؛ فالمخلوقات قليلة وبسيطة.<br><b>مجتمع الذَّروة:</b> أشجار غابة كثيفة وتربة غنيَّة، وتنوُّع كبير في النباتات والحيوانات (حشرات وطيور وثدييات ومفترسات). وهو المرحلة الأخيرة من التعاقب، ويحافظ على ذروته ما لم تحدث كارثة أو تدخُّل جائر.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٣٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>السبب والنتيجة.</b> ما الذي يسبِّب نموَّ النباتات الكبيرة بدل الحزازيات والأشنات في أثناء التَّعاقب؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٣</span><b>السبب:</b> تكسَّرت الصخور في أثناء نموِّ الأنواع الرائدة فتكوَّنت التربة، وبعد موتها حلَّلتها البكتيريا فتوافرت كميات إضافية من المواد الضرورية للتربة.<br><b>النتيجة:</b> أصبحت التربة غنيَّة تسمح بنموِّ النباتات بشكل أفضل، فحلَّت النباتاتُ الكبيرة محلَّ الحزازيات والأشنات.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> كيف يؤثِّر وقوع حريق في المنطقة العشبيَّة في عملية التَّعاقب؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٣</span>الحريق يدمِّر المجتمع الحيويَّ القائم لكنه <b>لا يدمِّر عناصره تمامًا</b>؛ إذ تبقى التربة وبعض المخلوقات الحية والبذور. فيبدأ <b>التعاقب الثانويُّ</b>: تنمو الأعشاب أولًا، ثم الشجيرات، ثم الأشجار. ويكون أسرع من التعاقب الأوَّليِّ لوجود التربة أصلًا.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما التَّعاقب الثانويُّ؟</h2><span class="src">ص ١٣٤</span></div>
+<div class="body"><div class="box idea" style="font-size:30px;"><b>التعاقُب الثانويُّ</b> هو بَدْءُ تكوُّن مجتمع جديد بدلَ مجتمع قائم قبلَه لم تدمَّر عناصرُه تمامًا.</div><p class="c">ويمكن للتعاقُب الثانويِّ أن يبدأ في غابة دمَّرها حريق، بسرعة أكبر من التَّعاقب الأوَّليِّ؛ بسبب وجود التربة وبعض المخلوقات الحيَّة.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>مثال المزرعة المهجورة</h2><span class="src">ص ١٣٤</span></div>
+<div class="body"><p class="c">فمثلًا إذا هُجرت مزرعة فإنَّ الأعشاب تأخذ في النموِّ في الحقل المحروث، وبعد سنوات تنمو الشُّجيرات، وتنمو الأشجار، وبعد عدة سنوات أخرى تتنافس الأعشاب والأشجار للحصول على حاجاتها من ضوء ومكان وغذاء، وفي النهاية تتغلَّب الأشجار على الشجيرات، وتتحوَّل المنطقة إلى غابة.</p><div class="box note" style="font-size:24px;">وعمليَّة التعاقُب الثانويِّ تشبه عمليَّة التَّعاقب الأوَّلِّي في إحدى جوانبها؛ فبعد عدة سنوات تظهر في منطقة الحريق طبقة منخفضة مليئة بالشجيرات الصَّغيرة التي تنمو وتصبح أشجارًا كبيرة خلال <b>٤٠ أو ٥٠ سنةً</b>، وتصبح غابةً من جديد (مجتمع ذروة).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٣٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>السبب والنتيجة.</b> الشجيرات الصَّغيرة لا تحتاج إلى كمية كبيرة من ضوء الشمس كالتي تحتاج إليها أشجار الصَّنَوْبر. ما أثر ذلك في تكاثُر الشُّجيرات في الغابة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٤</span><b>السبب:</b> الشجيرات الصغيرة تكتفي بكمية أقلَّ من ضوء الشمس.<br><b>النتيجة:</b> تستطيع أن تنمو وتتكاثر <b>تحت ظلِّ الأشجار الكبيرة</b> التي تحجب أوراقُها أشعةَ الشمس؛ فتبقى في الغابة ولا تختفي رغم منافسة الأشجار العالية لها.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> لماذا يستغرق التَّعاقب الثانويُّ وقتًا أقلَّ ممَّا يستغرقه التَّعاقب الأوَّليُّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٤</span>لأن التعاقب الثانويَّ يبدأ في منطقة <b>لم تدمَّر عناصرُها تمامًا</b>؛ فالتربة موجودة أصلًا وفيها بذور وبعض المخلوقات الحية. أما التعاقب الأوَّليُّ فيبدأ من صخور جرداء، ويحتاج أولًا إلى الأنواع الرائدة لتكسِّر الصخور وتُكوِّن التربة، وهذا يستغرق زمنًا طويلًا جدًّا.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>أوَّليٌّ أم ثانويٌّ؟</h2><span class="src">ص ١٣٢ — ١٣٤</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأ الحالة، ثم أختار نوع التعاقب.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="pri">تعاقُب أوَّليٌّ</button><button class="simBtn ghost" type="button" data-k="sec">تعاقُب ثانويٌّ</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ١٣٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">تُحدث <b>الكوارث الطَّبيعية والمخلوقات الحية وكذلك نشاطات الإنسان</b> تغيُّرات في النظام البيئيِّ.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px">هناك عدة أسباب وراء <b>انقراض</b> المخلوقات الحية. ومعظم الأنواع تنقرض بسبب فقدانها الموطن.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px">يحوِّل <b>التعاقب الأوَّليُّ</b> المنطقةَ التي تخلو من الحياة إلى مجتمع حيويٍّ. ويغيِّر <b>التعاقب الثانويُّ</b> المجتمعَ الحيويَّ السابق (أو ما تبقَّى منه) إلى مجتمع حيويٍّ آخر.</p></div></div><div class="box note" style="font-size:24px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمته عن التغيُّرات في الأنظمة البيئية: (التغيرات في النظام البيئي · الانقراض · التعاقب الأوَّليُّ والتعاقب الثانويُّ).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">التغيرات في الأنظمة البيئية</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">أسباب التغيُّر</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">كوارث طبيعية</span><span class="node leaf">مخلوقات حية: القندس والمرجان</span><span class="node leaf">نشاطات الإنسان</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">الانقراض</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">نوع منقرض</span><span class="node leaf">نوع مهدَّد بالانقراض</span><span class="node leaf">التلوُّث · العمران · تدمير المواطن · الصيد الجائر</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">التعاقب الأوَّليُّ</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">أنواع رائدة</span><span class="node leaf">مجتمع الرُّوَّاد</span><span class="node leaf">مجتمع الذَّروة</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">التعاقب الثانويُّ</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">بعد حريق أو هجر مزرعة</span><span class="node leaf">أسرع لوجود التربة</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكر وأتحدَّث وأكتب</h2><span class="src">ص ١٣٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> أوائل المخلوقات الحيَة التي تعيش في منطقة ما تسمَّى …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span><b>الأنواع الرائدة</b>؛ وهي مخلوقات حيَّة مكوَّنة من الأشنات وبعض النباتات التي تنمو فوق الصخور.</div></div><div class="qa"><p class="q">٢. <b>السبب والنتيجة.</b> أذكر الأسباب التي تحوِّل بيئةً جرداء خاليةً من الحياة إلى غابة.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span>١) تكوُّن النظام من الصخور ودقائق الغبار وبعض البذور من بيئة مجاورة ← ٢) ظهور <b>الأنواع الرائدة</b> (أشنات ونباتات فوق الصخور) وبناء مجتمع الرُّوَّاد ← ٣) تكسُّر الصخور فتتكوَّن <b>التربة</b>، وتحلِّل البكتيريا المخلوقاتِ الميتة فتتوافر مواد ضرورية ← ٤) نموُّ النباتات بشكل أفضل، وجذب الحشرات والطيور والثدييات ثم المفترسات ← ٥) نموُّ الأشجار حتى تملأ المنطقة فتصبح غابةً (<b>مجتمع الذَّروة</b>).</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> كيف يؤثِّر التعاقب الأوَّليُّ في سلاسل وشبكات الغذاء في النظام البيئيِّ؟ أجيب عن هذا السؤال في ضوء ما درستُه عن السلاسل والشبكات الغذائية.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span>في البداية لا توجد إلا <b>منتِجات</b> قليلة بسيطة (أشنات وحزازيات)، فتكون السلسلة الغذائية قصيرة جدًّا. وكلَّما تكوَّنت التربة ونمت نباتات أكبر زاد الغذاء المتاح، فجاءت آكلات الأعشاب (حشرات وطيور وثدييات صغيرة)، ثم جاءت المفترسات. فتطول السلاسل الغذائية وتتشابك مكوِّنةً <b>شبكة غذائية</b> معقَّدة في مجتمع الذَّروة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ١٣٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> أيُّ ممَّا يلي يمثِّل تسلسلًا صحيحًا للتعاقب؟<br>أ- أشنات، أعشاب، شجيرات، أشجار &nbsp;&nbsp; ب- أشجار، أعشاب، شجيرات، أشنات<br>جـ- أعشاب، أشنات، شجيرات، أشجار &nbsp;&nbsp; د- أشنات، شجيرات، أشجار، أعشاب</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span><b>أ - أشنات، أعشاب، شجيرات، أشجار</b>؛ فالأشنات من الأنواع الرائدة تبدأ فوق الصخور، ثم تتكوَّن التربة فتنمو الأعشاب والنباتات الصغيرة، ثم الشجيرات، وأخيرًا الأشجار (مجتمع الذَّروة).</div></div><div class="qa"><p class="q">٥. <b>السؤال الأساسي.</b> كيف تغيِّر الأحداث الطبيعية والإنسان النظام البيئيَّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span><b>الأحداث الطبيعية:</b> الزلازل والفيضانات والعواصف والبراكين والجفاف تؤثِّر كثيرًا في النظام البيئي ولا يستطيع الإنسان منع وقوعها. وكذلك تغيِّره مخلوقات حية كالقندس والمرجان.<br><b>الإنسان:</b> يعيد تشكيل النظام بما يناسب احتياجاته فيقطع الأشجار ويفجِّر الجبال ويلوِّث الهواء والماء والتربة ويدخل أنواعًا أو يزيل أخرى؛ فتُدمَّر المواطن وتنقرض أنواع.<br>ثم يستجيب النظام بـ<b>التعاقب</b> الأوَّليِّ أو الثانويِّ فيتكوَّن مجتمع حيويٌّ جديد.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والكتابة · العلوم والرياضيات</h2><span class="src">ص ١٣٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والكتابة — أنواع مهددة بالانقراض.</b> أكتب موضوعًا عن بعض الأنواع المهدَّدة بالانقراض. وأوضِّح لماذا هي كذلك؟ وما الطرق التي يمكن اتباعُها للمحافظة عليها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span>إجابة نموذجية مقترحة: من الأنواع المهدَّدة — كما ذكر الكتاب — <b>سلحفاة منقار الصقر المائية</b> (خطرها: الصيد وتلوُّث الماء وفَقْد الموطن الطبيعي)، و<b>الأرطي</b> (خطره: الاحتطاب)، والحوت المستقيم، وأنواع من الصبَّار. وللمحافظة عليها: إنشاء <b>المحميات الطبيعية</b> وإطلاق الحيوانات فيها كمحمية الوعول ومحمية الإمام سعود بن عبدالعزيز، ومنع الصيد الجائر والاحتطاب، والحدُّ من التلوُّث، وحماية المواطن الطبيعية — وهو من أهداف رؤية ٢٠٣٠.</div></div><div class="qa"><p class="q"><b>العلوم والرياضيات — التربة بالأرقام.</b> تتكون التُّربة في نظام بيئيٍّ بمعدل ٢ ملم كلَّ ١٠ سنوات. كم سنة تنقضي حتى تتكوَّن تربة سُمكها ٢ سم؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٣٥</span>٢ سم = ٢٠ ملم &nbsp;·&nbsp; ٢٠ ÷ ٢ = ١٠ فترات &nbsp;·&nbsp; ١٠ × ١٠ = <b>١٠٠ سنة</b>.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">عملية تغيُّر النظام البيئي إلى نظام بيئي جديد ومختلف تسمَّى:</p><div class="opts"><button class="opt" type="button">الانقراض</button><button class="opt" type="button">التعاقب</button><button class="opt" type="button">التكيُّف</button><button class="opt" type="button">التلوُّث</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">المرحلة الأخيرة من التعاقب هي:</p><div class="opts"><button class="opt" type="button">المجتمع الأوَّلي</button><button class="opt" type="button">مجتمع الرُّوَّاد</button><button class="opt" type="button">مجتمع الذَّروة</button><button class="opt" type="button">المجتمع الوسيط</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">الأنواع الرائدة مكوَّنة من:</p><div class="opts"><button class="opt" type="button">الأشنات وبعض النباتات التي تنمو فوق الصخور</button><button class="opt" type="button">الأشجار الكبيرة</button><button class="opt" type="button">الحيوانات المفترسة</button><button class="opt" type="button">الأسماك</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">انقرض الثعلب التسمانيُّ تمامًا منذ حوالَي:</p><div class="opts"><button class="opt" type="button">١٥ عامًا</button><button class="opt" type="button">٦٥ عامًا</button><button class="opt" type="button">١٠٠ عام</button><button class="opt" type="button">٥٠٠ عام</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">من الكوارث الطبيعية التي تغيِّر النظام البيئي:</p><div class="opts"><button class="opt" type="button">قطع الأشجار</button><button class="opt" type="button">الزلازل والبراكين</button><button class="opt" type="button">استعمال المبيدات</button><button class="opt" type="button">بناء المصانع</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الحيوان الذي يبني حواجز تشبه السدود فيغيِّر نظامه البيئي:</p><div class="opts"><button class="opt" type="button">المرجان</button><button class="opt" type="button">القندس</button><button class="opt" type="button">الغزال</button><button class="opt" type="button">النمر</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أذكر سببًا طبيعيًّا وسببًا بشريًّا لتغيُّر النظام البيئي.</li><li>أُفرِّق بجملة واحدة بين النوع المنقرض والنوع المهدَّد بالانقراض.</li><li>لماذا يكون التعاقب الثانوي أسرع من الأوَّلي؟</li></ul><div class="box idea" style="font-size:26px;">الفكرة الرئيسة: الأنظمة البيئية في تغيُّر دائم بفعل الطبيعة والمخلوقات والإنسان، ويستجيب النظام بالتعاقب فيتكوَّن مجتمع حيويٌّ جديد.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: كيف يتغيَّر النظام البيئي؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1320" height="310" viewBox="0 0 1320 310" xmlns="http://www.w3.org/2000/svg" role="img" id="g5l8SvgHost"><defs><marker id="g5l8sq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><g class="eHot" data-k="bare"><circle cx="1155" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(1092.0,87.0) scale(1.05)"><path d="M18 96 L34 52 L62 40 L92 56 L104 96z" fill="#8C9AA2"/><path d="M34 52 L62 40 L64 96 L34 96z" fill="#A6B2B9"/><circle cx="52" cy="70" r="5" fill="#78868E"/><circle cx="80" cy="76" r="4" fill="#78868E"/></g><g><text x="1155" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أرضٌ عاريةٌ بعد الحريق</text><text x="1155" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أرضٌ عاريةٌ بعد الحريق</text></g><circle cx="1211" cy="94" r="21" fill="#4A5568"/><text x="1211" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">١</text><rect class="hitBox" x="1081" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M1077 150 H 903" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g5l8sq)"/><g class="eHot" data-k="grass"><circle cx="825" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(762.0,87.0) scale(1.05)"><rect x="10" y="86" width="100" height="24" rx="8" fill="#8A6636"/><path d="M60 92 L60 40" stroke="#4E9A34" stroke-width="8" stroke-linecap="round"/><ellipse cx="60" cy="30" rx="24" ry="18" fill="#3F8E2E"/><ellipse cx="34" cy="52" rx="21" ry="12" fill="#57A83E" transform="rotate(-22 34 52)"/><ellipse cx="86" cy="52" rx="21" ry="12" fill="#57A83E" transform="rotate(22 86 52)"/><path d="M60 92 v14 M60 98 l-14 8 M60 100 l14 6" stroke="#6B4A24" stroke-width="5" fill="none" stroke-linecap="round"/></g><g><text x="825" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أعشابٌ أولى</text><text x="825" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أعشابٌ أولى</text></g><circle cx="881" cy="94" r="21" fill="#4A5568"/><text x="881" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٢</text><rect class="hitBox" x="751" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M747 150 H 573" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g5l8sq)"/><g class="eHot" data-k="shrub"><circle cx="495" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(432.0,87.0) scale(1.05)"><path d="M60 110 L60 56" stroke="#3F8E2E" stroke-width="7" stroke-linecap="round"/><ellipse cx="40" cy="56" rx="20" ry="12" fill="#57A83E" transform="rotate(-25 40 56)"/><ellipse cx="80" cy="52" rx="20" ry="12" fill="#3F8E2E" transform="rotate(25 80 52)"/><path d="M20 110 h80" stroke="#8A6636" stroke-width="9" stroke-linecap="round"/></g><g><text x="495" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">شُجيرات</text><text x="495" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">شُجيرات</text></g><circle cx="551" cy="94" r="21" fill="#4A5568"/><text x="551" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٣</text><rect class="hitBox" x="421" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M417 150 H 243" stroke="#6B7889" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#g5l8sq)"/><g class="eHot" data-k="forest"><circle cx="165" cy="150" r="70" fill="#FFFFFF" stroke="#D8DEE6" stroke-width="4"/><g transform="translate(102.0,87.0) scale(1.05)"><rect x="0" y="94" width="120" height="18" fill="#6E8F52"/><polygon points="30,92 12,92 30,44 48,92" fill="#2F6B2A"/><rect x="26" y="90" width="8" height="14" fill="#6B4A24"/><polygon points="64,96 42,96 64,36 86,96" fill="#3B7D2A"/><rect x="60" y="92" width="9" height="16" fill="#6B4A24"/><polygon points="98,94 80,94 98,52 116,94" fill="#2F6B2A"/><rect x="94" y="92" width="8" height="14" fill="#6B4A24"/></g><g><text x="165" y="254" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">غابة</text><text x="165" y="254" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">غابة</text></g><circle cx="221" cy="94" r="21" fill="#4A5568"/><text x="221" y="102" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٤</text><rect class="hitBox" x="91" y="76" width="148" height="148" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">تعاقُبُ التغيُّر في نظامٍ بيئيٍّ بعد اضطرابٍ كبير.</div></div><div class="eSteps" id="g5l8Pills"><span class="eStepPill" data-s="0">أرضٌ عاريةٌ بعد الحريق</span><span class="eStepPill" data-s="1">أعشابٌ أولى</span><span class="eStepPill" data-s="2">شُجيرات</span><span class="eStepPill" data-s="3">غابة</span></div><div class="eInfo" id="g5l8Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g5l8Prev">◀ السابق</button><button class="simBtn" type="button" id="g5l8Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: أسبابُ التغيُّر</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><polygon points="12,102 48,36 72,36 108,102" fill="#7A6A5A"/><polygon points="48,36 72,36 84,64 36,64" fill="#8A7A68"/><path d="M50 36 q 10 -22 20 0z" fill="#E2542A"/><path d="M52 36 q -6 34 -22 50 M68 36 q 8 30 24 46" stroke="#E2542A" stroke-width="7" fill="none" stroke-linecap="round"/></g></svg><h4>تغيُّراتٌ فجائية</h4><p>البراكين والزلازل والحرائق</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="48" rx="38" ry="22" fill="#E8EEF3"/><ellipse cx="34" cy="56" rx="22" ry="15" fill="#E8EEF3"/><ellipse cx="86" cy="56" rx="22" ry="15" fill="#E8EEF3"/><path d="M38 78 l-6 18 M60 78 l-6 18 M82 78 l-6 18" stroke="#2C7FB8" stroke-width="7" stroke-linecap="round"/></g></svg><h4>تغيُّراتٌ مناخية</h4><p>الجفاف أو الفيضان يغيِّران البيئة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="34" y="40" width="52" height="62" rx="8" fill="#7A8894"/><rect x="28" y="28" width="64" height="12" rx="6" fill="#5E6B76"/><rect x="52" y="18" width="16" height="10" rx="4" fill="#5E6B76"/><path d="M48 52 v38 M60 52 v38 M72 52 v38" stroke="#98A4AE" stroke-width="5"/></g></svg><h4>أثرُ الإنسان</h4><p>التلوُّث وإزالة الغطاء النباتي</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="52" y="62" width="16" height="48" rx="5" fill="#8A5A2B"/><ellipse cx="60" cy="48" rx="40" ry="32" fill="#3B7D2A"/><ellipse cx="42" cy="40" rx="22" ry="17" fill="#59A03B"/><ellipse cx="78" cy="42" rx="20" ry="16" fill="#59A03B"/></g></svg><h4>إعادة التوازن</h4><p>التشجير يساعد على استعادة النظام</p></div></div><div class="eCap">تتأثَّر الأنظمة البيئية بعواملَ طبيعيةٍ وبأنشطة الإنسان.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — الطبيعةُ تُصلح نفسها</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>بعد الحريق أو الفيضان تبدأ الحياة بالعودة تدريجيًّا؛ تسبق <b>الأعشاب</b> ثم الشجيرات ثم الأشجار.</p></div><div class="fFact"><div class="n">٢</div><p>ليست كلُّ التغيُّرات ضارَّة؛ فبعض الحرائق الطبيعية تفتح المجال لبذورٍ كانت مدفونةً كي تنمو.</p></div><div class="fFact"><div class="n">٣</div><p>أسرع تغيُّرٍ يصيب الأنظمة البيئية اليوم سببُه <b>أنشطة الإنسان</b>: التلوُّث وإزالة الغطاء النباتي.</p></div></div><div class="fCap">التغيُّر سُنَّةٌ في الطبيعة؛ والتوازن يعود ببطء.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s5h1"><div class="fCard"><div class="fIn"><div class="fF"><span>نوع منقرض</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نوع لم يعد له وجود على الأرض بعد موت آخر فرد منه.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>نوع مهدَّد بالانقراض</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نوع يتعرَّض لخطر موت أعداد كبيرة منه.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التعاقب</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عملية تغيُّر النظام البيئي إلى نظام بيئي جديد ومختلف.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>تعاقب أوَّلي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>يظهر في مجتمع حيوي يعيش فيه عدد قليل من المخلوقات، أو في منطقة ماتت مخلوقاتها.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الأنواع الرائدة</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مخلوقات حية مكوَّنة من الأشنات وبعض النباتات التي تنمو فوق الصخور.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>مجتمع الرُّوَّاد الحيوي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>ما تبنيه الأنواع الرائدة مع المخلوقات المجهرية الدقيقة.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5h1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب عودة الحياة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s5h2P"><button class="fChip" type="button" data-i="0">أرضٌ عاريةٌ بعد الحريق</button><button class="fChip" type="button" data-i="2">شُجيرات</button><button class="fChip" type="button" data-i="1">أعشابٌ صغيرة</button><button class="fChip" type="button" data-i="3">أشجارٌ كبيرة</button></div><div class="fSlots" id="s5h2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div></div><div class="fFb" id="s5h2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5h2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب مراحل عودة الحياة إلى المكان.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>لاحِظ حولك</h4><p>ابحث عن أرضٍ فارغةٍ قرب بيتك، وسجِّل أيَّ النباتات نمت فيها أولًا.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>كيف تسهم زراعةُ الأشجار في إصلاح نظامٍ بيئيٍّ تضرَّر؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="5" aria-label="إثراء مصور: التغيرات في الأنظمة البيئية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">ما الدور الذي قد تؤديه التربة والبذور في عودة نباتات الغابة بعد اضطراب؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/forest.jpg" alt="شلال تحيط به أشجار وسراخس كثيفة" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>غابة وشلال في حديقة أوتواي الكبرى بأستراليا؛ يجمع النظام البيئي مكونات حية وغير حية.</figcaption><p class="se-credit">الصورة: Dietmar Rabich · <a href="https://commons.wikimedia.org/wiki/File:Beech_Forest_(AU),_Great_Otway_National_Park,_Beauchamp_Falls_--_2019_--_1271.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>يبدأ التعاقب الأولي على سطح يفتقر إلى التربة، مثل صخر انكشف حديثًا.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>في التعاقب الثانوي تبقى التربة، وقد تبقى فيها بذور أو جذور تساعد على عودة النباتات.</span></p>
+<p class="se-fact"><span aria-hidden="true">🌳</span><span>يختلف مسار التعاقب ومدته باختلاف المناخ والأنواع والاضطرابات، ولا تنتهي جميع البيئات بغابة.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://home.nps.gov/kefj/learn/nature/plant-succession.htm" target="_blank" rel="noopener noreferrer">خدمة المتنزهات الوطنية: التعاقب الأولي والثانوي</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="5" aria-label="رسم توضيحي: تعاقب أولي محتمل">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>تعاقب أولي محتمل</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="تعاقب أولي محتمل"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🪨</span><span class="se-node-label">صخر مكشوف</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🌱</span><span class="se-node-label">مخلوقات رائدة</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🍂</span><span class="se-node-label">تربة تتطور</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🌿</span><span class="se-node-label">مجتمع متغير</span></button></div>
+
+<p class="se-diagram-caption">مثال مبسط لمسار ممكن؛ لا يحدد سنوات ثابتة ولا مجتمعًا نهائيًا واحدًا لكل مكان.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🪨</span><div><strong data-detail-title>صخر مكشوف</strong><p data-detail-text>لا توجد تربة متطورة</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="5" aria-label="محاكاة إثرائية: البدايات المتاحة للنبات">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>البدايات المتاحة للنبات</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">ما المواد التي قد تساعد عودة النباتات في ثلاثة أوضاع بعد تغير البيئة؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">حالة سطح الأرض</p><div class="se-options" role="group" aria-label="حالة سطح الأرض"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">صخر بلا تربة</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">تربة باقية بلا بذور حية</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">تربة مع بذور وجذور حية</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">المقارنة تعد عناصر محددة؛ لا تقيس سرعة التعافي ولا تتنبأ بعدد النباتات أو سنوات التعاقب.</p></div>
+ <div class="se-result"><p class="se-model-label">عدد العناصر الموجودة من قائمة: تربة، بذور حية، جذور حية</p><div class="se-model" role="img" data-model aria-label="لا عناصر من القائمة"><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>لا عناصر من القائمة</p><p class="se-observation" data-observation>صفر عناصر من القائمة، مع إمكان وصول مخلوقات لاحقًا.</p></div><p class="se-explanation" data-explanation>نفحص ثلاث بدايات محددة: تربة وبذور حية وجذور حية؛ لا يظهر أي منها في هذه الحالة.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 هل وجود العناصر الثلاثة يكفي لنمو النباتات إذا استمر الجفاف الشديد؟ فسّر.</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الخامس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثانية: الأنظمة البيئية · الفصل الرابع: الدورات والتغيرات في الأنظمة البيئية · التغيرات في الأنظمة البيئية<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٢٦ – ١٣٥ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['صخور جرداء تنمو عليها الأشنات','pri','يبدأ من منطقة لا تربة فيها ولا حياة.'],
+           ['غابة دمَّرها حريق','sec','لم تدمَّر عناصرها تمامًا؛ التربة باقية.'],
+           ['مزرعة هُجرت فنمت فيها الأعشاب','sec','مجتمع جديد بدل مجتمع قائم قبله.'],
+           ['منطقة كانت تعيش فيها مخلوقات ثم ماتت','pri','عدد قليل جدًّا من المخلوقات في البداية.'],
+           ['ظهور مجتمع الرُّوَّاد الحيويِّ','pri','الأنواع الرائدة مع المخلوقات المجهرية.'],
+           ['بعد ٤٠ أو ٥٠ سنة تعود منطقة الحريق غابةً','sec','تتحوَّل الشجيرات إلى أشجار كبيرة.'],
+           ['تكسُّر الصخور وتكوُّن التربة لأول مرة','pri','خطوة أساسية في التعاقب الأوَّلي.'],
+           ['يحدث بسرعة أكبر لوجود التربة والمخلوقات','sec','هذا ما يميِّز التعاقب الثانوي.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع الحالات.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='حالة '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g5l8SvgHost','g5l8Info',{'bare':'<span><b>أرضٌ عاريةٌ بعد الحريق</b> — تبدأ المنطقة خاليةً من النباتات بعد تغيُّرٍ كبير.</span>','grass':'<span><b>أعشابٌ أولى</b> — تنمو الأعشاب والنباتات الصغيرة سريعة النمو.</span>','shrub':'<span><b>شُجيرات</b> — تحلُّ الشجيرات محلَّ الأعشاب تدريجيًّا.</span>','forest':'<span><b>غابة</b> — تنمو الأشجار الكبيرة ويستقرُّ النظام البيئي.</span>'},'');
+ERT.stepper({pills:'g5l8Pills', info:'g5l8Info', svg:'g5l8SvgHost', next:'g5l8Next', prev:'g5l8Prev', stages:[['bare','أرضٌ عاريةٌ بعد الحريق','تبدأ المنطقة خاليةً من النباتات بعد تغيُّرٍ كبير.'],['grass','أعشابٌ أولى','تنمو الأعشاب والنباتات الصغيرة سريعة النمو.'],['shrub','شُجيرات','تحلُّ الشجيرات محلَّ الأعشاب تدريجيًّا.'],['forest','غابة','تنمو الأشجار الكبيرة ويستقرُّ النظام البيئي.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s5h1');
+EG.order({pool:'s5h2P', slots:'s5h2S', fb:'s5h2Fb', reset:'s5h2R', n:4});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"05_الصف_الخامس_الابتدائي/02_الأنظمة_البيئية/04_الدورات_والتغيرات_في_الأنظمة_البيئية/02_التغيرات_في_الأنظمة_البيئية/علوم_خامس_ابتدائي_ف1_الدرس_الثاني_التغيرات_في_الأنظمة_البيئية.html","title":"التغيرات في الأنظمة البيئية","grade":5,"emoji":"🌳","photoTopic":"forest","observeQuestion":"ما الدور الذي قد تؤديه التربة والبذور في عودة نباتات الغابة بعد اضطراب؟","facts":["يبدأ التعاقب الأولي على سطح يفتقر إلى التربة، مثل صخر انكشف حديثًا.","في التعاقب الثانوي تبقى التربة، وقد تبقى فيها بذور أو جذور تساعد على عودة النباتات.","يختلف مسار التعاقب ومدته باختلاف المناخ والأنواع والاضطرابات، ولا تنتهي جميع البيئات بغابة."],"diagram":{"title":"تعاقب أولي محتمل","relation":"sequence","nodes":[{"emoji":"🪨","label":"صخر مكشوف","detail":"لا توجد تربة متطورة"},{"emoji":"🌱","label":"مخلوقات رائدة","detail":"تستعمر السطح وفق الظروف"},{"emoji":"🍂","label":"تربة تتطور","detail":"يتراكم فتات ومواد عضوية"},{"emoji":"🌿","label":"مجتمع متغير","detail":"تستقر نباتات ومخلوقات إضافية"}],"caption":"مثال مبسط لمسار ممكن؛ لا يحدد سنوات ثابتة ولا مجتمعًا نهائيًا واحدًا لكل مكان."},"lab":{"title":"البدايات المتاحة للنبات","question":"ما المواد التي قد تساعد عودة النباتات في ثلاثة أوضاع بعد تغير البيئة؟","controlLabel":"حالة سطح الأرض","options":["صخر بلا تربة","تربة باقية بلا بذور حية","تربة مع بذور وجذور حية"],"states":[{"label":"لا عناصر من القائمة","emoji":"🌱","amount":0,"explanation":"نفحص ثلاث بدايات محددة: تربة وبذور حية وجذور حية؛ لا يظهر أي منها في هذه الحالة.","observation":"صفر عناصر من القائمة، مع إمكان وصول مخلوقات لاحقًا."},{"label":"عنصر واحد متاح","emoji":"🌱","amount":1,"explanation":"وجود التربة يوفر وسطًا للنمو عند وصول البذور، حتى إن لم تبق بذور أو جذور حية محليًا.","observation":"عنصر واحد: التربة."},{"label":"ثلاث بدايات متاحة","emoji":"🌱","amount":3,"explanation":"بقاء التربة والبذور والجذور الحية يوفر مسارات إضافية لعودة بعض النباتات إذا كانت الظروف مناسبة.","observation":"ثلاثة عناصر: تربة وبذور حية وجذور حية."}],"quantityLabel":"عدد العناصر الموجودة من قائمة: تربة، بذور حية، جذور حية","modelNote":"المقارنة تعد عناصر محددة؛ لا تقيس سرعة التعافي ولا تتنبأ بعدد النباتات أو سنوات التعاقب.","tryPrompt":"هل وجود العناصر الثلاثة يكفي لنمو النباتات إذا استمر الجفاف الشديد؟ فسّر."},"sources":[{"title":"خدمة المتنزهات الوطنية: التعاقب الأولي والثانوي","url":"https://home.nps.gov/kefj/learn/nature/plant-succession.htm"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

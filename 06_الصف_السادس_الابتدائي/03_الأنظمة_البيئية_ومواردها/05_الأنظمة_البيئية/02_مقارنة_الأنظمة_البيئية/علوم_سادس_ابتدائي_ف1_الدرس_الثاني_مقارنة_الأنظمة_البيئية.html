@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – الدرس الثاني: مقارنة الأنظمة البيئية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>مقارنة الأنظمة البيئية</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الثالثة: الأنظمة البيئية ومواردها<br>الفصل الخامس: الأنظمة البيئية — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن الآن؟</h2><span class="src">ص ١٤٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة</h3><p>الوحدة الثالثة: الأنظمة البيئية ومواردها</p></div><div class="card"><h3>الفصل</h3><p>الفصل الخامس: الأنظمة البيئية</p></div><div class="card"><h3>الدرس</h3><p>الدرس الثاني: مقارنة الأنظمة البيئية</p></div></div><div class="box idea"><b>السؤال الأساسي:</b> ما خصائص الأنظمة البيئية المختلفة على اليابسة وفي الماء؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أعرِّف النظام البيئي وأذكر أمثلةً عليه.</li><li>أوضِّح معنى المناخ والعوامل المؤثرة فيه.</li><li>أعرِّف المنطقة الحيوية وأذكر أنواعها.</li><li>أقارن بين التندرا والتايجا والصحراء.</li><li>أصف الأراضي العشبية والغابات بأنواعها.</li><li>أميِّز الأنظمة البيئية المائية العذبة ومصبَّات الأنهار ومناطق المحيط.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما الذي أعرفه من قبل؟</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card"><h3>التكيُّف</h3><p>صفاتٌ تساعد المخلوق على العيش في بيئته.</p></div><div class="card"><h3>الطقس والمناخ</h3><p>الطقس حالةٌ يومية، أما المناخ فحالةٌ عامةٌ لفترةٍ طويلة.</p></div><div class="card"><h3>السلسلة الغذائية</h3><p>مسار انتقال الطاقة بين مخلوقات النظام البيئي.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="cards"><div class="card"><h4>المُناخ</h4><p class="term">متوسِّط حالة الطقس في منطقةٍ جغرافيةٍ معينةٍ خلال فترةٍ زمنيةٍ طويلة.</p></div><div class="card"><h4>المنطقة الحيوية</h4><p class="term">نظامٌ بيئيٌّ يشغل منطقةً جغرافيةً واسعةً على اليابسة يسود فيها مناخٌ معيَّن، وتعيش فيها أنواعٌ معيَّنةٌ من الحيوانات والنباتات.</p></div><div class="card"><h4>مصبَّات الأنهار</h4><p class="term">الأنظمة البيئية في الأماكن التي تصبُّ فيها مياه الأنهار في المحيطات أو البحار.</p></div></div><div class="muted">مهارة القراءة في هذا الدرس: <b>المقارنة</b> (التشابه والاختلاف).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>كيف يمكن مقارنة المناطق الحيوية؟</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><div class="box idea"><b>الهدف:</b> يؤثِّر المناخ في الأنظمة البيئية في اليابسة، ونتيجةً لذلك تقسَّم اليابسة إلى مناطق حيوية. ولكلِّ منطقةٍ حيويةٍ مناخُها. فهل يوجد في كلٍّ من هذه المناطق الأنواعُ نفسها من النباتات والحيوانات؟</div><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">أحتاج إلى</h4><ul class="list"><li>شريط لاصق</li><li>ورق رسم كبير</li><li>مصادر معلومات (كتب ومراجع، وإنترنت)</li><li>أقلام تلوين</li><li>بطاقات من الورق المقوَّى</li><li>خريطة العالَم</li></ul></div><div style="flex:1 1 0"><h4 class="hl">الخطوات</h4><ul class="list num"><li>أعمل مع زملائي في مجموعاتٍ من خمسة طلابٍ أو ستة. تختار كل مجموعةٍ منطقةً حيويةً لدراستها.</li><li>ألصق الورق على حائط غرفة الصف.</li><li>أبحث في المنطقة الحيوية التي اختارتها مجموعتي، من حيث الموقع والمناخ والتربة والنباتات والحيوانات.</li><li><b>أعمل نموذجًا.</b> أرسم لوحة حائطٍ تمثِّل المنطقة الحيوية، وأبيِّن على الأقل نوعين من النباتات، ونوعين من الحيوانات التي تعيش فيها. وأضيف خارطةً للعالم تبيِّن مواقع هذه المنطقة الحيوية.</li><li><b>أتواصل.</b> أعمل قائمةً بالمعلومات التي حصلتُ عليها مكتوبةً على بطاقات، وأعلِّقها على لوحة الحائط، وأشير إلى مصادر المعلومات.</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>أستخلص النتائج</h2><span class="src">ص ١٤٧</span></div>
+<div class="body"><div class="qa"><p class="q">٦ – أقارن: لوحة الحائط الخاصة بمجموعتي بلوحات المجموعات الأخرى، وأحدِّد أوجه التشابه وأوجه الاختلاف بين النباتات والحيوانات التي تعيش في المناطق الحيوية المختلفة.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> <b>التشابه:</b> كل منطقةٍ فيها منتِجاتٌ ومستهلِكاتٌ ومحلِّلات، وتتكيَّف مخلوقاتها مع مناخها. <b>الاختلاف:</b> تختلف أنواع النباتات والحيوانات باختلاف الحرارة وكمية الهطل؛ فالتندرا فيها أعشابٌ وشجيراتٌ قصيرة، والصحراء فيها صبَّارٌ وجربوع، والغابات المطيرة فيها أشجارٌ ضخمةٌ وقردةٌ وببغاوات.</div></div><div class="qa"><p class="q">أستكشف أكثر: أقارن بين السلاسل الغذائية في المناطق الحيوية المختلفة. ما المنتِجات الرئيسة في كل منطقة؟ وما المستهلِكات الرئيسة في كلٍّ منها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span><b>إجابة نموذجية مقترحة:</b> في <b>التندرا</b> المنتِجات أعشابٌ وأشناتٌ وحزازيات، والمستهلِكات قوارضُ وثعالب. وفي <b>التايجا</b> أشجارٌ مخروطية، والمستهلِكات حشراتٌ وطيورٌ وذئاب. وفي <b>الصحراء</b> نباتاتٌ تحتفظ بالماء كالصبَّار، والمستهلِكات حشراتٌ وزواحفُ وجربوع. وفي <b>الأراضي العشبية</b> الأعشابُ، والمستهلِكات آكلات أعشابٍ وآكلات لحوم.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>الفكرة الرئيسة للدرس</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="box idea" style="font-size:bigpx;">تُقسَّم اليابسة إلى <b>مناطق حيوية</b> يحدِّدها المناخ، وتعيش في كلٍّ منها أنواعٌ معينةٌ من النباتات والحيوانات. وهناك كذلك <b>أنظمةٌ بيئيةٌ مائية</b> عذبةٌ ومالحة.</div><div class="map"><div class="node">الأنظمة البيئية</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E8F1F9;border-color:#2E6DA4;color:#2E6DA4">مناطق حيوية باردة</div><div class="line" style="background:#2E6DA4"></div><div class="leaves"><span class="node leaf">التندرا</span><span class="node leaf">التايجا</span></div></div><div class="col"><div class="node sub" style="background:#FBF3DF;border-color:#B8860B;color:#B8860B">مناطق حيوية دافئة</div><div class="line" style="background:#B8860B"></div><div class="leaves"><span class="node leaf">الصحارى</span><span class="node leaf">الأراضي العشبية</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">الغابات</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">استوائية مطيرة</span><span class="node leaf">متساقطة الأوراق</span></div></div><div class="col"><div class="node sub" style="background:#E7F4F1;border-color:#1F6E63;color:#1F6E63">أنظمة مائية</div><div class="line" style="background:#1F6E63"></div><div class="leaves"><span class="node leaf">مياه عذبة</span><span class="node leaf">مصبَّات الأنهار</span><span class="node leaf">المحيط</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">شرح</span><h2>ما النظام البيئي؟</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><p class="t">إذا ذهبتُ إلى إحدى الحدائق العامة فماذا أشاهد؟ ربما أشاهد مخلوقاتٍ حيةً منها الأطفال والأشجار والطيور، فضلًا عن أشياءَ غير حية، منها التربة والماء والحجارة.</p><div class="box idea"><b>مجموع المخلوقات الحية والأشياء غير الحية في مكانٍ ما، والتي يتفاعل بعضها مع بعض، يسمَّى النظام البيئي.</b></div><p class="t">فالحديقة نظامٌ بيئي، والغابة نظامٌ بيئيٌّ أيضًا. وقد يكون النظام البيئي صغيرًا كجذع شجرةٍ يعيش فيه مجموعةٌ من الديدان، أو كبيرًا جدًّا كالصحراء.</p><div class="muted">ولا ينحصر وجود الأنظمة البيئية في اليابسة؛ فهناك أيضًا أنظمةٌ بيئيةٌ مائية، منها البِرَك والبحار والمحيطات.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٤٨</h2><span class="src">ص ١٤٨</span></div>
+<div class="body"><div class="qa"><p class="q">أقارن: فيمَ يتشابه جذع شجرةٍ تعيش فيه مجموعة ديدان، مع الغابة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>كلاهما <b>نظامٌ بيئي</b>؛ ففي كلٍّ منهما مخلوقاتٌ حيةٌ وأشياءُ غير حيةٍ يتفاعل بعضها مع بعض. والفرق أن جذع الشجرة نظامٌ بيئيٌّ صغيرٌ جدًّا، أما الغابة فنظامٌ بيئيٌّ كبيرٌ يضمُّ داخله أنظمةً أصغر.</div></div><div class="qa"><p class="q">التفكير الناقد: هل يتغيَّر النظام البيئي إذا تغيَّرت المخلوقات الحية التي تعيش فيه؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> نعم؛ لأن المخلوقات الحية جزءٌ أساسيٌّ من النظام البيئي وتتفاعل مع بعضها ومع الأشياء غير الحية. فاختفاء نوعٍ أو دخول نوعٍ جديد يغيِّر السلاسل الغذائية وتوازن النظام.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المناخ</span><h2>ما الأنظمة البيئية على اليابسة؟</h2><span class="src">ص ١٤٩</span></div>
+<div class="body"><p class="t">يترقَّب بعض الناس في مناطقَ مختلفةٍ من العالم حلولَ فصل الصيف للاستمتاع بدفء الشمس، وفي مناطقَ أخرى يترقَّبون حلول فصل الشتاء للاستمتاع بتساقُط الثلوج.</p><div class="box idea">يُقصَد <b>بالمناخ</b> متوسِّط حالة الطقس في منطقةٍ جغرافيةٍ معينةٍ خلال فترةٍ زمنيةٍ طويلة. ويعتمد تحديد المناخ بشكلٍ رئيسٍ على <b>درجة الحرارة</b> و<b>الهطل</b>.</div><p class="t">وتؤدِّي الاختلافات في المناخ من مكانٍ إلى آخرَ إلى تهيئة ظروفٍ مختلفةٍ للمخلوقات الحية.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">المنطقة الحيوية</span><h2>المنطقة الحيوية</h2><span class="src">ص ١٤٩</span></div>
+<div class="body"><p class="t">وتصنَّف اليابسة على سطح الأرض إلى مناطقَ مناخيةٍ رئيسة، كلُّ منطقةٍ فيها تمثِّل نظامًا بيئيًّا يسمَّى <b>المنطقة الحيوية</b>.</p><div class="box idea"><b>المنطقة الحيوية</b> نظامٌ بيئيٌّ يشغل منطقةً جغرافيةً واسعةً على اليابسة يسود فيها مناخٌ معيَّن، وتعيش فيها أنواعٌ معيَّنةٌ من الحيوانات والنباتات.</div><p class="t">وتشمل المناطق الحيوية كلًّا من: <b>التايجا</b>، و<b>التندرا</b>، و<b>الصحراء</b>، و<b>الأراضي العشبية</b>، و<b>الغابات الاستوائية المطيرة</b>، و<b>الغابات المتساقطة الأوراق</b>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الخريطة</span><h2>المناطق الحيوية على الأرض</h2><span class="src">ص ١٤٩</span></div>
+<div class="body"><div class="box ask">إلى أيِّ المناطق الحيوية تُنسَب أرض وطني؟<br><span class="muted">إرشاد: أحدِّد موقع وطني على الخريطة، وأستعمل مفتاح الخريطة لتحديد المناطق الحيوية التي تكوِّن خريطة وطني.</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الخريطة»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تقع المملكة العربية السعودية في المنطقة الحيوية <b>الصحراوية</b> بحسب مفتاح الخريطة في الكتاب؛ إذ تظهر معظم أرضها باللون الدالِّ على الصحراء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الظروف المناخية</span><h2>الظروف المناخية</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><p class="t">تؤثِّر في المناخ مجموعةٌ من العوامل:</p><ul class="list"><li>كمية أشعة الشمس التي تسقط على منطقةٍ معينة.</li><li>أنماط الرياح.</li><li>التيارات البحرية.</li><li>السلاسل الجبلية.</li></ul><div class="box note">وكلما اتجهنا نحو <b>خط الاستواء</b> ازدادت كمية أشعة الشمس المباشرة. وكلما صعدنا إلى ارتفاعاتٍ أعلى عن سطح البحر <b>قلَّت</b> درجة الحرارة.</div><div class="muted">وتشمل الظروف المناخية كلًّا من: كمية الأشعة الشمسية وشدَّتها، ومجموع كمِّيات الهطل، وكمِّية الرطوبة، ومتوسِّط درجة الحرارة.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الظروف المناخية</span><h2>المناخ والمخلوقات الحية</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><p class="t">يؤثِّر المناخ في أنواع المخلوقات الحية التي تعيش في منطقةٍ معينة، وتتكيَّف المخلوقات الحية للعيش في ظروفٍ مناخيةٍ محدَّدةٍ ومناسبةٍ لها.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>حيوانات</b><br>لهذا لا نجد <b>البطريق</b> إلا في المناطق الباردة القطبية. ومن ذلك أن الزرافات تعيش في المناطق التي فيها أشجارٌ عالية.</div></div><div style="flex:1 1 0"><div class="box note"><b>نباتات</b><br>تتكيَّف النباتات وتنمو في ظروفٍ مناخيةٍ معيَّنة؛ فمعظم نباتات <b>الصبَّار</b> تنمو في الصحراء الحارَّة والجافَّة.</div></div></div><div class="box idea"><b>حقيقة:</b> تعيش في محمية وادي نخلة الطبيعية في محافظة العلا، عشرات الأنواع المختلفة التي تكيَّفت جميعها مع هذه الطبيعة الفريدة من نوعها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٥٠</h2><span class="src">ص ١٥٠</span></div>
+<div class="body"><div class="qa"><p class="q">أقارن: كيف تتغيَّر المناخات عندما أسافر شمالًا أو جنوبًا بعيدًا عن خط الاستواء؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تقلُّ كمية أشعة الشمس المباشرة كلما ابتعدنا عن خط الاستواء، فتنخفض درجة الحرارة تدريجيًّا، وينتقل المناخ من الحارِّ الرطب قرب خط الاستواء إلى المعتدل ثم إلى البارد جدًّا قرب القطبين.</div></div><div class="qa"><p class="q">التفكير الناقد: ما المنطقة الحيوية التي أعيش فيها؟ أفسِّر إجابتي.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> أعيش في المنطقة الحيوية <b>الصحراوية</b>؛ لأن معدَّل الهطل في بلادي قليلٌ جدًّا (أقلُّ من ٢٥ سم في العام)، والصيف حارٌّ جافٌّ، وتنمو فيها نباتاتٌ تتحمَّل الجفاف، وتعيش فيها حيواناتٌ كالإبل والزواحف والجربوع.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مناخاتٌ قاسية</span><h2>التندرا والتايجا والصحراء</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><p class="t">لبعض المناطق الحيوية — ومنها التندرا والتايجا والصحراء — مناخاتٌ قاسية؛ فقد تكون مناطقَ باردةً جدًّا، أو حارَّةً جدًّا، أو قليلةَ الهطل.</p><div class="box idea">وهذه الظروف المناخية تحدُّ من أنواع الحيوانات والنباتات القادرة على العيش هناك.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">التندرا</span><h2>التندرا</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><p class="t">توجد التندرا في أقصى النصف الشمالي من الكرة الأرضية، وتحيط بالمناطق الواقعة جنوبيَّ القطب الشمالي.</p><ul class="list"><li>فصول شتاءٍ باردةٍ جدًّا، وفصول صيفٍ قصيرة.</li><li>وهي باردةٌ جدًّا وجافَّة، وفيها طبقاتٌ ترابيةٌ دائمة التجمُّد، وتمنع نموَّ الجذور العميقة للأشجار والنباتات الكبيرة.</li><li>ومع ذلك فإن الأعشاب والشُّجيرات ذات الجذور السطحية والقصيرة يمكنها أن تنموَ فوق الطبقات الدائمة التجمُّد، وخصوصًا خلال فصول الصيف القصيرة، عندما ينصهر الجليد في الأجزاء العلوية لهذه الطبقات.</li></ul><div class="box note">ويصل معدَّل تساقُط الأمطار في التندرا <b>٢٥ سنتمترًا</b> في العام. وتغطِّي حوالَي <b>٢٠٪</b> من مساحة اليابسة على الأرض.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">التايجا</span><h2>التايجا</h2><span class="src">ص ١٥١</span></div>
+<div class="body"><p class="t">توجد التايجا في المناطق الواقعة جنوبيَّ التندرا الشمالية. وكلمة (تايجا) من كلمةٍ روسيةٍ تعني <b>الغابة</b>.</p><ul class="list"><li>وهي غاباتٌ باردةٌ ذات أشجارٍ مخروطيةٍ دائمة الخضرة.</li><li>وتمتدُّ في النصف الشمالي من الكرة الأرضية عبر أجزاءٍ من أوربا وآسيا وأمريكا الشمالية.</li><li>فصول الشتاء في مناطق التايجا باردةٌ جدًّا، بينما فصول الصيف قصيرةٌ ودافئةٌ وأكثرُ رطوبة.</li><li>وتشجِّع ظروف الصيف الحشراتِ على التكاثر. وتشكِّل الأعداد الضخمة لجماعات الحشرات مصدرًا غذائيًّا غنيًّا يجذب العديد من الطيور المهاجرة.</li></ul><div class="box note">وتقتصر الحياة في التايجا على المخلوقات التي تستطيع العيش في فصول الشتاء القاسية، ومنها <b>الأشنات والحزازيات</b> و<b>الأشجار</b> ومنها الصَّنوبر والتنُّوب والشوكران، وبعض الحيوانات ومنها <b>القوارض والثعالب والذئاب والغربان</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الصحارى</span><h2>الصحارى</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><p class="t">تُعرَف الصحراء بمقدار كميات الهطل فيها، وليس من خلال موقعها أو درجة حرارتها.</p><div class="box idea">ويقلُّ معدَّل تساقُط الأمطار في الصحراء عن <b>٢٥ سنتمترًا</b> في العام. وتوجد الصحارى في كافة قارَّات الأرض.</div><ul class="list"><li>والصحارى الحارَّة تكون حارَّةً وجافَّةً كما يشير اسمها.</li><li>ويحوي هواء الصحراء كمياتٍ قليلةً من الرطوبة، وعندما تتساقط الأمطار فإن ماء المطر يتبخَّر قبل وصوله سطح الأرض.</li><li>وأحيانًا قد تتساقط أمطارٌ غزيرةٌ في فترةٍ زمنيةٍ قصيرة، فتتجاوز المياه الجارية مستوى المجرى الطبيعي، ويحدث <b>فيضان</b>.</li></ul><div class="muted">ومن أمثلة الصحارى في العالم: صحراء <b>الدهناء</b>، و<b>الربع الخالي</b> في المملكة العربية السعودية، و<b>الصحراء الشرقية</b> في مصر.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الصحارى</span><h2>تكيُّف المخلوقات في الصحراء</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><p class="t">وقد تكيَّفت أنواعٌ مختلفةٌ من المخلوقات الحية للعيش في ظروفها القاسية.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>النباتات</b><br>بعض النباتات التي تحتفظ بالماء — ومنها <b>الصبَّار</b> — تستطيع أن تعيش في مثل هذه الظروف.</div></div><div style="flex:1 1 0"><div class="box note"><b>الحيوانات</b><br>منها الحشرات والعناكب والزواحف والطيور وحيوانات الجحور؛ فهي عادةً تستريح خلال النهار الحارِّ، ثم تعود إلى نشاطها عند هبوط درجات الحرارة ليلًا.</div></div></div><div class="box idea"><b>الجربوع</b> أحد الأمثلة على الحيوانات التي تكيَّفت للعيش في الصحراء؛ إذ يستريح نهارًا في جحره البارد، ثم يخرج في الليل للبحث عن طعامه. وهذا السلوك يحميه من حرِّ النهار الشديد على مدار السنة.</div><div class="box note"><b>حقيقة:</b> ليست جميع الصحارى حارَّة. فهناك صحارى باردةٌ قرب القطب الجنوبي. وبعض الصحارى باردةٌ على مدار العام، وهي موجودةٌ في المناطق القطبية الشمالية والجنوبية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٥٢</h2><span class="src">ص ١٥٢</span></div>
+<div class="body"><div class="qa"><p class="q">أقارن: فيمَ تتشابه التندرا والتايجا، وفيمَ يختلفان؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>التشابه:</b> كلتاهما في النصف الشمالي من الكرة الأرضية، وشتاؤهما باردٌ جدًّا، وصيفهما قصير. <b>الاختلاف:</b> التندرا أشدُّ برودةً وجفافًا وفيها طبقاتٌ دائمة التجمُّد تمنع نموَّ الأشجار، فتنمو فيها الأعشاب والشجيرات القصيرة؛ أما التايجا فتقع جنوبيَّ التندرا وصيفها أكثرُ رطوبةً، وتنمو فيها غاباتٌ من الأشجار المخروطية دائمة الخضرة.</div></div><div class="qa"><p class="q">التفكير الناقد: أفسِّر لماذا تبدو الصحراء الحارَّة وكأنها تحوي عددًا أقلَّ من المخلوقات الحية في النهار عمَّا في الليل؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>لأن معظم حيوانات الصحراء تستريح في جحورها وظلالها خلال النهار الحارِّ هربًا من الحرارة الشديدة وفقد الماء، ثم تعود إلى نشاطها ليلًا عند هبوط درجات الحرارة، فتبدو الصحراء نهارًا شبه خالية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأراضي العشبية</span><h2>الأراضي العشبية</h2><span class="src">ص ١٥٣</span></div>
+<div class="body"><p class="t">الأراضي العشبية هي أحد أنواع المناطق الحيوية، وفيها تُشكِّل الأعشابُ على اختلاف أنواعها المكوِّنَ الرئيسَ من النباتات. وتنتشر الأراضي العشبية في معظم القارات.</p><ul class="list"><li>وقد كانت هذه المناطق في السابق مليئةً بالحيوانات، ومنها الثور البريُّ، إلا أن الكثير من هذه الأراضي تمَّ حرثُها واستخدامها في الزراعة.</li><li>وتتساقط الأمطار غيرُ الغزيرة في الأراضي العشبية بشكلٍ غير منتظم.</li><li>ودرجات الحرارة فيها منخفضةٌ شتاءً ومرتفعةٌ صيفًا.</li><li>وتقع بعض أنواع التربة الأكثر خصوبةً في العالم ضمن الأراضي العشبية؛ ولذلك تستعمل غالبًا في الزراعة.</li></ul><div class="box note">وجذور الأعشاب تثبِّت التربة في مكانها، فإذا أُزيلت انجرفت التربة بعيدًا بفعل الرياح.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأراضي العشبية</span><h2>حيوانات الأراضي العشبية</h2><span class="src">ص ١٥٣</span></div>
+<div class="body"><p class="t">وتختلف أنواع النباتات والحيوانات التي تعيش في الأراضي العشبية من مكانٍ إلى آخر.</p><table class="cmp"><tr><th style="width:26%">المكان</th><th>الحيوانات</th></tr><tr><td>أمريكا الشمالية</td><td>بعض الحيوانات الآكلة الأعشاب ومنها الثور البريُّ، وكذلك الحيوانات الآكلة اللحوم ومنها ذئب البراري والغرير والنمس.</td></tr><tr><td>وسط روسيا</td><td>تعيش السناجب والخنازير البرِّية.</td></tr><tr><td>أمريكا الجنوبية</td><td>تعيش الأيائل.</td></tr><tr><td>أفريقيا</td><td>تعيش الأسود والظباء والحمر الوحشية.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">الغابات المتساقطة</span><h2>الغابات المتساقطة الأوراق</h2><span class="src">ص ١٥٣</span></div>
+<div class="body"><p class="t">تظهر الغابات المتساقطة الأوراق في بعض أجزاء أمريكا الشمالية بألوانٍ زاهيةٍ لبضعة أشهرٍ فقط خلال السنة. وهذه هي الفترة التي يتحوَّل فيها لون أوراق الشجر من الأخضر إلى الألوان الخريفية التقليدية: الأحمر والبرتقالي والأصفر والبنِّي، قبل أن تتساقط هذه الأوراق على الأرض.</p><div class="box idea">في الغابات المتساقطة الأوراق تفقد الأشجار أوراقها عندما يقترب الشتاء. وعندما تقلُّ الأوراق يقلُّ <b>النتح</b>، ممَّا يحافظ على الماء. وهذا مهمٌّ وخصوصًا عندما يندر تساقُط الأمطار وتتجمَّد الأرض.</div><div class="box note">ومن الأشجار المتساقطة الأوراق هناك أشجار <b>البلوط</b> و<b>الزان</b>. وتنمو على أرضية هذه الغابات <b>الأشناتُ والحزازياتُ والفطر</b>. وتوجد في شرق أمريكا الشمالية، وشمال شرق آسيا، وغرب ووسط أوروبا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الغابات المطيرة</span><h2>الغابات الاستوائية المطيرة</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><p class="t">تقع الغابات الاستوائية المطيرة قرب خطِّ الاستواء. والمناخ في هذه الغابات حارٌّ ورطب.</p><ul class="list"><li>وهناك تساقُطٌ غزيرٌ للأمطار فيها، يزيد معدَّله السنويُّ على <b>مترين</b>.</li><li>وهذا النوع من المناخ مناسبٌ لعيش أنواعٍ كثيرةٍ من المخلوقات الحية ومنها <b>القردة والثعابين والببغاوات والطوقان</b>.</li><li>وتعدُّ الغابات الاستوائية المطيرة موطنًا لأنواعٍ من المخلوقات الحية تزيد على ما هو موجودٌ في كافة المناطق الحيوية مجتمعة.</li></ul><div class="box note">وهناك نوعٌ آخر من الغابات المطيرة يقع في مناطق شمال غرب المحيط الهادي تسمَّى <b>الغابات المطيرة المعتدلة</b>. وتقلُّ درجات الحرارة فيها عنها في الغابات الاستوائية المطيرة، ومع ذلك فهما تشتركان في وفرة أمطارهما.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٥٤</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><div class="qa"><p class="q">أقارن: ما أوجه الشَّبه بين الغابات المطيرة المعتدلة والغابات الاستوائية المطيرة، وما أوجه الاختلاف بينهما؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>التشابه:</b> كلتاهما غاباتٌ تشترك في <b>وفرة الأمطار</b>. <b>الاختلاف:</b> الغابات الاستوائية المطيرة تقع قرب خط الاستواء ومناخها حارٌّ ورطب، أما الغابات المطيرة المعتدلة فتقع في مناطق شمال غرب المحيط الهادي وتقلُّ درجات الحرارة فيها.</div></div><div class="qa"><p class="q">التفكير الناقد: ما أوجه الشَّبه بين المناطق العشبية والمناطق الصحراوية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> كلتاهما قليلةُ الأشجار الكبيرة، وتتساقط فيهما الأمطار بكمياتٍ غيرِ غزيرةٍ وغير منتظمة، وتتفاوت فيهما درجات الحرارة بين الفصول (منخفضةٌ شتاءً مرتفعةٌ صيفًا)، وتعيش فيهما حيواناتٌ تكيَّفت مع قلة الماء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المياه العذبة</span><h2>ما الأنظمة البيئية ذات المياه العذبة؟</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><p class="t">إن الأنظمة البيئية ذات المياه العذبة نوعٌ من المناطق الحيوية الموجودة في المسطَّحات المائية القليلة المُلوحة وحولها.</p><div class="box idea">ومن هذه المسطحات المائية: <b>البِرَك، والبحيرات، والجداول، والأنهار، والمستنقعات</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">البرك والبحيرات</span><h2>البِرَك والبحيرات</h2><span class="src">ص ١٥٤</span></div>
+<div class="body"><p class="t">يكون الماء ساكنًا في معظم البِرَك والبحيرات. وقد يكون هناك غطاءٌ من الطحالب الخضراء على سطح الماء.</p><ul class="list"><li>من النباتات التي تنمو هناك <b>البُوص</b> و<b>زنبق الماء</b>.</li><li>وتنزلق الحشرات فوق سطح الماء، وقد تصبح طعامًا للأسماك السابحة تحت السطح.</li><li>ومن الحيوانات التي قد تعيش هناك <b>السلاحف المائية والضفادع وجراد البحر</b>.</li><li>وتبحث الطيور والأفاعي والراكون عن فريستها على طول الشاطئ.</li></ul><div class="box note">وتعيش تحت سطح الماء مخلوقاتٌ حيةٌ مجهريةٌ تسمَّى <b>العوالق</b>، تتغذَّى عليها الحشرات والأسماك الصغيرة. وتصنع بعض أنواع العوالق غذاءَها بنفسها بعملية البناء الضوئي، أما الأنواع الأخرى فتتغذَّى على غيرها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأنهار</span><h2>الأنهار والجداول</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><p class="t">يكون الماء جاريًا في الأنهار والجداول الصغيرة التي تتفرَّع منها. لذا تتكيَّف المخلوقات الحية فيها، فيكون لها وسائلُها التي تمنعها من الانجراف مع الماء.</p><div class="cards"><div class="card"><h3>نبات القصب</h3><p>له جذورٌ عميقةٌ تثبِّته في القاع.</p></div><div class="card"><h3>الأسماك النهرية</h3><p>ومنها السلمون المنقَّط، لها أجسامٌ انسيابيةٌ تساعدها على السباحة ضدَّ تيارات الماء.</p></div><div class="card"><h3>حيواناتٌ أخرى</h3><p>لبعضها خطاطيفُ أو مخالبُ تساعدها على تثبيت نفسها في الصخور.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأراضي الرطبة</span><h2>الأراضي الرطبة</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><p class="t">الأراضي الرطبة مناطقُ يكون مستوى الماء فيها قريبًا من سطح التربة في معظم الأوقات. وتشمل هذه المناطق <b>المستنقعات والسبخات</b>.</p><ul class="list"><li>وهذه المناطق البيئية غنيَّةٌ بالحياة النباتية، لذلك تعدُّ موطنًا لكثيرٍ من المخلوقات الحية.</li><li>كما أنها تصلح لتكاثر الطيور والحيوانات الأخرى.</li><li>وتعمل الأراضي الرطبة <b>مصفاةً للمياه</b>؛ فهي تساعد على إزالة الملوِّثات المختلفة الناتجة عن العمليات الطبيعية أو الصناعة أو الزراعة.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>الأراضي الرطبة وتنقية المياه</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><ul class="list num"><li><b>أعمل نموذجًا:</b> أضع أصيصين صغيرين لنباتاتٍ منزليةٍ في وعاءين شفَّافين. كل نبتةٍ وأصيصٍ يمثِّلان أرضًا رطبة.</li><li>أصبُّ ماءً نظيفًا على أحد الأصيصين ببطء، وألاحظ السائل الذي يخرج من قاع الأصيص.</li><li><b>أجرِّب:</b> أضيف كميةً قليلةً من ملوِّن الطعام إلى كأسٍ من الماء. ثم أحرِّكه (يمثِّل هذا المزيج ماءً ملوَّثًا)، ثم أصبُّ المزيج في الأصيص الثاني ببطء، وألاحظ ما يحدث، وما لون الماء المترشِّح من الأصيص.</li></ul><div class="box safe">أتعامل مع الماء وملوِّن الطعام بحذر، وأنظِّف مكان العمل بعد النشاط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نشاط الأراضي الرطبة — الاستنتاج</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أستخلص النتائج: بناءً على ملاحظاتي، ماذا يمكن أن أستنتج حول دور الأراضي الرطبة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span>يخرج الماء المترشِّح من الأصيص الثاني <b>أفتحَ لونًا</b> من الماء الملوَّن الذي صببته؛ لأن التربة والجذور احتجزت جزءًا من الملوِّن. وأستنتج أن <b>الأراضي الرطبة تعمل مصفاةً طبيعيةً للمياه</b> تساعد على إزالة الملوِّثات منها.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مصبَّات الأنهار</span><h2>مصبَّات الأنهار</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><div class="box idea">يُطلَق على الأنظمة البيئية في الأماكن التي تصبُّ فيها مياه الأنهار في المحيطات أو البحار <b>مصبَّات الأنهار</b>.</div><ul class="list"><li>وتكون مياهها أقلَّ ملوحةً من مياه المحيط، ولكنها أكثرُ ملوحةً من مياه النهر.</li><li>وتتكيَّف النباتات والحيوانات التي تعيش في مصبَّات الأنهار للعيش مع التغيُّر في الملوحة؛ حيث يتكاثر العديد من الطيور والحيوانات فيها.</li><li>والكثير من الأسماك تقضي جزءًا من حياتها في هذه البيئة.</li></ul><div class="box note">وتعدُّ مصبَّات الأنهار <b>موارد طبيعيةً مهمة</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٥٥</h2><span class="src">ص ١٥٥</span></div>
+<div class="body"><div class="qa"><p class="q">أقارن: فيمَ تتشابه مصبَّات الأنهار مع الأراضي الرطبة، وفيمَ يختلفان؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>التشابه:</b> كلتاهما نظامٌ بيئيٌّ مائيٌّ غنيٌّ بالحياة، وموطنٌ لتكاثر كثيرٍ من الطيور والأسماك، ويُعدُّ مورَدًا طبيعيًّا مهمًّا. <b>الاختلاف:</b> الأراضي الرطبة مياهها عذبةٌ ومستوى الماء فيها قريبٌ من سطح التربة وتعمل مصفاةً للمياه، أما مصبَّات الأنهار فمياهها مزيجٌ بين العذبة والمالحة، وتتميَّز بتغيُّر الملوحة فيها.</div></div><div class="qa"><p class="q">التفكير الناقد: ما الدور الذي تلعبه العوالق في الأنظمة البيئية ذات المياه العذبة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>العوالق مخلوقاتٌ مجهريةٌ تعيش تحت سطح الماء؛ بعضها يصنع غذاءه بنفسه بالبناء الضوئي فيكون <b>منتِجًا</b> يشكِّل قاعدة السلسلة الغذائية، وبعضها يتغذَّى على غيره. وتتغذَّى عليها الحشرات والأسماك الصغيرة، فهي أساس الغذاء في هذه الأنظمة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المحيط</span><h2>ما الذي يعيش في المحيط؟</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><p class="t">تغطِّي المحيطات أكثرَ من <b>٧٠٪</b> من سطح الأرض. وتؤدِّي دورًا مهمًّا في دورة الماء في الطبيعة. وتحتوي على المغذِّيات التي تدعم أشكال الحياة المختلفة.</p><table class="cmp"><tr><th style="width:20%">المجموعة</th><th>الوصف</th></tr><tr><td>العوالق</td><td>تبدأ السلاسل الغذائية في المحيط بالعوالق التي تعيش بالقرب من سطح الماء — ومنها الدياتومات — وتشكِّل مصدرًا رئيسًا لغذاء المخلوقات البحرية.</td></tr><tr><td>السوابح</td><td>الحيوانات التي تسبح في الماء — ومنها الجراد والأسماك والدلافين — مستهلِكاتٌ تسبح في الماء.</td></tr><tr><td>القاعيَّات</td><td>المخلوقات الحية التي تعيش بالقرب من القاع — ومنها سرطان البحر والإسفنج والمرجان — حيواناتٌ تعيش في قاع المحيط.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">المحيط</span><h2>العوامل المؤثرة ومناطق المحيط</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><p class="t">يقسَّم المحيط إلى مناطق؛ وتؤثِّر كلُّ منطقةٍ في المخلوقات الحية التي تعيش فيها بطرائقَ مختلفة. وتشمل العوامل: <b>المدَّ والجزر، ودرجة الحرارة، والملوحة، وضغط الماء، وكمية أشعة الشمس</b>.</p><ul class="list"><li>فقرب السطح تدفِّئ أشعة الشمس الماء، وتمدُّ المخلوقات الحية التي تستخدم التمثيل الضوئيَّ بالطاقة.</li><li>وتقلُّ أشعة الشمس تدريجيًّا إلى أن تختفي عند عمق <b>٢٠٠ متر</b> تقريبًا.</li><li>وتزداد ظُلمة الماء وبرودته مع زيادة العمق، وتتوقَّف عمليات التمثيل الضوئي.</li></ul><div class="box note">ومعظم المخلوقات الحية التي تعيش على عمقٍ أكبر يتغذَّى بعضها على بعض، وعلى موادَّ تصل إليها من سطح المحيط. وتتغذَّى مخلوقاتٌ حيةٌ أخرى تعيش في أعماق المحيطات — ومنها بعض أنواع البدائيات — على موادَّ تحصل عليها من <b>الفوهات الحرمائية</b> والشقوق العميقة الموجودة في أعماق المحيطات، والتي تتدفَّق منها بعض المواد الكيميائية الحارَّة.</div><div class="muted">ومناطق الحياة في المحيط كما في شكل الكتاب: <b>منطقة المد</b>، ثم <b>منطقة الشاطئ</b>، ثم <b>منطقة المحيط</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>مناطق الحياة في المحيط</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><div class="box ask">أيُّ مناطق المحيط لا تنمو فيها الطحالب على القاع؟<br><span class="muted">إرشاد: إلامَ تحتاج الطحالب لصنع غذائها؟</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الشكل»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>منطقة المحيط</b> (المياه العميقة)؛ لأن الطحالب تحتاج إلى <b>ضوء الشمس</b> لصنع غذائها بالبناء الضوئي، وأشعة الشمس تختفي عند عمق ٢٠٠ متر تقريبًا فلا تصل إلى القاع هناك.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٥٦</h2><span class="src">ص ١٥٦</span></div>
+<div class="body"><div class="qa"><p class="q">أقارن: أجد أوجه التشابه وأوجه الاختلاف بين الأنظمة البيئية في المحيطات وبين المناطق الحيوية على اليابسة.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>التشابه:</b> في كليهما منتِجاتٌ ومستهلِكاتٌ ومحلِّلات، وتتكيَّف مخلوقاتها مع ظروفها، وتؤثِّر فيها درجة الحرارة وكمية أشعة الشمس. <b>الاختلاف:</b> في المحيطات المنتِجات الرئيسة عوالقُ وطحالب، وتؤثِّر فيها عواملُ إضافيةٌ كالملوحة وضغط الماء والمدِّ والجزر والعمق؛ أما على اليابسة فالمنتِجات نباتاتٌ، ويحدِّد مناطقَها الحيويةَ المناخُ من حرارةٍ وهطل.</div></div><div class="qa"><p class="q">التفكير الناقد: كيف يؤثِّر العمق في درجة حرارة المحيط؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>كلما زاد العمق قلَّ ما يصل من أشعة الشمس التي تدفِّئ الماء، فتزداد برودة الماء وظُلمته، حتى تختفي الأشعة عند عمق ٢٠٠ متر تقريبًا وتتوقَّف عمليات التمثيل الضوئي.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط تفاعلي</span><h2>أيُّ منطقةٍ حيوية؟</h2><span class="src">تدريب إضافي</span></div>
+<div class="body"><p class="t">أحدِّد المنطقة الحيوية من وصفها.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="T">التندرا</button><button class="simBtn ghost" type="button" data-k="J">التايجا</button><button class="simBtn ghost" type="button" data-k="S">الصحراء</button><button class="simBtn ghost" type="button" data-k="R">الغابات المطيرة</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>الملخص المصوَّر</h2><span class="src">ص ١٥٧</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>المناطق الحيوية</h3><p>لكلِّ منطقةٍ حيويةٍ مناخٌ معيَّنٌ وأنواعٌ معيَّنةٌ من المخلوقات الحية.</p></div><div class="card"><h3>على اليابسة</h3><p>تشمل التندرا والتايجا والصحارى والأراضي العشبية والغابات الاستوائية المطيرة والغابات المتساقطة الأوراق.</p></div><div class="card"><h3>في الماء</h3><p>تغطِّي الأنظمة البيئية المائية معظم سطح الأرض.</p></div></div><div class="box note"><b>المطويات:</b> أعمل مطويةً وأكمل العبارات الواردة فيها، ثم أضيف تفاصيلَ تبيِّن ما تعلَّمتُه، وأمثلةً على ذلك.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ١ – ٣</h2><span class="src">ص ١٥٧</span></div>
+<div class="body"><div class="qa"><p class="q">١ – المفردات: ……… منطقةٌ من الأرض لها مناخٌ محدَّد، تحوي أنواعًا معيَّنةً من المخلوقات الحية.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المنطقة الحيوية</b>.</div></div><div class="qa"><p class="q">٢ – أقارن: فيمَ تتشابه الأنظمة البيئية في المياه العذبة والأنظمة البيئية في المحيط، وفيمَ تختلف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>التشابه:</b> كلاهما نظامٌ بيئيٌّ مائيٌّ تبدأ سلاسله الغذائية بالعوالق والطحالب، وتعيش فيه أسماكٌ ومخلوقاتٌ متكيفةٌ مع الماء. <b>الاختلاف:</b> المياه العذبة قليلة الملوحة وتشمل البِرَك والبحيرات والأنهار والمستنقعات، أما المحيط فمياهه مالحةٌ ويقسَّم إلى مناطقَ يؤثِّر فيها المدُّ والجزر والملوحة وضغط الماء والعمق.</div></div><div class="qa"><p class="q">٣ – التفكير الناقد: أفسِّر لماذا يمكن تصنيف مناطقَ معيَّنةٍ من القارَّة المتجمِّدة الجنوبية على أنها صحارى؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>لأن الصحراء تُعرَف <b>بمقدار كميات الهطل فيها</b> وليس بموقعها أو درجة حرارتها؛ ويقلُّ معدَّل الهطل في تلك المناطق عن ٢٥ سنتمترًا في العام، فهي صحارى باردة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ٤ – ٦</h2><span class="src">ص ١٥٧</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أختار الإجابة الصحيحة: المنطقة الحيوية التي تكثر فيها الأشجار المخروطية الدائمة الخضرة هي: أ) التندرا &nbsp; ب) الأراضي العشبية &nbsp; جـ) الغابات المتساقطة الأوراق &nbsp; د) التايجا</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>د) التايجا.</b></div></div><div class="qa"><p class="q">٥ – أختار الإجابة الصحيحة: درجة الحرارة وتساقُط الأمطار هما العاملان اللذان يحدِّدان ……… لأيِّ منطقة. أ) المناخ &nbsp; ب) خط الطول &nbsp; جـ) الارتفاع &nbsp; د) خط العرض</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>أ) المناخ.</b></div></div><div class="qa"><p class="q">٦ – السؤال الأساسي: ما خصائص الأنظمة البيئية المختلفة على اليابسة وفي الماء؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>على اليابسة:</b> تُقسَّم إلى مناطق حيويةٍ يحدِّدها المناخ (الحرارة والهطل): التندرا باردةٌ جافَّةٌ دائمة التجمُّد، والتايجا غاباتٌ باردةٌ مخروطية، والصحارى قليلة الهطل، والأراضي العشبية تسودها الأعشاب وتربتها خصبة، والغابات المتساقطة الأوراق تفقد أوراقها شتاءً، والغابات الاستوائية المطيرة حارَّةٌ رطبةٌ غزيرة الأمطار وأكثر المناطق تنوُّعًا. <b>وفي الماء:</b> أنظمةٌ عذبةٌ (بِرَكٌ وبحيراتٌ وأنهارٌ وأراضٍ رطبة)، ومصبَّاتُ الأنهار متوسطة الملوحة، والمحيط الذي يقسَّم إلى مناطق ويتأثَّر بالملوحة والعمق وأشعة الشمس.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم والكتابة · العلوم والمجتمع</h2><span class="src">ص ١٥٧</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">الدليل السياحي</h4><p class="t">أكتب مقالةً تصلح دليلًا للسيَّاح، أشجِّع فيها زيارة إحدى المناطق الحيوية التي قمتُ بدراستها. وأبيِّن في المقالة حقائقَ مهمة، منها الموقع الجغرافي، والمناخ، وطبيعة التربة، والنباتات، والحيوانات.</p></div><div style="flex:1 1 0"><h4 class="hl">أقارن بين العادات</h4><p class="t">تتكيَّف النباتات والحيوانات مع مناطقها الحيوية، وكذلك يفعل البشر. أبحث في غذاءٍ ومسكنٍ وملابسِ أناسٍ يعيشون في منطقتين مختلفتين، وأكتب تقريرًا يقارن بين عاداتهما.</p></div></div><div class="muted">نشاطان من الكتاب يُنجزهما الطالب بنفسه، ولا تُنسب نتائجهما إلى صفحات الدرس.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">متوسِّط حالة الطقس في منطقةٍ خلال فترةٍ طويلة يُسمَّى:</p><div class="opts"><button class="opt" type="button">الطقس</button><button class="opt" type="button">المناخ</button><button class="opt" type="button">الهطل</button><button class="opt" type="button">الرطوبة</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">المنطقة الحيوية التي فيها طبقاتٌ ترابيةٌ دائمة التجمُّد هي:</p><div class="opts"><button class="opt" type="button">التايجا</button><button class="opt" type="button">التندرا</button><button class="opt" type="button">الأراضي العشبية</button><button class="opt" type="button">الغابات المطيرة</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">تُعرَف الصحراء بأن معدَّل الأمطار فيها يقلُّ عن:</p><div class="opts"><button class="opt" type="button">٢٥ سنتمترًا في العام</button><button class="opt" type="button">مترين في العام</button><button class="opt" type="button">٧٠ سنتمترًا في العام</button><button class="opt" type="button">١٠٠ سنتمتر في العام</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي (٢)</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">الأماكن التي تصبُّ فيها مياه الأنهار في البحار تُسمَّى:</p><div class="opts"><button class="opt" type="button">الأراضي الرطبة</button><button class="opt" type="button">مصبَّات الأنهار</button><button class="opt" type="button">البِرَك</button><button class="opt" type="button">الجداول</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">تختفي أشعة الشمس في المحيط عند عمقٍ يقارب:</p><div class="opts"><button class="opt" type="button">٢٠ مترًا</button><button class="opt" type="button">٢٠٠ متر</button><button class="opt" type="button">٢٠٠٠ متر</button><button class="opt" type="button">٢ متر</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">تغطِّي المحيطات من سطح الأرض أكثرَ من:</p><div class="opts"><button class="opt" type="button">٢٠٪</button><button class="opt" type="button">٥٠٪</button><button class="opt" type="button">٧٠٪</button><button class="opt" type="button">٩٠٪</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبل أن أغادر</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أعرِّف المنطقة الحيوية بجملةٍ واحدة.</li><li>أذكر فرقًا واحدًا بين التندرا والتايجا.</li><li>أذكر مثالًا لنظامٍ بيئيٍّ مائيٍّ عذبٍ وآخر مالح.</li></ul><div class="box idea">سؤالٌ أفكر فيه: لماذا تختلف نباتات بلادي عن نباتات الغابات المطيرة رغم أن كليهما يتلقَّى ضوء الشمس؟</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>مقارنةٌ مصوَّرة: التندرا والتايجا</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1280" height="460" viewBox="0 0 1280 460" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l10aSvgHost"><g class="eHot" data-k="taiga"><rect x="30" y="20" width="590" height="410" rx="20" fill="#2F6B2A" opacity=".16"/><rect x="30" y="20" width="590" height="410" rx="20" fill="none" stroke="#2F6B2A" stroke-width="4"/><g transform="translate(256,46) scale(1.15)"><rect x="0" y="94" width="120" height="18" fill="#6E8F52"/><polygon points="30,92 12,92 30,44 48,92" fill="#2F6B2A"/><rect x="26" y="90" width="8" height="14" fill="#6B4A24"/><polygon points="64,96 42,96 64,36 86,96" fill="#3B7D2A"/><rect x="60" y="92" width="9" height="16" fill="#6B4A24"/><polygon points="98,94 80,94 98,52 116,94" fill="#2F6B2A"/><rect x="94" y="92" width="8" height="14" fill="#6B4A24"/></g><g><text x="325" y="216" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التايجا</text><text x="325" y="216" font-size="30" fill="#2F6B2A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التايجا</text></g><circle cx="586" cy="258" r="7" fill="#2F6B2A"/><g><text x="564" y="266" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">شتاءٌ باردٌ جدًّا</text><text x="564" y="266" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">شتاءٌ باردٌ جدًّا</text></g><circle cx="586" cy="302" r="7" fill="#2F6B2A"/><g><text x="564" y="310" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أشجارٌ مخروطية</text><text x="564" y="310" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أشجارٌ مخروطية</text></g><circle cx="586" cy="346" r="7" fill="#2F6B2A"/><g><text x="564" y="354" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">قوارضُ وذئاب</text><text x="564" y="354" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">قوارضُ وذئاب</text></g><rect class="hitBox" x="30" y="20" width="590" height="410" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="tundra"><rect x="680" y="20" width="590" height="410" rx="20" fill="#6E8FA8" opacity=".16"/><rect x="680" y="20" width="590" height="410" rx="20" fill="none" stroke="#6E8FA8" stroke-width="4"/><g transform="translate(906,46) scale(1.15)"><rect x="0" y="70" width="120" height="40" fill="#E5CE9B"/><path d="M0 76 q 30 -14 60 0 t 60 0" fill="#D8BE85"/><circle cx="94" cy="34" r="17" fill="#F6C445"/><g><rect x="52" y="46" width="14" height="46" rx="7" fill="#4E9A34"/><rect x="34" y="58" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="34" y="58" width="10" height="24" rx="5" fill="#4E9A34"/><rect x="72" y="52" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="74" y="52" width="10" height="28" rx="5" fill="#4E9A34"/></g></g><g><text x="975" y="216" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التندرا</text><text x="975" y="216" font-size="30" fill="#6E8FA8" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التندرا</text></g><circle cx="1236" cy="258" r="7" fill="#6E8FA8"/><g><text x="1214" y="266" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">باردةٌ جافَّة</text><text x="1214" y="266" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">باردةٌ جافَّة</text></g><circle cx="1236" cy="302" r="7" fill="#6E8FA8"/><g><text x="1214" y="310" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">طبقاتٌ دائمة التجمُّد</text><text x="1214" y="310" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">طبقاتٌ دائمة التجمُّد</text></g><circle cx="1236" cy="346" r="7" fill="#6E8FA8"/><g><text x="1214" y="354" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أعشابٌ وشُجيرات</text><text x="1214" y="354" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أعشابٌ وشُجيرات</text></g><rect class="hitBox" x="680" y="20" width="590" height="410" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">مقارنةٌ مصوَّرة بين منطقتين حيويتين باردتين.</div></div><div class="eSteps" id="g6l10aPills"><span class="eStepPill" data-s="0">التندرا</span><span class="eStepPill" data-s="1">التايجا</span></div><div class="eInfo" id="g6l10aInfo">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l10aPrev">◀ السابق</button><button class="simBtn" type="button" id="g6l10aNext">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: مناطق الحياة في المحيط</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1240" height="470" viewBox="0 0 1240 470" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l10bSvgHost"><g class="eHot" data-k="tide"><rect x="40" y="20" width="900" height="74" rx="10" fill="#7EC1E8"/><g><text x="490" y="65" font-size="27" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">منطقة المد</text><text x="490" y="65" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">منطقة المد</text></g><rect class="hitBox" x="40" y="20" width="900" height="74" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M944 57 H 990" stroke="#B7C3C9" stroke-width="3" stroke-dasharray="7 6"/><g><text x="1090" y="65" font-size="22" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يغمرها الماء وينحسر</text><text x="1090" y="65" font-size="22" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يغمرها الماء وينحسر</text></g><g class="eHot" data-k="shore"><rect x="40" y="100" width="900" height="111" rx="10" fill="#4FA3D1"/><g><text x="490" y="163" font-size="27" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">منطقة الشاطئ</text><text x="490" y="163" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">منطقة الشاطئ</text></g><rect class="hitBox" x="40" y="100" width="900" height="111" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M944 155 H 990" stroke="#B7C3C9" stroke-width="3" stroke-dasharray="7 6"/><g><text x="1090" y="163" font-size="22" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ضحلةٌ ويصلها الضوء بوفرة</text><text x="1090" y="163" font-size="22" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ضحلةٌ ويصلها الضوء بوفرة</text></g><g class="eHot" data-k="open"><rect x="40" y="217" width="900" height="111" rx="10" fill="#2E7BA6"/><g><text x="490" y="280" font-size="27" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">منطقة المحيط — قربَ السطح</text><text x="490" y="280" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">منطقة المحيط — قربَ السطح</text></g><rect class="hitBox" x="40" y="217" width="900" height="111" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M944 272 H 990" stroke="#B7C3C9" stroke-width="3" stroke-dasharray="7 6"/><g><text x="1090" y="280" font-size="22" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تعيش فيها العوالق والسوابح</text><text x="1090" y="280" font-size="22" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تعيش فيها العوالق والسوابح</text></g><g class="eHot" data-k="deep"><rect x="40" y="334" width="900" height="111" rx="10" fill="#173E5C"/><g><text x="490" y="397" font-size="27" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الأعماق</text><text x="490" y="397" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الأعماق</text></g><rect class="hitBox" x="40" y="334" width="900" height="111" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M944 389 H 990" stroke="#B7C3C9" stroke-width="3" stroke-dasharray="7 6"/><g><text x="1090" y="397" font-size="22" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">لا يصلها الضوء وتتوقَّف عملية البناء الضوئي</text><text x="1090" y="397" font-size="22" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">لا يصلها الضوء وتتوقَّف عملية البناء الضوئي</text></g></svg><div class="eCap">مناطق الحياة في المحيط: يتغيَّر الضوء والحرارة والضغط مع العمق.</div></div><div class="eSteps" id="g6l10bPills"><span class="eStepPill" data-s="0">منطقة المد</span><span class="eStepPill" data-s="1">منطقة الشاطئ</span><span class="eStepPill" data-s="2">منطقة المحيط</span><span class="eStepPill" data-s="3">الأعماق</span></div><div class="eInfo" id="g6l10bInfo">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l10bPrev">◀ السابق</button><button class="simBtn" type="button" id="g6l10bNext">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: مناطقُ حيويةٌ أخرى</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="0" y="70" width="120" height="40" fill="#E5CE9B"/><path d="M0 76 q 30 -14 60 0 t 60 0" fill="#D8BE85"/><circle cx="94" cy="34" r="17" fill="#F6C445"/><g><rect x="52" y="46" width="14" height="46" rx="7" fill="#4E9A34"/><rect x="34" y="58" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="34" y="58" width="10" height="24" rx="5" fill="#4E9A34"/><rect x="72" y="52" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="74" y="52" width="10" height="28" rx="5" fill="#4E9A34"/></g></g></svg><h4>الصحارى</h4><p>هطلٌ أقلُّ من ٢٥ سم في العام</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="0" y="94" width="120" height="18" fill="#6E8F52"/><polygon points="30,92 12,92 30,44 48,92" fill="#2F6B2A"/><rect x="26" y="90" width="8" height="14" fill="#6B4A24"/><polygon points="64,96 42,96 64,36 86,96" fill="#3B7D2A"/><rect x="60" y="92" width="9" height="16" fill="#6B4A24"/><polygon points="98,94 80,94 98,52 116,94" fill="#2F6B2A"/><rect x="94" y="92" width="8" height="14" fill="#6B4A24"/></g></svg><h4>الغابات المطيرة</h4><p>حارَّةٌ رطبةٌ وأمطارها تزيد على مترين</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="10" y="86" width="100" height="24" rx="8" fill="#8A6636"/><path d="M60 92 L60 40" stroke="#4E9A34" stroke-width="8" stroke-linecap="round"/><ellipse cx="60" cy="30" rx="24" ry="18" fill="#3F8E2E"/><ellipse cx="34" cy="52" rx="21" ry="12" fill="#57A83E" transform="rotate(-22 34 52)"/><ellipse cx="86" cy="52" rx="21" ry="12" fill="#57A83E" transform="rotate(22 86 52)"/><path d="M60 92 v14 M60 98 l-14 8 M60 100 l14 6" stroke="#6B4A24" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg><h4>الأراضي العشبية</h4><p>تسودها الأعشاب وتربتها خصبة</p></div><div class="eCard"><svg class="ill" width="150" height="140" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="0" y="44" width="120" height="66" fill="#2E7BA6"/><path d="M0 52 q 15 -10 30 0 t 30 0 t 30 0 t 30 0" stroke="#8FC7E4" stroke-width="5" fill="none"/><path d="M0 70 q 15 -10 30 0 t 30 0 t 30 0 t 30 0" stroke="#8FC7E4" stroke-width="4" fill="none" opacity=".7"/><ellipse cx="44" cy="90" rx="16" ry="9" fill="#E2703A"/><path d="M60 90 l12 -8 v16z" fill="#C9552A"/></g></svg><h4>الأنظمة المائية</h4><p>تغطِّي المحيطات أكثر من ٧٠٪ من سطح الأرض</p></div></div><div class="eCap">لكلِّ منطقةٍ حيويةٍ مناخُها وأنواعها المعيَّنة من النبات والحيوان.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — عالَمٌ متنوِّع</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>قد يكون المكانُ <b>صحراءَ باردة</b>! فالصحراء تُعرَف بقلَّة الهطل لا بالحرارة؛ ولهذا تُعدُّ بعض مناطق القطب الجنوبي صحارى.</p></div><div class="fFact"><div class="n">٢</div><p><b>العوالق النباتية</b> الدقيقة قرب سطح المحيط تقوم بأكثرَ من نصف عمليات البناء الضوئي على الكرة الأرضية.</p></div><div class="fFact"><div class="n">٣</div><p>في المملكة محمياتٌ طبيعيةٌ تحفظ التنوُّع الحيويَّ في بيئاتٍ صحراويةٍ وجبليةٍ وساحلية.</p></div></div><div class="fCap">لكلِّ منطقةٍ حيويةٍ مناخُها ومخلوقاتها.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6j1"><div class="fCard"><div class="fIn"><div class="fF"><span>المُناخ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>متوسِّط حالة الطقس في منطقةٍ جغرافيةٍ معينةٍ خلال فترةٍ زمنيةٍ طويلة.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>المنطقة الحيوية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نظامٌ بيئيٌّ يشغل منطقةً جغرافيةً واسعةً على اليابسة يسود فيها مناخٌ معيَّن، وتعيش فيها أنواعٌ معيَّنةٌ من الحيوانات والنباتات.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>مصبَّات الأنهار</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الأنظمة البيئية في الأماكن التي تصبُّ فيها مياه الأنهار في المحيطات أو البحار.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6j1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>تحدِّي الوقت — ٥٠ ثانية</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fBar"><span class="fPill warn" id="s6j2T">الوقت</span><span class="fPill" id="s6j2Sc">النقاط</span><button class="fBtn" type="button" id="s6j2Go">▶ ابدأ التحدي</button></div><div class="fQ" id="s6j2Q">اضغط «ابدأ التحدي» لتبدأ.</div><div class="fOpts" id="s6j2O"></div><div class="fFb" id="s6j2Fb"></div></div><div class="fCap">أجب عن أكبر عددٍ ممكنٍ من الأسئلة قبل انتهاء الوقت.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>بيئتي أنا</h4><p>حدِّد المنطقة الحيوية التي تعيش فيها، واذكر نباتًا وحيوانًا تكيَّفا معها.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا لا تنمو الأشجار الضخمة في التندرا رغم وجود الماء المتجمِّد فيها؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: مقارنة الأنظمة البيئية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">كيف يغيّر وصول الضوء أنواع المنتجات الممكنة في مناطق المحيط؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/ocean.jpg" alt="أمواج بحرية تتكسر قرب شاطئ صخري" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>أمواج على الساحل؛ تتحرك مياه البحر وتؤثر في شكل الشاطئ.</figcaption><p class="se-credit">الصورة: Jon Sullivan · <a href="https://commons.wikimedia.org/wiki/File:Waves_on_Ocean_Coast.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://commons.wikimedia.org/wiki/File:Waves_on_Ocean_Coast.jpg#Licensing" target="_blank" rel="noopener noreferrer">Public domain</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>تؤثر الحرارة والهطول في النباتات السائدة على اليابسة، ويساعد المناخ على تفسير اختلاف المناطق الحيوية.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>تختلف البيئات المائية في الملوحة والعمق وحركة الماء والضوء، ولذلك تختلف المخلوقات القادرة على العيش فيها.</span></p>
+<p class="se-fact"><span aria-hidden="true">🌊</span><span>يقل الضوء الشمسي مع العمق؛ وتحتاج المنتجات التي تقوم بالبناء الضوئي إلى منطقة يصلها ضوء كافٍ.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://oceanservice.noaa.gov/facts/light_travel.html" target="_blank" rel="noopener noreferrer">NOAA: إلى أين يصل ضوء الشمس في المحيط؟</a></li><li><a href="https://oceanservice.noaa.gov/education/marine-ecosystem-modeling-vr/ocean-food-webs/module-activities.html" target="_blank" rel="noopener noreferrer">NOAA: نمذجة الشبكات الغذائية البحرية</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: قارن الضوء عبر ثلاث مناطق بحرية">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>قارن الضوء عبر ثلاث مناطق بحرية</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="قارن الضوء عبر ثلاث مناطق بحرية"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">☀️</span><span class="se-node-label">المنطقة المضاءة</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🌗</span><span class="se-node-label">منطقة الشفق</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🌑</span><span class="se-node-label">المنطقة المظلمة</span></button></div>
+
+<p class="se-diagram-caption">حدود المناطق تتأثر بصفاء الماء؛ وجود حياة في الظلام لا يعني وجود بناء ضوئي.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">☀️</span><div><strong data-detail-title>المنطقة المضاءة</strong><p data-detail-text>ضوء يدعم البناء الضوئي.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: غيّر العمق وراقب ضوء الشمس المتبقي">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>غيّر العمق وراقب ضوء الشمس المتبقي</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير وصول الضوء عندما نغيّر العمق ونثبت صفاء الماء وضوء السطح؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">موضع الرصد</p><div class="se-options" role="group" aria-label="موضع الرصد"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">قرب السطح</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">أعمق في الماء</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">في المنطقة المظلمة</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">لا تمثل الدرجات أعماقًا بالأمتار أو نسب إضاءة؛ تختلف الحدود بين المياه الصافية والعكرة.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي لضوء الشمس الواصل</p><div class="se-model" role="img" data-model aria-label="ضوء سطحي وفير"><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol se-active" aria-hidden="true">☀️</span><span class="se-symbol" aria-hidden="true">☀️</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>ضوء سطحي وفير</p><p class="se-observation" data-observation>وصول مرتفع لضوء الشمس.</p></div><p class="se-explanation" data-explanation>تبقى صفات الماء وضوء الشمس ثابتة في النموذج. بالقرب من السطح يتاح ضوء أكبر للطحالب والمنتجات الضوئية.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 كيف يمكن أن تتغير المنطقة المضاءة إذا ازدادت عكارة الماء؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثالثة: الأنظمة البيئية ومواردها · الفصل الخامس: الأنظمة البيئية · الدرس الثاني: مقارنة الأنظمة البيئية<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٤٦ – ١٥٧ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+(function(){
+  var D=[
+    ["طبقاتٌ ترابيةٌ دائمة التجمُّد تمنع نموَّ الأشجار","T","هذه صفة التندرا."],
+    ["غاباتٌ باردةٌ ذات أشجارٍ مخروطيةٍ دائمة الخضرة","J","كلمة تايجا روسيةٌ تعني الغابة."],
+    ["يقلُّ معدَّل المطر فيها عن ٢٥ سنتمترًا في العام","S","الصحراء تُعرَف بمقدار الهطل."],
+    ["مناخٌ حارٌّ ورطبٌ ومطرٌ يزيد على مترين سنويًّا","R","الغابات الاستوائية المطيرة قرب خط الاستواء."],
+    ["يعيش فيها الجربوع ويستريح نهارًا في جحره","S","تكيُّفٌ مع حرِّ الصحراء."],
+    ["تجذب أعدادُ الحشرات فيها الطيورَ المهاجرة صيفًا","J","صيف التايجا قصيرٌ دافئٌ رطب."]
+  ];
+  var i=0,ok=0,n=0;
+  var card=document.getElementById('aCard'), tag=document.getElementById('aTag');
+  var msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+  if(!card) return;
+  var NM={T:'التندرا',J:'التايجا',S:'الصحراء',R:'الغابات المطيرة'};
+  function ar(x){var s=String(x),o='';for(var k=0;k<s.length;k++){o+='٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(k)-48];}return o;}
+  function show(){
+    if(i>=D.length){card.querySelector('.nm').textContent='انتهى النشاط';tag.textContent='—';
+      msg.textContent='أحسنت! ميَّزت المناطق الحيوية.';msg.className='simMsg good';return;}
+    card.querySelector('.nm').textContent=D[i][0];tag.textContent='؟';
+  }
+  function upd(){sc.textContent='النتيجة: '+ar(ok)+' / '+ar(n);}
+  document.querySelectorAll('#simA .simBtn[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(i>=D.length) return;
+      n++;
+      if(b.getAttribute('data-k')===D[i][1]){ok++;msg.textContent='إجابة صحيحة ✓ — '+D[i][2];msg.className='simMsg good';}
+      else{msg.textContent='أعد التفكير ✗ — '+D[i][2];msg.className='simMsg';}
+      tag.textContent=NM[D[i][1]];
+      i++;upd();setTimeout(show,900);
+    });
+  });
+  document.getElementById('aReset').addEventListener('click',function(){
+    i=0;ok=0;n=0;msg.textContent='أبدأ التصنيف.';msg.className='simMsg';upd();show();
+  });
+  upd();show();
+})();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g6l10aSvgHost','g6l10aInfo',{'tundra':'<span><b>التندرا</b> — باردةٌ جدًّا وجافَّة، وفيها <b>طبقاتٌ ترابيةٌ دائمة التجمُّد</b> تمنع نموَّ الأشجار الكبيرة.</span>','taiga':'<span><b>التايجا</b> — غاباتٌ باردةٌ ذات <b>أشجارٍ مخروطيةٍ دائمة الخضرة</b>، صيفها قصيرٌ رطب.</span>'},'');
+ERT.stepper({pills:'g6l10aPills', info:'g6l10aInfo', svg:'g6l10aSvgHost', next:'g6l10aNext', prev:'g6l10aPrev', stages:[['tundra','التندرا','باردةٌ جدًّا وجافَّة، وفيها <b>طبقاتٌ ترابيةٌ دائمة التجمُّد</b> تمنع نموَّ الأشجار الكبيرة.'],['taiga','التايجا','غاباتٌ باردةٌ ذات <b>أشجارٍ مخروطيةٍ دائمة الخضرة</b>، صيفها قصيرٌ رطب.']]});
+ERT.hotspots('g6l10bSvgHost','g6l10bInfo',{'tide':'<span><b>منطقة المد</b> — منطقةٌ يغمرها الماء وينحسر عنها؛ تتكيَّف مخلوقاتها مع التغيُّر المستمر.</span>','shore':'<span><b>منطقة الشاطئ</b> — مياهٌ ضحلةٌ يصلها الضوء، فتكثر فيها الحياة.</span>','open':'<span><b>منطقة المحيط</b> — قرب السطح تعيش <b>العوالق</b> التي تبدأ بها السلاسل الغذائية البحرية.</span>','deep':'<span><b>الأعماق</b> — تختفي أشعة الشمس عند عمق <b>٢٠٠ متر</b> تقريبًا فتتوقَّف عمليات البناء الضوئي.</span>'},'');
+ERT.stepper({pills:'g6l10bPills', info:'g6l10bInfo', svg:'g6l10bSvgHost', next:'g6l10bNext', prev:'g6l10bPrev', stages:[['tide','منطقة المد','منطقةٌ يغمرها الماء وينحسر عنها؛ تتكيَّف مخلوقاتها مع التغيُّر المستمر.'],['shore','منطقة الشاطئ','مياهٌ ضحلةٌ يصلها الضوء، فتكثر فيها الحياة.'],['open','منطقة المحيط','قرب السطح تعيش <b>العوالق</b> التي تبدأ بها السلاسل الغذائية البحرية.'],['deep','الأعماق','تختفي أشعة الشمس عند عمق <b>٢٠٠ متر</b> تقريبًا فتتوقَّف عمليات البناء الضوئي.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6j1');
+EG.timed({q:'s6j2Q', opts:'s6j2O', fb:'s6j2Fb', timer:'s6j2T', score:'s6j2Sc', start:'s6j2Go', sec:50, data:[['منطقةٌ حيويةٌ فيها طبقاتٌ ترابيةٌ دائمة التجمُّد:',['التندرا','التايجا','الصحراء'],0],['كلمة «تايجا» تعني:',['الغابة','الجبل','النهر'],0],['تُعرَف الصحراء بمقدار:',['كميات الهطل','درجة الحرارة','الموقع'],0],['أكثر المناطق الحيوية تنوُّعًا في المخلوقات:',['الغابات الاستوائية المطيرة','التندرا','الأراضي العشبية'],0],['تختفي أشعة الشمس في المحيط عند عمقٍ يقارب:',['٢٠٠ متر','٢٠ مترًا','٢٠٠٠ متر'],0],['مياه مصبَّات الأنهار:',['بين العذبة والمالحة','عذبةٌ تمامًا','مالحةٌ تمامًا'],0]]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/03_الأنظمة_البيئية_ومواردها/05_الأنظمة_البيئية/02_مقارنة_الأنظمة_البيئية/علوم_سادس_ابتدائي_ف1_الدرس_الثاني_مقارنة_الأنظمة_البيئية.html","title":"مقارنة الأنظمة البيئية","grade":6,"emoji":"🌊","photoTopic":"ocean","observeQuestion":"كيف يغيّر وصول الضوء أنواع المنتجات الممكنة في مناطق المحيط؟","facts":["تؤثر الحرارة والهطول في النباتات السائدة على اليابسة، ويساعد المناخ على تفسير اختلاف المناطق الحيوية.","تختلف البيئات المائية في الملوحة والعمق وحركة الماء والضوء، ولذلك تختلف المخلوقات القادرة على العيش فيها.","يقل الضوء الشمسي مع العمق؛ وتحتاج المنتجات التي تقوم بالبناء الضوئي إلى منطقة يصلها ضوء كافٍ."],"diagram":{"title":"قارن الضوء عبر ثلاث مناطق بحرية","relation":"comparison","nodes":[{"emoji":"☀️","label":"المنطقة المضاءة","detail":"ضوء يدعم البناء الضوئي."},{"emoji":"🌗","label":"منطقة الشفق","detail":"ضوء ضعيف لا يكفي للبناء الضوئي المستمر."},{"emoji":"🌑","label":"المنطقة المظلمة","detail":"لا يصلها ضوء الشمس."}],"caption":"حدود المناطق تتأثر بصفاء الماء؛ وجود حياة في الظلام لا يعني وجود بناء ضوئي."},"lab":{"title":"غيّر العمق وراقب ضوء الشمس المتبقي","question":"كيف يتغير وصول الضوء عندما نغيّر العمق ونثبت صفاء الماء وضوء السطح؟","controlLabel":"موضع الرصد","options":["قرب السطح","أعمق في الماء","في المنطقة المظلمة"],"states":[{"label":"ضوء سطحي وفير","emoji":"☀️","amount":9,"explanation":"تبقى صفات الماء وضوء الشمس ثابتة في النموذج. بالقرب من السطح يتاح ضوء أكبر للطحالب والمنتجات الضوئية.","observation":"وصول مرتفع لضوء الشمس."},{"label":"ضوء أضعف","emoji":"☀️","amount":3,"explanation":"يمتص الماء ومواده بعض الضوء ويشتته كلما زاد العمق، فتقل الطاقة الضوئية التي تصل إلى موضع الرصد.","observation":"ضوء أقل من السطح."},{"label":"غياب الضوء الشمسي","emoji":"☀️","amount":0,"explanation":"في المنطقة المظلمة لا يصل ضوء الشمس؛ تعتمد كثير من المخلوقات على غذاء يصل من الأعلى أو مصادر غذاء أخرى.","observation":"لا بناء ضوئي يعتمد على الشمس هنا."}],"quantityLabel":"مؤشر وصفي لضوء الشمس الواصل","modelNote":"لا تمثل الدرجات أعماقًا بالأمتار أو نسب إضاءة؛ تختلف الحدود بين المياه الصافية والعكرة.","tryPrompt":"كيف يمكن أن تتغير المنطقة المضاءة إذا ازدادت عكارة الماء؟"},"sources":[{"title":"NOAA: إلى أين يصل ضوء الشمس في المحيط؟","url":"https://oceanservice.noaa.gov/facts/light_travel.html"},{"title":"NOAA: نمذجة الشبكات الغذائية البحرية","url":"https://oceanservice.noaa.gov/education/marine-ecosystem-modeling-vr/ocean-food-webs/module-activities.html"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

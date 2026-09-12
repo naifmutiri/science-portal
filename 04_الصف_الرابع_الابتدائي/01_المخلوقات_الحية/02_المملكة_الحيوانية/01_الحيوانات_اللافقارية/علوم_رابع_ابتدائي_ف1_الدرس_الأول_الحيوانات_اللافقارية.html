@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – رابع ابتدائي – ف1 – الدرس الأول: الحيوانات اللافقارية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#5E9E1E;--g-dark:#3B650F;--g-light:#EFF7E5}
+.card{border-color:#CFE5B4}
+.cover{background:linear-gradient(140deg,#3B650F 0%,#5E9E1E 55%,#8FC456 100%)}
+.endS{background:linear-gradient(140deg,#3B650F,#5E9E1E)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>الحيواناتُ اللافقاريةُ</h1><div class="rule"></div>
+<div class="meta">الصف الرابع الابتدائي<br>الوحدة الأولى: المخلوقات الحية<br>الفصل الثاني: المملكة الحيوانية — الدرس الأول</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أينَ نحنُ في الكتابِ؟</h2><span class="src">صفحات ٥٦ – ٦٣</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الصف</h3><p>الرابع الابتدائي</p></div><div class="card"><h3>الوحدة الأولى</h3><p style="font-size:27px">المخلوقات الحية</p></div><div class="card"><h3>الفصل الثاني</h3><p style="font-size:27px">المملكة الحيوانية</p></div><div class="card"><h3>الدرس الأول</h3><p style="font-size:25px">الحيوانات اللافقارية<br><span class='muted' style='font-size:22px'>صفحات ٥٦ – ٦٣</span></p></div></div><div class="box idea" style="font-size:32px;"><strong>السؤالُ الأساسيُّ:</strong> كيفَ أقارنُ الحيواناتِ بعضَها ببعضٍ؟ &nbsp;<span class='muted' style='font-size:25px'>(ص ٥٨)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الأهداف</span><h2>أهدافُ التعلُّمِ</h2><span class="src">مستخلصة من ص ٥٦ – ٦٣</span></div>
+<div class="body"><p class="t">في نهايةِ الدرسِ أكونُ قادرًا على أنْ:</p><ul class="list num"><li>أُميِّزَ بينَ الفقارياتِ واللافقارياتِ.</li><li>أُسمِّيَ مجموعاتِ اللافقارياتِ الثمانيَ.</li><li>أصفَ الإسفنجياتِ واللاسعاتِ والرخوياتِ وشوكياتِ الجلدِ.</li><li>أُعرِّفَ الهيكلَ الداخليَّ والهيكلَ الخارجيَّ.</li><li>أُصنِّفَ المفصلياتِ والديدانَ في مجموعاتِها.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">التهيئة</span><h2>نشاطُ الاستكشافِ</h2><span class="src">ص ٥٧ — سؤال الكتاب</span></div>
+<div class="body center"><svg width="430" height="205" viewBox="0 0 330 158" role="img" aria-label="رسم قنديل بحر أزرق يسبح في الماء">
+<rect x="0" y="0" width="330" height="158" fill="#1E5A80"/>
+<g fill="#2E7099" opacity="0.6"><ellipse cx="60" cy="30" rx="70" ry="26"/><ellipse cx="270" cy="120" rx="76" ry="30"/></g>
+<g fill="#4E96C4" opacity="0.35"><circle cx="42" cy="112" r="9"/><circle cx="292" cy="34" r="7"/><circle cx="128" cy="24" r="6"/><circle cx="238" cy="146" r="8"/></g>
+<g><path d="M96 74 q68 -62 138 0 q-10 16 -34 16 q-16 -10 -34 0 q-18 -10 -36 0 q-24 0 -34 -16z" fill="#7FC4E8"/>
+ <path d="M110 66 q56 -46 110 0 q-8 10 -24 10 q-14 -8 -30 0 q-16 -8 -32 0 q-18 0 -24 -10z" fill="#A9DCF2" opacity="0.75"/>
+ <g fill="#DCEFF8" opacity="0.85"><circle cx="140" cy="46" r="5"/><circle cx="166" cy="38" r="6"/><circle cx="192" cy="46" r="5"/>
+   <circle cx="152" cy="58" r="4"/><circle cx="180" cy="58" r="4"/></g>
+ <g stroke="#8FCBE8" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9">
+  <path d="M106 88 q-8 30 4 56"/><path d="M132 90 q-6 34 6 58"/><path d="M158 90 q0 36 4 60"/>
+  <path d="M182 90 q4 34 -2 60"/><path d="M208 90 q8 32 -4 56"/></g>
+ <g stroke="#C4E8F7" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.7">
+  <path d="M118 88 q-14 36 -6 62"/><path d="M146 90 q-4 40 2 62"/><path d="M196 90 q10 38 0 60"/></g></g>
+</svg><div class="box ask" style="font-size:34px;max-width:1230px">كيفَ نعرفُ أنَّ دودةَ الأرضِ حيوانٌ؟ ما الصفاتُ التي تجعلُ منْ دودةِ الأرضِ حيوانًا؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ماذا أعرفُ منْ قبلُ؟</h2><span class="src">تمهيد تربوي</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>مملكةُ الحيواناتِ</h3><p style="font-size:22px">عديدةُ الخلايا، تتحرَّكُ ولا تصنعُ غذاءَها</p></div><div class="card"><h3>الشعبةُ</h3><p style="font-size:22px">تتشابهُ أفرادُها في صفةٍ كوجودِ عمودٍ فقريٍّ</p></div><div class="card"><h3>التصنيفُ</h3><p style="font-size:25px">نضعُ المتشابهَ في مجموعاتٍ</p></div><div class="card"><h3>اليومَ</h3><p style="font-size:22px">ماذا عنِ الحيواناتِ بلا عمودٍ فقريٍّ؟</p></div></div><div class="box note"><strong>توضيح إضافي:</strong> عرفْنا في الدرسِ السابقِ الشعبةَ وصفةَ العمودِ الفقريِّ، واليومَ نتعمَّقُ فيها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>المفرداتُ العلميةُ (١)</h2><span class="src">ص ٥٨ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>لافقاريٌّ</h3><p style="font-size:26px">حيوانٌ ليسَ لهُ عمودٌ فقريٌّ.</p></div><div class="card"><h3>الإسفنجياتُ</h3><p style="font-size:23px">أبسطُ اللافقارياتِ، ولمعظمِها شكلٌ يشبهُ كيسًا لهُ فتحةٌ في أعلاهُ.</p></div></div><div class="cards"><div class="card"><h3>اللاسعاتُ</h3><p style="font-size:22px">حيواناتٌ لها أجزاءٌ تسمَّى لوامسَ تشبهُ الأذرعَ، ينتهي كلٌّ منها بخلايا لاسعةٍ.</p></div><div class="card"><h3>الرخوياتُ</h3><p style="font-size:25px">حيواناتٌ لافقاريةٌ أجسامُها ليِّنةٌ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>المفرداتُ العلميةُ (٢)</h2><span class="src">ص ٥٨ — مفردات الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card"><h3>شوكياتُ الجلدِ</h3><p style="font-size:25px">لها جلدٌ يحملُ أشواكًا، ولها دعامةٌ داخليةٌ.</p></div><div class="card"><h3>هيكلٌ داخليٌّ</h3><p style="font-size:25px">الدعامةُ الداخليةُ في شوكياتِ الجلدِ.</p></div></div><div class="cards"><div class="card"><h3>المفصلياتُ</h3><p style="font-size:22px">أكبرُ مجموعةٍ في اللافقارياتِ، لها أرجلٌ مفصليةٌ وأجسامُها مقسَّمةٌ إلى أجزاءٍ.</p></div><div class="card"><h3>هيكلٌ خارجيٌّ</h3><p style="font-size:24px">هيكلٌ صلبٌ يحمي جسمَ المفصلياتِ ويحفظُهُ رطبًا.</p></div></div><p class="t muted' style='font-size:25px">المفرداتُ الثمانِ كما وردتْ في صفحةِ «أقرأُ وأتعلَّمُ» ص ٥٨.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">مهارة القراءة</span><h2>الفكرةُ الرئيسةُ والتفاصيلُ</h2><span class="src">ص ٥٨ — مهارة القراءة في الكتاب</span></div>
+<div class="body center"><table class="cmp"><tr><th style="width:50%">الفكرةُ الرئيسةُ</th><th>التفاصيلُ</th></tr><tr><td>ما أهمُّ ما يقولُهُ النصُّ؟</td><td>ما الذي يدعمُها ويوضِّحُها؟</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>السؤالُ الأساسيُّ</h2><span class="src">ص ٥٨</span></div>
+<div class="body center"><div class="box idea" style="font-size:46px;max-width:1250px;text-align:center;border-right:none;border-top:12px solid var(--g)">كيفَ أقارنُ الحيواناتِ بعضَها ببعضٍ؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>ما اللافقارياتُ؟</h2><span class="src">ص ٥٨ — نص الكتاب</span></div>
+<div class="body"><p class="big">كيفَ يمكنُ وصفُ الحيواناتِ؟ منْ طرائقِ وصفِ الحيواناتِ <span class='hl'>معرفةُ أوجهِ التشابهِ والاختلافِ بينَها</span>.</p><div class="box idea" style="font-size:23px;">خلقَ اللهُ تعالى جميعَ الحيواناتِ منْ <strong>خلايا كثيرةٍ</strong>، ومعظمُها <strong>يتحرَّكُ بطريقتِهِ الخاصةِ</strong>. وقدَّرَ عزَّ وجلَّ لها وَلمعظمِ المخلوقاتِ الحيةِ أنْ <strong>تنموَ وتتكاثرَ وتستجيبَ للمؤثِّراتِ البيئيةِ، وتحصلَ على طاقتِها منَ الغذاءِ الذي تأكلُهُ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">آية كريمة</span><h2>قالَ تعالى</h2><span class="src">ص ٥٨ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center">﴿ وَمَا مِن دَابَّةٍ فِي الْأَرْضِ إِلَّا عَلَى اللَّهِ رِزْقُهَا وَيَعْلَمُ مُسْتَقَرَّهَا وَمُسْتَوْدَعَهَا ۚ كُلٌّ فِي كِتَابٍ مُّبِينٍ ۝ ﴾</div><p class="t' style='font-size:30px">سورةُ هودٍ — الآيةُ ٦</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>فقارياتٌ ولافقارياتٌ</h2><span class="src">ص ٥٨ — نص الكتاب</span></div>
+<div class="body center"><p class="big">منَ الصفاتِ الأساسيةِ التي يتمُّ تصنيفُ الحيواناتِ بناءً عليها:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الفقارياتُ</h3><p style="font-size:26px">بعضُها لهُ عمودٌ فقريٌّ.</p></div><div class="card center" style="text-align:center;"><h3>اللافقارياتُ</h3><p style="font-size:25px">وبعضُها الآخرُ ليسَ لهُ عمودٌ فقريٌّ.</p></div></div><div class="box idea" style="font-size:26px;">بعضُ اللافقارياتِ <strong>يغطِّي جسمَها أعضاءٌ صلبةٌ</strong>، وبعضُها الآخرُ <strong>لهُ تراكيبُ داخليةٌ تدعمُ جسمَهُ</strong>.</div><div class="box note" style="font-size:29px;"><strong>معظمُ الحيواناتِ لافقارياتٌ، وتصنَّفُ في ثماني مجموعاتٍ.</strong> <span class='muted'>(ص ٥٨)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">جدول الكتاب</span><h2>مجموعاتُ اللافقارياتِ الثمانِ</h2><span class="src">ص ٥٨ — شكل الكتاب</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;"><h3>الإسفنجياتُ</h3></div><div class="card center" style="text-align:center;"><h3>اللاسعاتُ</h3></div><div class="card center" style="text-align:center;"><h3>الديدانُ المفلطحةُ (المسطَّحةُ)</h3></div><div class="card center" style="text-align:center;"><h3>الديدانُ الأسطوانيةُ</h3></div></div><div class="cards"><div class="card center" style="text-align:center;"><h3>الرخوياتُ</h3></div><div class="card center" style="text-align:center;"><h3>الديدانُ الحلقيةُ</h3></div><div class="card center" style="text-align:center;"><h3>المفصلياتُ</h3></div><div class="card center" style="text-align:center;"><h3>شوكياتُ الجلدِ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><div class="qa"><p class="q"><b>الفكرةُ الرئيسةُ والتفاصيلُ.</b> ما الصفةُ التي يمكنُ أنْ تستخدمَ في تصنيفِ الحيواناتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>الفكرةُ الرئيسةُ:</strong> منَ الصفاتِ الأساسيةِ التي يتمُّ تصنيفُ الحيواناتِ بناءً عليها <strong>وجودُ العمودِ الفقريِّ منْ عدمِهِ</strong>.<br><strong>التفاصيلُ:</strong> بعضُها لهُ عمودٌ فقريٌّ ويسمَّى <strong>فقارياتٍ</strong>، وبعضُها الآخرُ ليسَ لهُ عمودٌ فقريٌّ ويسمَّى <strong>لافقارياتٍ</strong>. ومعظمُ الحيواناتِ لافقارياتٌ، وتصنَّفُ في ثماني مجموعاتٍ. (ص ٥٨)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> كيفَ تحافظُ الحيواناتُ التي ليسَ لها عمودٌ فقريٌّ على شكلِها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>بطرائقَ مختلفةٍ:<br><strong>بأعضاءٍ صلبةٍ تغطِّي الجسمَ</strong>؛ كأصدافِ الرخوياتِ.<br><strong>بتراكيبَ داخليةٍ تدعمُ الجسمَ</strong>؛ كالهيكلِ الداخليِّ في شوكياتِ الجلدِ.<br><strong>بهيكلٍ خارجيٍّ صلبٍ</strong>؛ كما في المفصلياتِ، وهوَ يحمي الجسمَ ويحفظُهُ رطبًا.<br><strong>وبعضُها بلا دعامةٍ صلبةٍ</strong>، فيحفظُ شكلَهُ بالماءِ داخلَ جسمِهِ — كاللاسعاتِ التي لا تعيشُ إلا في الماءِ. (ص ٥٨ – ٦١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>مجموعاتُ اللافقارياتِ</h2><span class="src">محاكاة لشكل ص ٥٨ ونص ص ٥٩ – ٦٢</span></div>
+<div class="body"><div class="sim" id="simA">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:25px">أضغطُ على المجموعةِ:</p>
+    <button class="tgl on" type="button" data-k="spo"><span class="dot"></span>الإسفنجياتُ</button>
+    <button class="tgl" type="button" data-k="cni"><span class="dot"></span>اللاسعاتُ</button>
+    <button class="tgl" type="button" data-k="mol"><span class="dot"></span>الرخوياتُ</button>
+    <button class="tgl" type="button" data-k="ech"><span class="dot"></span>شوكياتُ الجلدِ</button>
+    <button class="tgl" type="button" data-k="art"><span class="dot"></span>المفصلياتُ</button>
+    <button class="tgl" type="button" data-k="wor"><span class="dot"></span>الديدانُ</button>
+  </div>
+  <div class="simStage">
+    <svg width="340" height="160" viewBox="0 0 270 130" role="img" aria-label="رسوم تمثل مجموعات اللافقاريات">
+      <rect x="0" y="0" width="270" height="130" rx="12" fill="#EFF7E5"/>
+      <g id="iSpo"><g fill="#C4956A"><rect x="88" y="40" width="26" height="66" rx="12"/><rect x="122" y="30" width="30" height="76" rx="14"/>
+        <rect x="160" y="48" width="24" height="58" rx="11"/></g>
+        <g fill="#A87B4E"><ellipse cx="101" cy="42" rx="10" ry="5"/><ellipse cx="137" cy="32" rx="12" ry="6"/><ellipse cx="172" cy="50" rx="9" ry="5"/></g>
+        <g fill="#8E6A44" opacity="0.6"><circle cx="96" cy="66" r="3"/><circle cx="132" cy="60" r="3"/><circle cx="145" cy="80" r="3"/><circle cx="168" cy="72" r="3"/></g>
+        <rect x="30" y="104" width="210" height="14" rx="6" fill="#8FA87A"/></g>
+      <g id="iCni" style="opacity:0">
+        <path d="M92 56 q46 -44 92 0 q-8 12 -24 12 q-12 -8 -22 0 q-12 -8 -22 0 q-16 0 -24 -12z" fill="#7FC4E8"/>
+        <g stroke="#8FCBE8" stroke-width="3.4" fill="none" stroke-linecap="round">
+          <path d="M100 70 q-6 24 2 42"/><path d="M122 72 q-4 26 4 44"/><path d="M146 72 q0 28 2 44"/>
+          <path d="M170 70 q6 24 -4 42"/></g></g>
+      <g id="iMol" style="opacity:0">
+        <ellipse cx="104" cy="88" rx="34" ry="12" fill="#B8A88E"/>
+        <path d="M130 86 q22 -6 26 4" stroke="#B8A88E" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <g stroke="#B8A88E" stroke-width="3" stroke-linecap="round"><path d="M152 82 v-12 M160 84 v-12"/></g>
+        <g><circle cx="112" cy="62" r="26" fill="#C4A06C"/>
+          <path d="M112 62 q-2 -18 14 -16 q14 4 8 16 q-6 12 -18 6 q-8 -6 -4 -6" stroke="#8E6A44" stroke-width="3" fill="none"/></g></g>
+      <g id="iEch" style="opacity:0">
+        <g fill="#D96A5A"><path d="M135 34 l16 40 l42 4 l-32 28 l10 42 l-36 -24 l-36 24 l10 -42 l-32 -28 l42 -4z"/></g>
+        <g fill="#B84E40"><circle cx="135" cy="80" r="10"/></g>
+        <g stroke="#B84E40" stroke-width="2" opacity="0.7">
+          <path d="M135 44 v22 M155 62 l-14 12 M115 62 l14 12 M120 108 l10 -18 M150 108 l-10 -18"/></g></g>
+      <g id="iArt" style="opacity:0">
+        <ellipse cx="140" cy="70" rx="20" ry="30" fill="#3E6FA8"/>
+        <path d="M140 40 q-40 -22 -56 6 q-6 26 34 30 z" fill="#5C8AC4"/>
+        <path d="M140 40 q40 -22 56 6 q6 26 -34 30 z" fill="#5C8AC4"/>
+        <path d="M140 76 q-30 4 -38 24 q22 12 38 -6 z" fill="#4E7BB0"/>
+        <path d="M140 76 q30 4 38 24 q-22 12 -38 -6 z" fill="#4E7BB0"/>
+        <g stroke="#2C4A78" stroke-width="3" fill="none" stroke-linecap="round"><path d="M136 42 q-8 -14 -18 -18 M144 42 q8 -14 18 -18"/></g></g>
+      <g id="iWor" style="opacity:0">
+        <path d="M50 82 q30 -30 60 0 q30 30 60 0 q30 -30 52 4" stroke="#D99A9A" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <g stroke="#C48282" stroke-width="2.4">
+          <path d="M74 68 v16 M96 62 v18 M120 76 v16 M144 84 v16 M168 74 v16 M192 62 v18"/></g>
+        <circle cx="218" cy="80" r="3" fill="#8E5A5A"/></g>
+    </svg>
+    <div class="simTag" id="aTag"></div>
+    <div class="simMsg good" id="aMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الإسفنجياتُ</h2><span class="src">ص ٥٩ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:25px;"><span class='hl'>الإسفنجياتُ</span> هيَ <strong>أبسطُ اللافقارياتِ</strong>، ولمعظمِها شكلٌ يشبهُ كيسًا لهُ فتحةٌ في أعلاهُ، ويتكوَّنُ الجسمُ منْ طبقتينِ، وهوَ مجوَّفٌ منَ الداخلِ.</div><p class="big">تعيشُ الإسفنجياتُ في الماءِ.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الإسفنجُ المكتملُ النموِّ</h3><p style="font-size:26px">عديمُ الحركةِ.</p></div><div class="card center" style="text-align:center;"><h3>أمَّا الصغارُ</h3><p style="font-size:25px">فتكونُ قادرةً على الطفوِ فوقَ الماءِ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>اللاسعاتُ (الجوفمعوياتُ)</h2><span class="src">ص ٥٩ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:25px;"><span class='hl'>اللاسعاتُ</span> حيواناتٌ لها أجزاءٌ تسمَّى <strong>لوامسَ</strong> تشبهُ الأذرعَ، ينتهي كلٌّ منها <strong>بخلايا لاسعةٍ تشلُّ بها حركةَ فريستِها</strong>.</div><div class="cards"><div class="card center" style="text-align:center;"><h3>عديمةُ الحركةِ</h3><p style="font-size:25px">لا تنتقلُ منْ مكانِها، ومنها المرجانُ.</p></div><div class="card center" style="text-align:center;"><h3>تطفو وتسبحُ</h3><p style="font-size:25px">وبعضُها الآخرُ يطفو ويسبحُ، ومنها قنديلُ البحرِ.</p></div></div><div class="box note" style="font-size:24px;"><strong>منْ صورةِ الكتابِ (ص ٥٩):</strong> شُعَبٌ مرجانيةٌ في البحرِ الأحمرِ — محميةُ الأميرِ محمدِ بنِ سلمانَ الملكيةُ. المرجانُ منَ اللاسعاتِ وهوَ عديمُ الحركةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>نشاطُ الكتابِ — حركةُ قنديلِ البحرِ</h2><span class="src">ص ٥٩ — خطوات النشاط</span></div>
+<div class="body"><ul class="list num"><li><span><strong style='color:var(--g-dark)'>أعملُ نموذجًا.</strong> أنفخُ بالونًا وأُحكمُ إغلاقَهُ بيدي حتى لا يتسرَّبَ منهُ الهواءُ ثمَّ أُفلتُهُ فجأةً. يمثِّلُ البالونُ نموذجًا لتجويفِ قنديلِ البحرِ.</span></li><li><span>ما الذي يحدثُ إذا تركتُ البالونَ حرًّا؟</span></li><li><span><strong style='color:var(--g-dark)'>ألاحظُ.</strong> أتركُ البالونَ، ما الذي أشاهدُهُ؟ كيفَ يوضِّحُ هذا النموذجُ حركةَ قنديلِ البحرِ؟</span></li></ul><div class="box safe" style="font-size:27px;">أنفخُ البالونَ بحذرٍ، ولا أُفلتُهُ باتجاهِ وجهي أوْ وجهِ زميلي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">إجابة النشاط</span><h2>الخطوتانِ ٢ وَ ٣</h2><span class="src">ص ٥٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٢ و ٣.</b> ما الذي يحدثُ إذا تركتُ البالونَ حرًّا؟ وكيفَ يوضِّحُ هذا النموذجُ حركةَ قنديلِ البحرِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>ما يحدثُ:</strong> <strong>يندفعُ الهواءُ خارجًا منْ فتحةِ البالونِ بسرعةٍ</strong>، فَ<strong>ينطلقُ البالونُ في الاتجاهِ المعاكسِ</strong>.<br><strong>وكيفَ يوضِّحُ حركةَ قنديلِ البحرِ:</strong> جسمُ قنديلِ البحرِ <strong>مجوَّفٌ يمتلئُ بالماءِ</strong>، فإذا انقبضَ جسمُهُ <strong>دفعَ الماءَ إلى الخارجِ</strong> فَ<strong>اندفعَ هوَ في الاتجاهِ المعاكسِ</strong> — تمامًا كالبالونِ.<br>وهكذا <strong>يطفو ويسبحُ</strong> في الماءِ. (ص ٥٩)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الرخوياتُ</h2><span class="src">ص ٦٠ — نص الكتاب</span></div>
+<div class="body"><p class="big">يهتمُّ بعضُ الناسِ بجمعِ أشكالٍ مختلفةٍ منَ الأصدافِ منْ شاطئِ البحرِ. ما مصدرُ هذهِ الأصدافِ؟ تعودُ الأصدافُ إلى حيواناتٍ لافقاريةٍ، أجسامُها ليِّنةٌ تسمَّى <span class='hl'>الرخوياتِ</span>.</p><div class="box idea" style="font-size:25px;">جميعُ الرخوياتِ لها <strong>تراكيبُ صلبةٌ لدعمِ وحمايةِ أجسامِها اللينةِ</strong>، بعضُ هذهِ التراكيبِ <strong>داخليةٌ</strong> وبعضُها <strong>خارجيةٌ</strong>، ومنها الأصدافُ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>أينَ تعيشُ الرخوياتُ؟</h2><span class="src">ص ٦٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">معظمُ الرخوياتِ تعيشُ في الماءِ، ويعدُّ <span class='hl'>الحلزونُ</span> منَ الرخوياتِ الوحيدةِ التي تستطيعُ العيشَ على اليابسةِ.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>تستقرُّ في مكانٍ واحدٍ</h3><p style="font-size:24px">بعضُ الرخوياتِ البالغةِ — ومنها المحارُ.</p></div><div class="card center" style="text-align:center;"><h3>يسبحُ بحريةٍ</h3><p style="font-size:24px">وبعضُها يسبحُ بحريةٍ، ومنها الحبَّارُ والأخطبوطُ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>شوكياتُ الجلدِ</h2><span class="src">ص ٦٠ — نص الكتاب</span></div>
+<div class="body center"><p class="big">يصنَّفُ قنفذُ البحرِ في شوكياتِ الجلدِ، فما الذي يميِّزُ هذهِ المخلوقاتِ؟</p><div class="box idea" style="font-size:30px;"><span class='hl'>شوكياتُ الجلدِ</span> لها <strong>جلدٌ يحملُ أشواكًا</strong>، ولها أيضًا <strong>دعامةٌ داخليةٌ تسمَّى الهيكلَ الداخليَّ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال من الكتاب</span><h2>أقرأُ الصورةَ</h2><span class="src">ص ٦٠</span></div>
+<div class="body"><div class="qa"><p class="q">ماذا يحدثُ للأخطبوطِ عندَما يحسُّ بالخطرِ؟</p><p class="t muted" style="font-size:26px;margin-top:8px">إرشادُ الكتابِ: أنظرُ في أيِّ الصورتينِ يكونُ شكلُ الأخطبوطِ ولونُهُ مشابهًا لما حولَهُ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>عندَما يحسُّ الأخطبوطُ بالخطرِ <strong>يُغيِّرُ شكلَهُ ولونَهُ ليصبحا مشابهينِ لما حولَهُ</strong>، فَ<strong>يندمجُ في بيئتِهِ ويتخفَّى</strong> عنْ أعدائِهِ.<br>ويظهرُ ذلكَ بالمقارنةِ بينَ صورتَي «قبلَ» وَ«بعدَ» في الكتابِ؛ ففي صورةِ «بعدَ» صارَ لونُهُ وشكلُهُ مشابهينِ للصخورِ والأعشابِ منْ حولِهِ. (ص ٦٠)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٦٠</span></div>
+<div class="body"><div class="qa"><p class="q"><b>الفكرةُ الرئيسةُ والتفاصيلُ.</b> فيمَ تتشابهُ كلٌّ منَ الإسفنجياتِ، واللاسعاتِ، والرخوياتِ، وشوكياتِ الجلدِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>الفكرةُ الرئيسةُ:</strong> جميعُها <strong>حيواناتٌ لافقاريةٌ</strong>؛ أيْ ليسَ لها عمودٌ فقريٌّ.<br><strong>التفاصيلُ:</strong> جميعُها <strong>عديدةُ الخلايا</strong>، وَ<strong>تحصلُ على غذائِها منْ مخلوقاتٍ أخرى</strong>، وَ<strong>معظمُها يعيشُ في الماءِ</strong> — عدا الحلزونِ الذي يستطيعُ العيشَ على اليابسةِ.<br>وفيها ما هوَ <strong>عديمُ الحركةِ</strong> (الإسفنجُ المكتملُ النموِّ والمرجانُ) وما هوَ <strong>متحرِّكٌ</strong>. (ص ٥٩ – ٦٠)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> لماذا سُمِّيتِ اللاسعاتُ بهذا الاسمِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>سُمِّيتْ بذلكَ لأنَّ لها <strong>أجزاءً تسمَّى لوامسَ</strong> تشبهُ الأذرعَ، <strong>ينتهي كلٌّ منها بخلايا لاسعةٍ</strong> تُطلقُها على فريستِها فَ<strong>تشلُّ بها حركتَها</strong> ثمَّ تلتهمُها.<br>فالاسمُ مأخوذٌ منْ <strong>وظيفةِ هذهِ الخلايا اللاسعةِ</strong>. (ص ٥٩)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>ما المفصلياتُ؟</h2><span class="src">ص ٦١ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:28px;"><span class='hl'>المفصلياتُ</span> <strong>أكبرُ مجموعةٍ في اللافقارياتِ</strong>. لها <strong>أرجلٌ مفصليةٌ</strong>، وأجسامُها <strong>مقسَّمةٌ إلى أجزاءٍ</strong>.</div><p class="big">بعضُ المفصلياتِ — ومنها <span class='hl'>الروبيانُ والسرطانُ</span> — تتنفَّسُ عنْ طريقِ <span class='hl'>الخياشيمِ</span>،</p><p class="big">وبعضُها الآخرُ — ومنها <span class='hl'>الحشراتُ والعنكبياتُ</span> — تتنفَّسُ عنْ طريقِ <span class='hl'>أنابيبَ (قُصَيباتٍ) دقيقةٍ تفتحُ عندَ سطحِ الجسمِ</span>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الهيكلُ الخارجيُّ</h2><span class="src">ص ٦١ — نص الكتاب</span></div>
+<div class="body center"><div class="box idea" style="font-size:34px;max-width:1250px;text-align:center">وللمفصلياتِ <span class='hl'>هيكلٌ خارجيٌّ</span> صلبٌ <strong>يحمي الجسمَ ويحفظُهُ رطبًا</strong>.</div><div class="box safe" style="font-size:28px;"><strong>حقيقةٌ (ص ٦١):</strong> معظمُ المفصلياتِ تطرحُ هيكلَها الخارجيَّ عندَما تنمو.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>مجموعاتُ المفصلياتِ الأربعُ</h2><span class="src">محاكاة لشكل ص ٦١</span></div>
+<div class="body"><div class="sim" id="simB">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:25px">مجموعاتُ المفصلياتِ:</p>
+    <button class="tgl on" type="button" data-k="ins"><span class="dot"></span>الحشراتُ</button>
+    <button class="tgl" type="button" data-k="myr"><span class="dot"></span>عديدةُ الأرجلِ</button>
+    <button class="tgl" type="button" data-k="cru"><span class="dot"></span>القشرياتُ</button>
+    <button class="tgl" type="button" data-k="ara"><span class="dot"></span>العنكبياتُ</button>
+  </div>
+  <div class="simStage">
+    <svg width="330" height="155" viewBox="0 0 260 125" role="img" aria-label="رسوم تمثل مجموعات المفصليات الأربع">
+      <rect x="0" y="0" width="260" height="125" rx="12" fill="#EFF7E5"/>
+      <g id="mIns">
+        <ellipse cx="130" cy="66" rx="14" ry="28" fill="#2C4A78"/>
+        <path d="M130 42 q-42 -20 -56 8 q-6 24 32 26 z" fill="#3E7BC4"/>
+        <path d="M130 42 q42 -20 56 8 q6 24 -32 26 z" fill="#3E7BC4"/>
+        <path d="M130 72 q-32 4 -38 22 q22 12 38 -6 z" fill="#2C6BA8"/>
+        <path d="M130 72 q32 4 38 22 q-22 12 -38 -6 z" fill="#2C6BA8"/>
+        <g stroke="#1C3454" stroke-width="3" fill="none" stroke-linecap="round"><path d="M126 42 q-8 -14 -18 -18 M134 42 q8 -14 18 -18"/></g></g>
+      <g id="mMyr" style="opacity:0">
+        <path d="M32 74 q46 -34 96 0 q46 34 100 -4" stroke="#C4914E" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <g stroke="#A87838" stroke-width="3" stroke-linecap="round">
+          <path d="M52 62 l-8 -12 M52 86 l-8 12 M78 56 l-6 -14 M78 84 l-6 14 M104 56 l-4 -14 M104 84 l-4 14
+                   M130 62 l0 -16 M130 86 l0 16 M156 66 l4 -16 M156 90 l4 14 M182 66 l6 -14 M182 90 l6 14
+                   M208 60 l8 -14 M208 84 l8 12"/></g>
+        <circle cx="30" cy="76" r="8" fill="#B07E3E"/><circle cx="27" cy="72" r="2.4" fill="#3A2B18"/></g>
+      <g id="mCru" style="opacity:0">
+        <ellipse cx="130" cy="66" rx="42" ry="26" fill="#C4523E"/>
+        <g fill="#A83E2E"><ellipse cx="130" cy="60" rx="30" ry="14"/></g>
+        <g stroke="#C4523E" stroke-width="7" fill="none" stroke-linecap="round">
+          <path d="M96 76 q-22 12 -26 24 M164 76 q22 12 26 24 M104 84 q-14 14 -14 24 M156 84 q14 14 14 24"/></g>
+        <g fill="#C4523E"><path d="M92 50 q-26 -18 -38 -4 q-4 12 12 14 q14 2 26 -10z"/>
+          <path d="M168 50 q26 -18 38 -4 q4 12 -12 14 q-14 2 -26 -10z"/></g>
+        <g fill="#2E2118"><circle cx="118" cy="52" r="3.4"/><circle cx="142" cy="52" r="3.4"/></g></g>
+      <g id="mAra" style="opacity:0">
+        <ellipse cx="130" cy="68" rx="22" ry="16" fill="#6E5535"/>
+        <ellipse cx="130" cy="48" rx="14" ry="11" fill="#8A6A44"/>
+        <g stroke="#6E5535" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M112 56 q-30 -8 -44 -22 M114 64 q-32 0 -48 -8 M114 74 q-32 8 -46 20 M116 82 q-28 16 -38 30
+                   M148 56 q30 -8 44 -22 M146 64 q32 0 48 -8 M146 74 q32 8 46 20 M144 82 q28 16 38 30"/></g>
+        <g fill="#2E2118"><circle cx="125" cy="45" r="2.4"/><circle cx="135" cy="45" r="2.4"/></g></g>
+    </svg>
+    <div class="simTag" id="bTag"></div>
+    <div class="simMsg good" id="bMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>مجموعاتُ المفصلياتِ</h2><span class="src">ص ٦١ — نص الكتاب</span></div>
+<div class="body center"><p class="big">وتنقسمُ المفصلياتُ إلى <span class='hl'>أربعِ مجموعاتٍ</span>، هيَ:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الحشراتُ</h3><p style="font-size:22px">تشكِّلُ أكبرَ مجموعةٍ منَ اللافقارياتِ؛ حيثُ يبلغُ عددُ أنواعِها أكثرَ منْ مليونِ نوعٍ. مثالٌ: فراشةٌ.</p></div><div class="card center" style="text-align:center;"><h3>عديدةُ الأرجلِ</h3><p style="font-size:22px">منها: أُمُّ ٤٤ رِجلًا، وذاتُ الأرجلِ المئةِ، وذاتُ الأرجلِ الألفِ.</p></div></div><div class="cards"><div class="card center" style="text-align:center;"><h3>القشرياتُ</h3><p style="font-size:24px">منها الروبيانُ والسرطاناتُ.</p></div><div class="card center" style="text-align:center;"><h3>العنكبياتُ</h3><p style="font-size:24px">منها العناكبُ والعقاربُ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٦١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>الفكرةُ الرئيسةُ والتفاصيلُ.</b> ما الصفاتُ التي تتشابهُ فيها جميعُ المفصلياتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>الفكرةُ الرئيسةُ:</strong> المفصلياتُ أكبرُ مجموعةٍ في اللافقارياتِ، وتشتركُ في صفاتٍ أساسيةٍ.<br><strong>التفاصيلُ:</strong> جميعُها <strong>لافقاريةٌ</strong> · لها <strong>أرجلٌ مفصليةٌ</strong> · أجسامُها <strong>مقسَّمةٌ إلى أجزاءٍ</strong> · لها <strong>هيكلٌ خارجيٌّ صلبٌ</strong> يحمي الجسمَ ويحفظُهُ رطبًا. (ص ٦١)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> جميعُ الحشراتِ تعدُّ منَ المفصلياتِ، فهلْ كلُّ المفصلياتِ حشراتٌ؟ وضِّحْ ذلكَ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>لا، ليستْ كلُّ المفصلياتِ حشراتٍ.</strong><br><strong>التوضيحُ:</strong> المفصلياتُ تنقسمُ إلى <strong>أربعِ مجموعاتٍ</strong>: الحشراتُ · عديدةُ الأرجلِ · القشرياتُ · العنكبياتُ.<br>فَ<strong>الحشراتُ مجموعةٌ واحدةٌ فقطْ</strong> منها. أمَّا <strong>السرطانُ والروبيانُ</strong> فمنَ القشرياتِ، وَ<strong>العنكبوتُ والعقربُ</strong> منَ العنكبياتِ، وَ<strong>ذاتُ الأرجلِ المئةِ</strong> منْ عديدةِ الأرجلِ.<br>فالحشراتُ جزءٌ منَ المفصلياتِ، والمفصلياتُ أشملُ. (ص ٦١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>كيفَ تصنَّفُ الديدانُ؟</h2><span class="src">ص ٦٢ — نص الكتاب</span></div>
+<div class="body center"><p class="big">ليسَ كلُّ الديدانِ تشبهُ دودةَ الأرضِ؛ فهناكَ <span class='hl'>مجموعاتٌ عديدةٌ منَ الديدانِ في الطبيعةِ</span>، منها:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الديدانُ المفلطحةُ (المسطَّحةُ)</h3></div><div class="card center" style="text-align:center;"><h3>الديدانُ الأسطوانيةُ</h3></div><div class="card center" style="text-align:center;"><h3>الديدانُ الحلقيةُ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>أنواعُ الديدانِ الثلاثةُ</h2><span class="src">محاكاة لنص ص ٦٢</span></div>
+<div class="body"><div class="sim" id="simC">
+  <div class="simSide">
+    <p class="simCap" style="text-align:right;font-size:25px">أخترُ نوعَ الدودةِ:</p>
+    <button class="tgl on" type="button" data-k="fla"><span class="dot"></span>المفلطحةُ (المسطَّحةُ)</button>
+    <button class="tgl" type="button" data-k="rou"><span class="dot"></span>الأسطوانيةُ</button>
+    <button class="tgl" type="button" data-k="ann"><span class="dot"></span>الحلقيةُ</button>
+  </div>
+  <div class="simStage">
+    <svg width="330" height="150" viewBox="0 0 260 120" role="img" aria-label="رسوم تمثل أنواع الديدان الثلاثة">
+      <rect x="0" y="0" width="260" height="120" rx="12" fill="#F7FBF2"/>
+      <g id="wFla">
+        <path d="M60 60 q28 -34 76 -22 q52 12 68 22 q-16 10 -68 22 q-48 12 -76 -22z" fill="#C4526A"/>
+        <path d="M74 60 q24 -24 62 -16 q42 8 54 16 q-12 8 -54 16 q-38 8 -62 -16z" fill="#D9738A" opacity="0.7"/>
+        <g fill="#8E3448"><circle cx="200" cy="60" r="6"/><circle cx="118" cy="52" r="3"/><circle cx="132" cy="66" r="3"/><circle cx="150" cy="56" r="3"/></g>
+        <circle cx="62" cy="60" r="5" fill="#8E3448"/></g>
+      <g id="wRou" style="opacity:0">
+        <path d="M50 84 q34 -52 78 -20 q40 30 84 -20" stroke="#E8A08E" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <path d="M50 84 q34 -52 78 -20 q40 30 84 -20" stroke="#F2C4B4" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="212" cy="44" r="4" fill="#C4796A"/></g>
+      <g id="wAnn" style="opacity:0">
+        <path d="M44 74 q34 -34 74 -6 q40 28 96 -6" stroke="#D9A0A0" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <g stroke="#B87E7E" stroke-width="2.6">
+          <path d="M64 62 v20 M84 56 v22 M104 58 v22 M124 66 v20 M144 74 v18 M164 78 v16 M184 74 v18 M204 66 v18"/></g>
+        <circle cx="42" cy="76" r="6" fill="#B06868"/>
+        <rect x="94" y="52" width="18" height="26" rx="8" fill="#C48A8A"/></g>
+    </svg>
+    <div class="simTag" id="cTag"></div>
+    <div class="simMsg good" id="cMsg"></div>
+  </div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الديدانُ المفلطحةُ والأسطوانيةُ</h2><span class="src">ص ٦٢ — نص الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:23px;"><strong>الديدانُ المفلطحةُ (المسطَّحةُ):</strong> كما يشيرُ اسمُها إليها، <strong>أجسامٌ مسطَّحةٌ، لها رأسٌ وذيلٌ</strong>. وهيَ <strong>أبسطُ أنواعِ الديدانِ</strong>، ومعظمُها <strong>غيرُ ضارٍّ</strong>، وبعضُها يعيشُ داخلَ أجسامِ حيواناتٍ أخرى.</div><div class="box note" style="font-size:24px;"><strong>الديدانُ الأسطوانيةُ:</strong> لها <strong>أجسامٌ رفيعةٌ ونهاياتٌ مدببةٌ</strong>. ومعظمُ الديدانِ الأسطوانيةِ <strong>تعيشُ داخلَ أجسامِ بعضِ الحيواناتِ</strong>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح</span><h2>الديدانُ الحلقيةُ</h2><span class="src">ص ٦٢ — نص الكتاب</span></div>
+<div class="body"><p class="big">تنتمي <span class='hl'>دودةُ الأرضِ</span> إلى الديدانِ الحلقيةِ.</p><div class="box idea" style="font-size:26px;">تتكوَّنُ أجسامُ الديدانِ الحلقيةِ منْ <strong>ثلاثِ طبقاتٍ</strong>، والجسمُ <strong>مقسَّمٌ إلى حلقاتٍ متماثلةٍ</strong> ما عدا الرأسَ ونهاياتِ الذيلِ.</div><div class="box note" style="font-size:26px;">وتعيشُ الديدانُ الحلقيةُ <strong>على اليابسةِ</strong>، وأعدادٌ قليلةٌ منها تعيشُ داخلَ أجسامِ حيواناتٍ أخرى.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أختبرُ نفسي</h2><span class="src">ص ٦٢</span></div>
+<div class="body"><div class="qa"><p class="q"><b>الفكرةُ الرئيسةُ والتفاصيلُ.</b> أصفُ المجموعاتِ الثلاثَ للديدانِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>الديدانُ المفلطحةُ (المسطَّحةُ):</strong> أجسامٌ مسطَّحةٌ لها رأسٌ وذيلٌ، وهيَ أبسطُ أنواعِ الديدانِ، ومعظمُها غيرُ ضارٍّ، وبعضُها يعيشُ داخلَ أجسامِ حيواناتٍ أخرى.<br><strong>الديدانُ الأسطوانيةُ:</strong> لها أجسامٌ رفيعةٌ ونهاياتٌ مدببةٌ، ومعظمُها يعيشُ داخلَ أجسامِ بعضِ الحيواناتِ.<br><strong>الديدانُ الحلقيةُ:</strong> أجسامُها منْ ثلاثِ طبقاتٍ، والجسمُ مقسَّمٌ إلى حلقاتٍ متماثلةٍ ما عدا الرأسَ ونهاياتِ الذيلِ، وتعيشُ على اليابسةِ. ومنها دودةُ الأرضِ. (ص ٦٢)</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> منْ أينَ تحصلُ الديدانُ التي تعيشُ داخلَ أجسامِ الحيواناتِ على الغذاءِ اللازمِ لنموِّها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>تحصلُ عليهِ <strong>منْ جسمِ الحيوانِ الذي تعيشُ داخلَهُ</strong>؛ فهيَ تأخذُ <strong>منَ الغذاءِ الذي يتناولُهُ ويهضمُهُ</strong>، أوْ <strong>منْ دمِهِ وأنسجتِهِ</strong>.<br>ولهذا فهيَ <strong>لا تصنعُ غذاءَها بنفسِها</strong>، شأنُها شأنُ بقيةِ الحيواناتِ التي تعتمدُ في غذائِها على مخلوقاتٍ أخرى.<br>وقدْ تُضِرُّ بالحيوانِ الذي تعيشُ فيهِ؛ لأنَّها تأخذُ منْ غذائِهِ. (ص ٦٢ و ٤٦)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">محاكاة</span><h2>لافقاريٌّ أمْ فقاريٌّ؟</h2><span class="src">تدريب تفاعلي على نص ص ٥٨ – ٦٢</span></div>
+<div class="body"><div class="sim" id="simD" style="flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+    <span class="simTag" id="dN">١ منْ ٦</span><span class="score" id="dSc">الإجاباتُ الصحيحةُ: ٠</span>
+  </div>
+  <div class="sortCard" style="width:100%"><div class="nm" id="dNm" style="text-align:center"></div></div>
+  <div class="sortBtns">
+    <button class="simBtn" id="dA" type="button">لافقاريٌّ</button>
+    <button class="simBtn ghost" id="dB" type="button">فقاريٌّ</button>
+  </div>
+  <div class="simMsg neutral" id="dMsg">أختارُ، ثمَّ أعرفُ السببَ.</div>
+</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أستكشفُ — التوقُّعُ والأدواتُ</h2><span class="src">ص ٥٧ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:30px;"><strong>سؤال النشاط:</strong> كيفَ نعرفُ أنَّ دودةَ الأرضِ حيوانٌ؟</div><div class="box note" style="font-size:28px;"><strong>أتوقَّعُ:</strong> ما الصفاتُ التي تجعلُ منْ دودةِ الأرضِ حيوانًا؟ أكتبُ توقُّعاتي.</div><p class="t"><strong>أحتاجُ إلى:</strong></p><div class="cards"><div class="card center" style="text-align:center;"><h3>دودةِ أرضٍ حيَّةٍ</h3></div><div class="card center" style="text-align:center;"><h3>تربةٍ خصبةٍ</h3></div><div class="card center" style="text-align:center;"><h3>أوراقِ نباتٍ</h3></div><div class="card center" style="text-align:center;"><h3>مناشفَ ورقيةٍ رطبةٍ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط استقصائي</span><h2>أستكشفُ — الخطواتُ</h2><span class="src">ص ٥٧ — الخطوات ١ – ٣</span></div>
+<div class="body"><ul class="list num"><li><span>أُخرجُ دودةَ الأرضِ منَ المربَى، وأضعُها على منشفةٍ ورقيةٍ رطبةٍ، ثمَّ ألاحظُ كيفَ تتحرَّكُ، وأسجِّلُ ملاحظاتي.</span></li><li><span><strong style='color:var(--g-dark)'>ألاحظُ.</strong> ألمسُ دودةَ الأرضِ بلطفٍ، وألاحظُ حركتَها. ماذا حدثَ؟ أسجِّلُ ملاحظاتي. وأُعيدُ الدودةَ إلى المربَى.</span></li><li><span><strong style='color:var(--g-dark)'>ألاحظُ.</strong> بعدَ بضعةِ أيامٍ، ألاحظُ المربَى، ما التغيُّراتُ التي لاحظتُها في بيئةِ الدودةِ؟</span></li></ul><div class="box safe" style="font-size:24px;">أتعاملُ معَ الدودةِ برفقٍ ولا أؤذيها، وأُبقي المنشفةَ رطبةً، وأُعيدُها إلى المربَى، وأغسلُ يديَّ بالماءِ والصابونِ بعدَ النشاطِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستخلص النتائج</span><h2>الخطواتُ ٤ – ٦</h2><span class="src">ص ٥٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٤. أتواصلُ.</b> كيفَ استجابتْ دودةُ الأرضِ عندَ لمسِها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>عندَ لمسِها بلطفٍ <strong>انقبضَ جسمُها وتقلَّصَ</strong>، وَ<strong>ابتعدتْ عنِ اللمسِ</strong> وتحرَّكتْ بسرعةٍ في الاتجاهِ المعاكسِ.<br>وهذا يدلُّ على أنَّها <strong>تستجيبُ للمؤثِّراتِ البيئيةِ</strong> — وهيَ إحدى صفاتِ المخلوقاتِ الحيةِ. (ص ٥٨)</div></div><div class="qa"><p class="q"><b>٥. أستنتجُ.</b> هلْ لدودةِ الأرضِ هيكلٌ دعاميٌّ؟ كيفَ أستدلُّ على ذلكَ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>ليسَ لها عمودٌ فقريٌّ ولا هيكلٌ صلبٌ</strong>؛ فهيَ منَ <strong>الديدانِ الحلقيةِ</strong> وهيَ <strong>لافقارياتٌ</strong>.<br><strong>وأستدلُّ على ذلكَ</strong> بأنَّ جسمَها <strong>ليِّنٌ يتمدَّدُ وينقبضُ</strong> ويتلوَّى بسهولةٍ، ولا أُحسُّ فيهِ بأجزاءٍ صلبةٍ عندَ لمسِهِ برفقٍ. وجسمُها <strong>مقسَّمٌ إلى حلقاتٍ متماثلةٍ</strong> يساعدُها على الحركةِ. (ص ٥٨ و ٦٢)</div></div><div class="qa"><p class="q"><b>٦.</b> ما صفاتُ دودةِ الأرضِ التي تجعلُها منَ الحيواناتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span><strong>تتكوَّنُ منْ خلايا كثيرةٍ</strong> · <strong>تتحرَّكُ بطريقتِها الخاصةِ</strong> · <strong>تنمو وتتكاثرُ</strong> · <strong>تستجيبُ للمؤثِّراتِ البيئيةِ</strong> — كما ظهرَ عندَ لمسِها · <strong>تحصلُ على طاقتِها منَ الغذاءِ الذي تأكلُهُ</strong> ولا تصنعُهُ بنفسِها — ويظهرُ ذلكَ منْ تغيُّرِ أوراقِ النباتِ في المربَى. (ص ٥٨)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف أكثر</span><h2>أستكشفُ أكثرَ</h2><span class="src">ص ٥٧</span></div>
+<div class="body"><div class="qa"><p class="q">ألاحظُ حيواناتٍ أخرى، هلْ لها صفاتُ دودةِ الأرضِ نفسُها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>نعمْ، تشتركُ معها في الصفاتِ الأساسيةِ للحيواناتِ:</strong> فهيَ عديدةُ الخلايا، وتتحرَّكُ، وتنمو وتتكاثرُ، وتستجيبُ للبيئةِ، وتحصلُ على غذائِها منْ مخلوقاتٍ أخرى.<br><strong>ولكنَّها تختلفُ في صفاتٍ أخرى:</strong><br>فَ<strong>السمكةُ والقطُّ</strong> لهما <strong>عمودٌ فقريٌّ</strong> (فقارياتٌ)، أمَّا دودةُ الأرضِ فَ<strong>لافقاريةٌ</strong>.<br>وَ<strong>الحشرةُ</strong> لافقاريةٌ مثلَها، ولكنَّ لها <strong>أرجلًا مفصليةً وهيكلًا خارجيًّا</strong>.<br>وهذا ما يجعلُنا نصنِّفُها في مجموعاتٍ مختلفةٍ. (ص ٥٨ و ٦١ – ٦٢)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ١ وَ ٢</h2><span class="src">ص ٦٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>١. المفرداتُ.</b> لشوكياتِ الجلدِ دعامةٌ داخليةٌ تسمَّى ...............</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>تسمَّى <strong>الهيكلَ الداخليَّ</strong>. (ص ٦٠)</div></div><div class="qa"><p class="q"><b>٢. الفكرةُ الرئيسةُ والتفاصيلُ.</b> ما فوائدُ ومضارُّ الهيكلِ الخارجيِّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span><strong>الفكرةُ الرئيسةُ:</strong> للمفصلياتِ هيكلٌ خارجيٌّ صلبٌ.<br><strong>الفوائدُ:</strong> <strong>يحمي الجسمَ</strong> منَ الأعداءِ والإصاباتِ · <strong>يحفظُ الجسمَ رطبًا</strong> فلا يجفُّ · <strong>يدعمُ الجسمَ</strong> ويعطيهِ شكلَهُ. (ص ٦١)<br><strong>المضارُّ:</strong> <strong>لا ينمو معَ الحيوانِ</strong>؛ فمعظمُ المفصلياتِ <strong>تطرحُ هيكلَها الخارجيَّ عندَما تنمو</strong> — وفي أثناءِ ذلكَ يكونُ الحيوانُ <strong>ضعيفًا ومعرَّضًا للخطرِ</strong>. كما أنَّهُ <strong>ثقيلٌ</strong> ويحدُّ منْ حجمِ الحيوانِ وحركتِهِ. (ص ٦١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ٣ وَ ٤</h2><span class="src">ص ٦٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٣. التفكيرُ الناقدُ.</b> لماذا لا تعيشُ بعضُ الحيواناتِ ذاتِ الأجسامِ اللينةِ — ومنها اللاسعاتُ — على اليابسةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>لأنَّ أجسامَها <strong>ليِّنةٌ ليسَ لها هيكلٌ يدعمُها</strong>؛ فهيَ تعتمدُ على <strong>الماءِ الذي يحملُ جسمَها ويحفظُ شكلَهُ</strong>. فلوْ خرجتْ إلى اليابسةِ <strong>لانهارَ جسمُها بفعلِ الجاذبيةِ</strong>.<br>وَ<strong>لأنَّها تفقدُ الماءَ بسرعةٍ فتجفُّ وتموتُ</strong>؛ إذْ ليسَ لها غطاءٌ يحفظُ الرطوبةَ كالهيكلِ الخارجيِّ في المفصلياتِ.<br>وَ<strong>لأنَّها تصطادُ فرائسَها بلوامسِها في الماءِ</strong>، وتتنفَّسُ منْ خلالِ الماءِ المحيطِ بها.<br>ولهذا فإنَّ <strong>الحلزونَ</strong> — وهوَ رخوٌ — استطاعَ العيشَ على اليابسةِ؛ لأنَّ لهُ <strong>صدفةً</strong> تحميهِ وتحفظُ رطوبتَهُ. (ص ٥٩ – ٦٠)</div></div><div class="qa"><p class="q"><b>٤. أختارُ الإجابةَ الصحيحةَ.</b> أيُّ الحيواناتِ التاليةِ منَ اللافقارياتِ؟<br>أ – النسرُ &nbsp;|&nbsp; ب – السمكةُ &nbsp;|&nbsp; جـ – الروبيانُ &nbsp;|&nbsp; د – الحيَّةُ (الثعبانُ)</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الإجابةُ الصحيحةُ: <strong>جـ – الروبيانُ</strong>؛ فهوَ منَ <strong>القشرياتِ</strong> وهيَ إحدى مجموعاتِ <strong>المفصلياتِ</strong>، والمفصلياتُ لافقارياتٌ.<br><span class='muted'>أمَّا النسرُ والسمكةُ والحيَّةُ فلها عمودٌ فقريٌّ؛ فهيَ فقارياتٌ. (ص ٦١)</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>السؤالانِ ٥ وَ ٦</h2><span class="src">ص ٦٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>٥. أختارُ الإجابةَ الصحيحةَ.</b> ما الخاصيةُ التي تشتركُ فيها الرخوياتُ والمفصلياتُ؟<br>أ – لها عمودٌ فقريٌّ &nbsp;|&nbsp; ب – ليسَ لها عمودٌ فقريٌّ<br>جـ – لها هياكلُ خارجيةٌ &nbsp;|&nbsp; د – غيرُ قادرةٍ على الحركةِ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>الإجابةُ الصحيحةُ: <strong>ب – ليسَ لها عمودٌ فقريٌّ</strong>؛ فكلتاهُما منَ <strong>اللافقارياتِ</strong>.<br><span class='muted'>أمَّا (جـ) فلا تصحُّ؛ لأنَّ الرخوياتِ بعضُ تراكيبِها الصلبةِ داخليةٌ وبعضُها خارجيةٌ. وَ(د) لا تصحُّ؛ فكثيرٌ منهُما يتحرَّكُ. (ص ٦٠ – ٦١)</span></div></div><div class="qa"><p class="q"><b>٦. السؤالُ الأساسيُّ.</b> كيفَ أقارنُ الحيواناتِ بعضَها ببعضٍ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية</span>أُقارنُ بينَها <strong>بمعرفةِ أوجهِ التشابهِ والاختلافِ</strong> في صفاتِها:<br><strong>١. وجودُ العمودِ الفقريِّ:</strong> فقارياتٌ ولافقارياتٌ — وهيَ الصفةُ الأساسيةُ.<br><strong>٢. الدعامةُ:</strong> هيكلٌ داخليٌّ (شوكياتُ الجلدِ) · هيكلٌ خارجيٌّ (المفصلياتُ) · أصدافٌ (الرخوياتُ).<br><strong>٣. شكلُ الجسمِ وتقسيمُهُ:</strong> أرجلٌ مفصليةٌ · حلقاتٌ · أجسامٌ مسطَّحةٌ أوْ رفيعةٌ.<br><strong>٤. الحركةُ:</strong> عديمةُ الحركةِ (الإسفنجُ والمرجانُ) أوْ متحرِّكةٌ.<br><strong>٥. مكانُ العيشِ والتنفُّسُ:</strong> ماءٌ أوْ يابسةٌ · خياشيمُ أوْ قصيباتٌ.<br>وبهذهِ الصفاتِ نضعُ كلَّ حيوانٍ في مجموعتِهِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخَّصٌ مصوَّرٌ</h2><span class="src">ص ٦٣ — ملخص الكتاب</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:20%">المحورُ</th><th>الخلاصةُ</th></tr><tr><td>اللافقارياتُ</td><td>اللافقارياتُ حيواناتٌ ليسَ لها عمودٌ فقريٌّ: كالإسفنجياتِ واللاسعاتِ والرخوياتِ وشوكياتِ الجلدِ.</td></tr><tr><td>المفصلياتُ</td><td>المفصلياتُ مجموعةٌ منَ الحيواناتِ لها أرجلٌ مفصليةٌ، وأجسامُها مقسَّمةٌ إلى أجزاءٍ. المفصلياتُ هيَ أكبرُ مجموعةٍ في اللافقارياتِ.</td></tr><tr><td>الديدانُ</td><td>تتفرَّعُ الديدانُ إلى مجموعاتٍ عديدةٍ. منها المفلطحةُ (المسطَّحةُ)، والأسطوانيةُ، والحلقيةُ.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">المطويات</span><h2>أنظِّمُ أفكاري</h2><span class="src">ص ٦٣ — المطويات</span></div>
+<div class="body center"><div class="box idea" style="font-size:31px;max-width:1250px;text-align:center">أعملُ مطويةً كالمبيَّنةِ في الشكلِ، ألخِّصُ فيها ما تعلَّمتُهُ عنِ الحيواناتِ اللافقاريةِ.</div><div class="cards"><div class="card center" style="text-align:center;background:#EFF7E5;border-color:#CFE5B4"><h3>اللافقارياتُ</h3></div><div class="card center" style="text-align:center;background:#E9F4FF;border-color:#A9CDEB"><h3>المفصلياتُ</h3></div><div class="card center" style="text-align:center;background:#FDF2E1;border-color:#F3D9AE"><h3>الديدانُ</h3></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">العلوم والكتابة والفن</span><h2>أنشطةُ التوسُّعِ</h2><span class="src">ص ٦٣ — الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:27px;"><strong>العلومُ والكتابةُ — أكتبُ قصةً:</strong> أختارُ حيوانًا لافقاريًّا، وأكتبُ قصةً على لسانِهِ أصفُ فيها كيفَ يعيشُ.</div><div class="box note" style="font-size:27px;"><strong>العلومُ والفنُّ — أعملُ ملصقًا:</strong> أعملُ ملصقًا أوضِّحُ فيهِ مجموعاتِ اللافقارياتِ، وأكتبُ أسماءَها مستخدمًا الصورَ والرسومَ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">تدريب إضافي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ</h2><span class="src">من إعداد المعلم — ليست من الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. ما الفرقُ بينَ الهيكلِ الداخليِّ والهيكلِ الخارجيِّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>الهيكلُ الداخليُّ:</strong> دعامةٌ داخليةٌ في شوكياتِ الجلدِ. (ص ٦٠)<br><strong>الهيكلُ الخارجيُّ:</strong> هيكلٌ صلبٌ يحمي جسمَ المفصلياتِ منَ الخارجِ ويحفظُهُ رطبًا. (ص ٦١)</div></div><div class="qa"><p class="q">٢. أذكرُ مجموعاتِ المفصلياتِ الأربعَ معَ مثالٍ لكلٍّ منها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">الإجابة</span><strong>الحشراتُ</strong> — الفراشةُ · <strong>عديدةُ الأرجلِ</strong> — ذاتُ الأرجلِ المئةِ · <strong>القشرياتُ</strong> — السرطانُ والروبيانُ · <strong>العنكبياتُ</strong> — العنكبوتُ والعقربُ. (ص ٦١)</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الملخص</span><h2>ماذا تعلَّمتُ؟</h2><span class="src">خلاصة ص ٥٦ – ٦٣</span></div>
+<div class="body"><ul class="list"><li>اللافقارياتُ حيواناتٌ ليسَ لها عمودٌ فقريٌّ، ومعظمُ الحيواناتِ لافقارياتٌ.</li><li>تصنَّفُ اللافقارياتُ في ثماني مجموعاتٍ.</li><li>الإسفنجياتُ أبسطُ اللافقارياتِ، واللاسعاتُ لها لوامسُ بخلايا لاسعةٍ.</li><li>الرخوياتُ أجسامُها ليِّنةٌ ولها تراكيبُ صلبةٌ، وشوكياتُ الجلدِ لها أشواكٌ وهيكلٌ داخليٌّ.</li><li>المفصلياتُ أكبرُ مجموعةٍ، لها أرجلٌ مفصليةٌ وهيكلٌ خارجيٌّ، وتنقسمُ إلى أربعِ مجموعاتٍ.</li><li>الديدانُ ثلاثُ مجموعاتٍ: المفلطحةُ والأسطوانيةُ والحلقيةُ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة مفاهيم</span><h2>أرتِّبُ أفكاري</h2><span class="src">تنظيم لمحتوى الدرس</span></div>
+<div class="body center"><div class="map"><div class="node">اللافقارياتُ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">مجموعاتٌ مائيةٌ أساسًا</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">إسفنجياتٌ: أبسطُها</span><span class="node leaf">لاسعاتٌ: لوامسُ لاسعةٌ</span><span class="node leaf">رخوياتٌ: أجسامٌ ليِّنةٌ</span><span class="node leaf">شوكياتُ الجلدِ: هيكلٌ داخليٌّ</span></div></div><div class="col"><div class="node sub" style="background:#FDF2E1;border-color:#8C5709;color:#8C5709">مفصلياتٌ وديدانٌ</div><div class="line" style="background:#8C5709"></div><div class="leaves"><span class="node leaf">مفصلياتٌ: أرجلٌ مفصليةٌ وهيكلٌ خارجيٌّ</span><span class="node leaf">حشراتٌ · عديدةُ الأرجلِ · قشرياتٌ · عنكبياتٌ</span><span class="node leaf">ديدانٌ: مفلطحةٌ · أسطوانيةٌ · حلقيةٌ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختارُ الإجابةَ الصحيحةَ</h2><span class="src">تفاعلي — أسئلة تدريبية</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">١. أكبرُ مجموعةٍ في اللافقارياتِ هيَ:</p><div class="opts"><button class="opt" type="button">الرخوياتُ</button><button class="opt" type="button">المفصلياتُ</button><button class="opt" type="button">الإسفنجياتُ</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">٢. الرخويُّ الوحيدُ الذي يستطيعُ العيشَ على اليابسةِ هوَ:</p><div class="opts"><button class="opt" type="button">الحلزونُ</button><button class="opt" type="button">الأخطبوطُ</button><button class="opt" type="button">المحارُ</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">٣. تنتمي دودةُ الأرضِ إلى:</p><div class="opts"><button class="opt" type="button">الديدانِ المفلطحةِ</button><button class="opt" type="button">الديدانِ الأسطوانيةِ</button><button class="opt" type="button">الديدانِ الحلقيةِ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبلَ أنْ أُغادرَ الصفَّ</h2><span class="src">تقويم ختامي</span></div>
+<div class="body center"><div class="cards"><div class="card center" style="text-align:center;"><h3>١</h3><p style="font-size:30px">ما اللافقارياتُ؟</p></div><div class="card center" style="text-align:center;"><h3>٢</h3><p style="font-size:26px">أذكرُ مجموعتينِ منَ المفصلياتِ.</p></div><div class="card center" style="text-align:center;"><h3>٣</h3><p style="font-size:27px">ما فائدةُ الهيكلِ الخارجيِّ؟</p></div></div><p class="t' style='font-size:32px">أكتبُ إجاباتي في بطاقةٍ صغيرةٍ وأُسلِّمُها للمعلِّمِ.</p></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: مجموعاتٌ من اللافقاريات</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="70" rx="18" ry="28" fill="#4E7D2A"/><circle cx="60" cy="38" r="14" fill="#3E6821"/><path d="M46 34 l-12 -14 M74 34 l12 -14" stroke="#3E6821" stroke-width="5" stroke-linecap="round"/><ellipse cx="34" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(-24 34 60)" opacity=".9"/><ellipse cx="86" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(24 86 60)" opacity=".9"/><path d="M44 76 l-16 8 M44 88 l-16 6 M76 76 l16 8 M76 88 l16 6" stroke="#3E6821" stroke-width="4" stroke-linecap="round"/></g></svg><h4>المفصليات</h4><p>أرجلٌ مفصليةٌ وهيكلٌ خارجي كالحشرات</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg><h4>الإسفنجيات</h4><p>تُصفِّي غذاءها من الماء عبر ثقوبٍ في جسمها</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M14 92 q 24 -34 46 -12 q 22 22 46 -18" stroke="#7A9A3A" stroke-width="16" fill="none" stroke-linecap="round"/><circle cx="106" cy="62" r="10" fill="#6B8A2E"/><circle cx="110" cy="58" r="2.6" fill="#20260E"/><path d="M116 64 l10 3 l-10 3" stroke="#C0392B" stroke-width="3" fill="none"/></g></svg><h4>الديدان</h4><p>أجسامٌ طريَّةٌ ممتدَّة، منها دودة الأرض</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="58" cy="62" rx="38" ry="22" fill="#E2703A"/><path d="M96 62 l20 -16 v32z" fill="#C9552A"/><circle cx="34" cy="56" r="4" fill="#2A2A2A"/><path d="M56 40 q 10 -14 20 -2" stroke="#C9552A" stroke-width="6" fill="none"/><path d="M50 84 q 10 12 22 2" stroke="#C9552A" stroke-width="6" fill="none"/></g></svg><h4>الرخويات</h4><p>أجسامٌ طريَّةٌ وبعضها له صَدَفة</p></div></div><div class="eCap">اللافقاريات حيواناتٌ ليس لها عمودٌ فقري، وهي أكثر الحيوانات عددًا.</div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: تراكيبُ تساعدها على العيش</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="70" rx="18" ry="28" fill="#4E7D2A"/><circle cx="60" cy="38" r="14" fill="#3E6821"/><path d="M46 34 l-12 -14 M74 34 l12 -14" stroke="#3E6821" stroke-width="5" stroke-linecap="round"/><ellipse cx="34" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(-24 34 60)" opacity=".9"/><ellipse cx="86" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(24 86 60)" opacity=".9"/><path d="M44 76 l-16 8 M44 88 l-16 6 M76 76 l16 8 M76 88 l16 6" stroke="#3E6821" stroke-width="4" stroke-linecap="round"/></g></svg><h4>الهيكل الخارجي</h4><p>غطاءٌ صلبٌ يحمي الجسم ويدعمه</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="62" rx="6" ry="30" fill="#4A3A24"/><path d="M56 44 q -38 -30 -44 6 q -4 26 44 16z" fill="#E4712F"/><path d="M64 44 q 38 -30 44 6 q 4 26 -44 16z" fill="#E4712F"/><path d="M56 70 q -30 -6 -30 22 q 2 18 30 -2z" fill="#F0A050"/><path d="M64 70 q 30 -6 30 22 q -2 18 -30 -2z" fill="#F0A050"/><path d="M56 34 l-12 -16 M64 34 l12 -16" stroke="#4A3A24" stroke-width="4" stroke-linecap="round"/></g></svg><h4>التحوُّل</h4><p>تغيُّرٌ كبيرٌ في الشكل خلال دورة الحياة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="60" rx="34" ry="24" fill="#7FBF6A" stroke="#4E8E3C" stroke-width="4"/><circle cx="48" cy="56" r="6" fill="#3E6E2E"/><circle cx="70" cy="66" r="5" fill="#3E6E2E"/><path d="M94 60 q 16 -10 22 4 q -14 10 -22 -4" fill="#4E8E3C"/><path d="M26 60 q -14 8 -18 -4" stroke="#4E8E3C" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg><h4>الأهداب والأسواط</h4><p>تراكيبُ تساعد على الحركة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M42 108 q 0 -34 18 -34 q 18 0 18 34z" fill="#E8DCC4"/><ellipse cx="60" cy="62" rx="42" ry="24" fill="#C46A3A"/><circle cx="42" cy="56" r="6" fill="#F0E2C8"/><circle cx="72" cy="52" r="5" fill="#F0E2C8"/><circle cx="86" cy="64" r="4" fill="#F0E2C8"/></g></svg><h4>التغذية</h4><p>منها ما يصفِّي غذاءه ومنها ما يفترس</p></div></div><div class="eCap">لكلِّ مجموعةٍ تراكيبُ تناسب بيئتها وطريقة غذائها.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — أكثرُ الحيوانات عددًا</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>معظم أنواع الحيوانات على الأرض <b>لافقارية</b>؛ فالحشرات وحدها أنواعُها أكثر من كلِّ الفقاريات مجتمعة.</p></div><div class="fFact"><div class="n">٢</div><p>الحشرة لا تكبر داخل هيكلها الخارجي؛ فهي <b>تنسلخ</b> منه وتكوِّن هيكلًا جديدًا أوسع.</p></div><div class="fFact"><div class="n">٣</div><p>دودة الأرض صديقةُ المزارع؛ فأنفاقها تهوِّي التربة وتساعد الماء على النفاذ إلى الجذور.</p></div></div><div class="fCap">اللافقاريات صغيرةٌ لكنها أساس كثيرٍ من الأنظمة البيئية.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s4c1"><div class="fCard"><div class="fIn"><div class="fF"><span>لافقاريٌّ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حيوانٌ ليسَ لهُ عمودٌ فقريٌّ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الإسفنجياتُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>أبسطُ اللافقارياتِ، ولمعظمِها شكلٌ يشبهُ كيسًا لهُ فتحةٌ في أعلاهُ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>اللاسعاتُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حيواناتٌ لها أجزاءٌ تسمَّى لوامسَ تشبهُ الأذرعَ، ينتهي كلٌّ منها بخلايا لاسعةٍ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الرخوياتُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حيواناتٌ لافقاريةٌ أجسامُها ليِّنةٌ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4c1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>تحدِّي الوقت — ٤٥ ثانية</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fBar"><span class="fPill warn" id="s4c2T">الوقت</span><span class="fPill" id="s4c2Sc">النقاط</span><button class="fBtn" type="button" id="s4c2Go">▶ ابدأ التحدي</button></div><div class="fQ" id="s4c2Q">اضغط «ابدأ التحدي» لتبدأ.</div><div class="fOpts" id="s4c2O"></div><div class="fFb" id="s4c2Fb"></div></div><div class="fCap">أجب عن أكبر عددٍ ممكنٍ من الأسئلة قبل انتهاء الوقت.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>ارصد وسجِّل</h4><p>ابحث في حديقةٍ عن ثلاثة لافقارياتٍ مختلفة، وصف لكلٍّ منها طريقة حركته.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>ما فائدة الهيكل الخارجيِّ للحشرة؟ وما عيبه؟</p></div><div class="fBox safe"><h4>تنبيه سلامة</h4><p>أراقب الحشرات دون لمسها، وأغسل يديَّ بعد ذلك.</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="4" aria-label="إثراء مصور: الحيوانات اللافقارية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">ما الذي تلاحظه من أجنحة الفراشة وقرون استشعارها؟ وما الصفة التي تجعلها لافقارية؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/butterfly.jpg" alt="فراشة ليمون بالغة تنشر أجنحتها المزخرفة بالبقع" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>فراشة ليمون بالغة؛ الفراشات حشرات لافقارية تمر بتحول كامل خلال دورة حياتها.</figcaption><p class="se-credit">الصورة: Haneesh K M. · <a href="https://commons.wikimedia.org/wiki/File:Life_cycle_of_Lime_Butterfly_(Papilio_demoleus)_(4687994952).jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener noreferrer">CC0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>اللافقاريات حيوانات ليس لها عمود فقري، لكنها تختلف كثيرًا في تراكيب أجسامها.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>للحشرة البالغة ثلاث مناطق جسم رئيسة وست أرجل مفصلية متصلة بالصدر.</span></p>
+<p class="se-fact"><span aria-hidden="true">🐝</span><span>للعنكبوت ثماني أرجل؛ لذلك يصنف ضمن العنكبيات، مع اشتراكه مع الحشرات في شعبة المفصليات.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://naturalhistory.si.edu/education/teaching-resources/life-science/what-insect" target="_blank" rel="noopener noreferrer">متحف سميثسونيان: ما الحشرة؟</a></li><li><a href="https://nationalzoo.si.edu/conservation/news/house-hunters-amazing-arthropods" target="_blank" rel="noopener noreferrer">سميثسونيان: المفصليات وتنوعها</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="4" aria-label="رسم توضيحي: تنوع اللافقاريات">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>تنوع اللافقاريات</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="تنوع اللافقاريات"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🐝</span><span class="se-node-label">نحلة</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🕷️</span><span class="se-node-label">عنكبوت</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🪱</span><span class="se-node-label">دودة أرض</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🐌</span><span class="se-node-label">حلزون</span></button></div>
+
+<p class="se-diagram-caption">عدم وجود العمود الفقري صفة مشتركة، أما طريقة الدعم والحركة فتختلف بين المجموعات.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🐝</span><div><strong data-detail-title>نحلة</strong><p data-detail-text>حشرة ذات ست أرجل</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="4" aria-label="محاكاة إثرائية: عدّ الأرجل للتصنيف">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>عدّ الأرجل للتصنيف</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يساعد عد الأرجل المفصلية على التمييز بين الحيوانات الثلاثة المرسومة؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">الحيوان البالغ في الرسم</p><div class="se-options" role="group" aria-label="الحيوان البالغ في الرسم"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">دودة أرض</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">نحلة</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">عنكبوت</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">نماذج لحيوانات بالغة سليمة؛ العلامات تمثل الأرجل فقط، ولا تشمل قرون الاستشعار أو أجزاء الفم.</p></div>
+ <div class="se-result"><p class="se-model-label">عدد الأرجل المفصلية في النموذج التشريحي لكل حيوان</p><div class="se-model" role="img" data-model aria-label="بلا أرجل مفصلية"><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span><span class="se-symbol" aria-hidden="true">🔵</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>بلا أرجل مفصلية</p><p class="se-observation" data-observation>صفر أرجل مفصلية في المقارنة.</p></div><p class="se-explanation" data-explanation>تتحرك دودة الأرض بانقباض العضلات، وليس لها أرجل مفصلية مثل أرجل الحشرات والعناكب.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 هل عدم وجود أرجل يجعل دودة الأرض نباتًا؟ استدل بصفة حيوانية أخرى.</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الرابع الابتدائي — الجزء الأول من المقرر<br>الوحدة الأولى: المخلوقات الحية · الفصل الثاني: المملكة الحيوانية · الدرس الأول: الحيوانات اللافقارية<br>المصدر: كتاب الطالب، صفحات ٥٦ – ٦٣ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg');
+    var EL={spo:'iSpo',cni:'iCni',mol:'iMol',ech:'iEch',art:'iArt',wor:'iWor'};
+    var D={spo:['الإسفنجياتُ','أبسطُ اللافقارياتِ، ولمعظمِها شكلٌ يشبهُ كيسًا لهُ فتحةٌ في أعلاهُ، ويتكوَّنُ الجسمُ منْ طبقتينِ وهوَ مجوَّفٌ منَ الداخلِ. تعيشُ في الماءِ، والإسفنجُ المكتملُ النموِّ عديمُ الحركةِ. (ص ٥٩)'],
+           cni:['اللاسعاتُ (الجوفمعوياتُ)','لها أجزاءٌ تسمَّى لوامسَ تشبهُ الأذرعَ، ينتهي كلٌّ منها بخلايا لاسعةٍ تشلُّ بها حركةَ فريستِها. بعضُها عديمُ الحركةِ كالمرجانِ، وبعضُها يطفو ويسبحُ كقنديلِ البحرِ. (ص ٥٩)'],
+           mol:['الرخوياتُ','حيواناتٌ لافقاريةٌ أجسامُها ليِّنةٌ، ولها تراكيبُ صلبةٌ لدعمِ وحمايةِ أجسامِها؛ بعضُها داخليٌّ وبعضُها خارجيٌّ ومنها الأصدافُ. معظمُها يعيشُ في الماءِ، والحلزونُ هوَ الوحيدُ الذي يستطيعُ العيشَ على اليابسةِ. (ص ٦٠)'],
+           ech:['شوكياتُ الجلدِ','لها جلدٌ يحملُ أشواكًا، ولها أيضًا دعامةٌ داخليةٌ تسمَّى الهيكلَ الداخليَّ. ومنها قنفذُ البحرِ ونجمُ البحرِ. (ص ٦٠)'],
+           art:['المفصلياتُ','أكبرُ مجموعةٍ في اللافقارياتِ. لها أرجلٌ مفصليةٌ، وأجسامُها مقسَّمةٌ إلى أجزاءٍ، ولها هيكلٌ خارجيٌّ صلبٌ يحمي الجسمَ ويحفظُهُ رطبًا. (ص ٦١)'],
+           wor:['الديدانُ','مجموعاتٌ عديدةٌ في الطبيعةِ، منها: الديدانُ المفلطحةُ (المسطَّحةُ)، والديدانُ الأسطوانيةُ، والديدانُ الحلقيةُ. (ص ٦٢)']};
+    function show(k){
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===k); });
+      for(var j in EL){ document.getElementById(EL[j]).style.opacity=(j===k)?1:0; }
+      tag.textContent=D[k][0]; msg.className='simMsg good'; msg.textContent=D[k][1];
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('spo');
+  })();
+
+  (function(){
+    var box=document.getElementById('simB'); if(!box) return;
+    var tag=document.getElementById('bTag'), msg=document.getElementById('bMsg');
+    var EL={ins:'mIns',myr:'mMyr',cru:'mCru',ara:'mAra'};
+    var D={ins:['الحشراتُ','تشكِّلُ الحشراتُ أكبرَ مجموعةٍ منَ اللافقارياتِ؛ حيثُ يبلغُ عددُ أنواعِها أكثرَ منْ مليونِ نوعٍ. مثالٌ: الفراشةُ. وهيَ تتنفَّسُ عنْ طريقِ أنابيبَ (قُصَيباتٍ) دقيقةٍ تفتحُ عندَ سطحِ الجسمِ. (ص ٦١)'],
+           myr:['عديدةُ الأرجلِ','منَ الحيواناتِ العديدةِ الأرجلِ: أُمُّ ٤٤ رِجلًا، وذاتُ الأرجلِ المئةِ، وذاتُ الأرجلِ الألفِ. (ص ٦١)'],
+           cru:['القشرياتُ','منَ القشرياتِ الروبيانُ والسرطاناتُ. وهيَ تتنفَّسُ عنْ طريقِ الخياشيمِ. (ص ٦١)'],
+           ara:['العنكبياتُ','منَ العنكبياتِ العناكبُ والعقاربُ. وهيَ تتنفَّسُ عنْ طريقِ أنابيبَ (قُصَيباتٍ) دقيقةٍ تفتحُ عندَ سطحِ الجسمِ. (ص ٦١)']};
+    function show(k){
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===k); });
+      for(var j in EL){ document.getElementById(EL[j]).style.opacity=(j===k)?1:0; }
+      tag.textContent=D[k][0]; msg.className='simMsg good'; msg.textContent=D[k][1];
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('ins');
+  })();
+
+  (function(){
+    var box=document.getElementById('simC'); if(!box) return;
+    var tag=document.getElementById('cTag'), msg=document.getElementById('cMsg');
+    var EL={fla:'wFla',rou:'wRou',ann:'wAnn'};
+    var D={fla:['الديدانُ المفلطحةُ (المسطَّحةُ)','كما يشيرُ اسمُها إليها، أجسامٌ مسطَّحةٌ، لها رأسٌ وذيلٌ. وهيَ أبسطُ أنواعِ الديدانِ، ومعظمُها غيرُ ضارٍّ، وبعضُها يعيشُ داخلَ أجسامِ حيواناتٍ أخرى. (ص ٦٢)'],
+           rou:['الديدانُ الأسطوانيةُ','لها أجسامٌ رفيعةٌ ونهاياتٌ مدببةٌ. ومعظمُ الديدانِ الأسطوانيةِ تعيشُ داخلَ أجسامِ بعضِ الحيواناتِ. (ص ٦٢)'],
+           ann:['الديدانُ الحلقيةُ','تنتمي دودةُ الأرضِ إليها. تتكوَّنُ أجسامُها منْ ثلاثِ طبقاتٍ، والجسمُ مقسَّمٌ إلى حلقاتٍ متماثلةٍ ما عدا الرأسَ ونهاياتِ الذيلِ. وتعيشُ على اليابسةِ، وأعدادٌ قليلةٌ منها تعيشُ داخلَ أجسامِ حيواناتٍ أخرى. (ص ٦٢)']};
+    function show(k){
+      box.querySelectorAll('.tgl').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k')===k); });
+      for(var j in EL){ document.getElementById(EL[j]).style.opacity=(j===k)?1:0; }
+      tag.textContent=D[k][0]; msg.className='simMsg good'; msg.textContent=D[k][1];
+    }
+    box.querySelectorAll('.tgl').forEach(function(b){
+      b.addEventListener('click',function(){ show(b.getAttribute('data-k')); }); });
+    show('fla');
+  })();
+
+  (function(){
+    var nm=document.getElementById('dNm'); if(!nm) return;
+    var msg=document.getElementById('dMsg'), cnt=document.getElementById('dN'), sc=document.getElementById('dSc');
+    var AR=['٠','١','٢','٣','٤','٥','٦'];
+    var Q=[{t:'الروبيانُ',k:true,r:'منَ القشرياتِ، والقشرياتُ إحدى مجموعاتِ المفصلياتِ، والمفصلياتُ لافقارياتٌ. (ص ٦١)'},
+           {t:'السمكةُ',k:false,r:'لها عمودٌ فقريٌّ؛ فهيَ منَ الفقارياتِ. (ص ٥٨)'},
+           {t:'قنديلُ البحرِ',k:true,r:'منَ اللاسعاتِ، وهيَ لافقارياتٌ لها لوامسُ تنتهي بخلايا لاسعةٍ. (ص ٥٩)'},
+           {t:'الحيَّةُ (الثعبانُ)',k:false,r:'منَ الزواحفِ ولها عمودٌ فقريٌّ؛ فهيَ منَ الفقارياتِ. (ص ٥٨)'},
+           {t:'دودةُ الأرضِ',k:true,r:'منَ الديدانِ الحلقيةِ، وهيَ لافقارياتٌ. (ص ٦٢)'},
+           {t:'قنفذُ البحرِ',k:true,r:'يصنَّفُ في شوكياتِ الجلدِ، ولهُ دعامةٌ داخليةٌ تسمَّى الهيكلَ الداخليَّ — ولكنْ لا عمودَ فقريَّ لهُ. (ص ٦٠)'}];
+    var i=0, score=0, lock=false;
+    function show(){ nm.textContent=Q[i].t; cnt.textContent=AR[i+1]+' منْ ٦';
+      sc.textContent='الإجاباتُ الصحيحةُ: '+AR[score];
+      msg.className='simMsg neutral'; msg.textContent='أختارُ، ثمَّ أعرفُ السببَ.'; lock=false; }
+    function pick(v){
+      if(lock) return; lock=true;
+      if(Q[i].k===v){ score++; msg.className='simMsg good'; msg.textContent='✔ صحيحٌ. '+Q[i].r; }
+      else { msg.className='simMsg bad'; msg.textContent='✖ الصحيحُ: '+(Q[i].k?'لافقاريٌّ':'فقاريٌّ')+'. '+Q[i].r; }
+      sc.textContent='الإجاباتُ الصحيحةُ: '+AR[score];
+      setTimeout(function(){ i++;
+        if(i<Q.length) show();
+        else { msg.className='simMsg good'; msg.textContent='انتهى التدريبُ. نتيجتي: '+AR[score]+' منْ ٦.';
+               i=0; score=0; setTimeout(show,2600); } }, 2600);
+    }
+    document.getElementById('dA').addEventListener('click',function(){pick(true);});
+    document.getElementById('dB').addEventListener('click',function(){pick(false);});
+    show();
+  })();
+
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s4c1');
+EG.timed({q:'s4c2Q', opts:'s4c2O', fb:'s4c2Fb', timer:'s4c2T', score:'s4c2Sc', start:'s4c2Go', sec:45, data:[['الحيوان الذي ليس له عمودٌ فقريٌّ يُسمَّى:',['لافقاريًّا','فقاريًّا','ثدييًّا'],0],['الحشرات لها عددٌ من الأرجل:',['ستٌّ','أربع','ثمانٍ'],0],['الهيكل الخارجيُّ يوجد في:',['المفصليات','الأسماك','الطيور'],0],['الإسفنجيات تحصل على غذائها عن طريق:',['تصفية الماء','الافتراس','البناء الضوئي'],0],['دودة الأرض تنتمي إلى:',['اللافقاريات','الفقاريات','النباتات'],0]]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"04_الصف_الرابع_الابتدائي/01_المخلوقات_الحية/02_المملكة_الحيوانية/01_الحيوانات_اللافقارية/علوم_رابع_ابتدائي_ف1_الدرس_الأول_الحيوانات_اللافقارية.html","title":"الحيوانات اللافقارية","grade":4,"emoji":"🐝","photoTopic":"animals","observeQuestion":"ما الذي تلاحظه من أجنحة الفراشة وقرون استشعارها؟ وما الصفة التي تجعلها لافقارية؟","facts":["اللافقاريات حيوانات ليس لها عمود فقري، لكنها تختلف كثيرًا في تراكيب أجسامها.","للحشرة البالغة ثلاث مناطق جسم رئيسة وست أرجل مفصلية متصلة بالصدر.","للعنكبوت ثماني أرجل؛ لذلك يصنف ضمن العنكبيات، مع اشتراكه مع الحشرات في شعبة المفصليات."],"diagram":{"title":"تنوع اللافقاريات","relation":"comparison","nodes":[{"emoji":"🐝","label":"نحلة","detail":"حشرة ذات ست أرجل"},{"emoji":"🕷️","label":"عنكبوت","detail":"عنكبي ذو ثماني أرجل"},{"emoji":"🪱","label":"دودة أرض","detail":"دودة حلقية بلا أرجل مفصلية"},{"emoji":"🐌","label":"حلزون","detail":"رخوي يتحرك بقدم عضلية"}],"caption":"عدم وجود العمود الفقري صفة مشتركة، أما طريقة الدعم والحركة فتختلف بين المجموعات."},"lab":{"title":"عدّ الأرجل للتصنيف","question":"كيف يساعد عد الأرجل المفصلية على التمييز بين الحيوانات الثلاثة المرسومة؟","controlLabel":"الحيوان البالغ في الرسم","options":["دودة أرض","نحلة","عنكبوت"],"states":[{"label":"بلا أرجل مفصلية","emoji":"🔵","amount":0,"explanation":"تتحرك دودة الأرض بانقباض العضلات، وليس لها أرجل مفصلية مثل أرجل الحشرات والعناكب.","observation":"صفر أرجل مفصلية في المقارنة."},{"label":"ست أرجل","emoji":"🔵","amount":6,"explanation":"للنحلة البالغة ثلاثة أزواج من الأرجل؛ وهذه صفة أساسية للحشرات البالغة السليمة.","observation":"ست علامات، واحدة لكل رجل."},{"label":"ثماني أرجل","emoji":"🔵","amount":8,"explanation":"للعنكبوت أربعة أزواج من الأرجل، وهي تساعد على تمييزه من الحشرات في هذه الأمثلة.","observation":"ثماني علامات، واحدة لكل رجل."}],"quantityLabel":"عدد الأرجل المفصلية في النموذج التشريحي لكل حيوان","modelNote":"نماذج لحيوانات بالغة سليمة؛ العلامات تمثل الأرجل فقط، ولا تشمل قرون الاستشعار أو أجزاء الفم.","tryPrompt":"هل عدم وجود أرجل يجعل دودة الأرض نباتًا؟ استدل بصفة حيوانية أخرى."},"sources":[{"title":"متحف سميثسونيان: ما الحشرة؟","url":"https://naturalhistory.si.edu/education/teaching-resources/life-science/what-insect"},{"title":"سميثسونيان: المفصليات وتنوعها","url":"https://nationalzoo.si.edu/conservation/news/house-hunters-amazing-arthropods"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

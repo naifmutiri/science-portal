@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – الدرس الثاني: الحركة والإحساس</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>الحركة والإحساس</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الثانية: عمليات الحياة<br>الفصل الرابع: عمليات الحياة في الإنسان والحيوانات — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن الآن؟</h2><span class="src">ص ١٢٠</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة</h3><p>الوحدة الثانية: عمليات الحياة</p></div><div class="card"><h3>الفصل</h3><p>الفصل الرابع: عمليات الحياة في الإنسان والحيوانات</p></div><div class="card"><h3>الدرس</h3><p>الدرس الثاني: الحركة والإحساس</p></div></div><div class="box idea"><b>السؤال الأساسي:</b> كيف تعمل أجهزة الجسم معًا لتسمح بالحصول على الطاقة والحركة والاستجابة للبيئة؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أصف الجهاز الهيكلي وأذكر وظيفتيه الرئيستين.</li><li>أوضِّح كيف يعمل الجهاز العضلي مع الجهاز الهيكلي على الحركة.</li><li>أميِّز الهيكل الخارجي في المفصليات.</li><li>أذكر أجزاء الجهاز العصبي ووظيفة كلٍّ منها.</li><li>أعرِّف الهرمونات وأبيِّن دور جهاز الغدد الصمَّاء.</li><li>أوضِّح كيف يتكامل عمل أجهزة جسم الإنسان.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أنظر وأتساءل</span><h2>تمهيد</h2><span class="src">ص ١٢٠</span></div>
+<div class="body"><p class="t">يستطيع طائر <b>الببغاء</b> الطيران مسافةً تزيد على ٧٠٠ كلم يوميًّا للبحث عن الغذاء.</p><div class="box ask">فما الذي يحرِّك أجنحته؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما الذي أعرفه من قبل؟</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الفقاريات</h3><p>حيواناتٌ لها عمودٌ فقريٌّ وهيكلٌ داخليٌّ من العظام.</p></div><div class="card"><h3>المفصليات</h3><p>لافقارياتٌ لها هيكلٌ خارجيٌّ وأرجلٌ مفصلية.</p></div><div class="card"><h3>أجهزة الجسم</h3><p>مجموعةٌ من الأعضاء تعمل معًا لأداء وظيفة.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١٢٢</span></div>
+<div class="body"><div class="cards"><div class="card"><h4>الجهاز الهيكلي</h4><p class="term">يتكوَّن من العظام والأربطة والأوتار، ويحمي الأعضاء ويدعم الجسم.</p></div><div class="card"><h4>الجهاز العضلي</h4><p class="term">مصدر القوة التي تحرِّك العظام.</p></div><div class="card"><h4>الجهاز العصبي</h4><p class="term">يشتمل على الدماغ والحبل الشوكي والأعصاب وأعضاء الحس.</p></div></div><div class="cards"><div class="card"><h4>جهاز الغدد الصمَّاء</h4><p class="term">جهازٌ يفرز الهرمونات.</p></div><div class="card"><h4>الهرمون</h4><p class="term">مادةٌ كيميائيةٌ تفرز في الدم مباشرةً وتغيِّر أنشطة الجسم.</p></div></div><div class="muted">مهارة القراءة في هذا الدرس: <b>التلخيص</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>كيف تعمل العضلات؟</h2><span class="src">ص ١٢١</span></div>
+<div class="body"><div class="box idea"><b>أتوقَّع:</b> كيف تساعدني العضلات على الحركة؟ ماذا يحدث عندما تنقبض عضلةٌ مرتبطةٌ مع عظم؟</div><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">أحتاج إلى</h4><ul class="list"><li>ماصَّة عصير</li><li>مقص</li><li>معجون أطفال</li><li>مشابك ورق</li><li>خيط</li></ul></div><div style="flex:1 1 0"><h4 class="hl">أختبر توقُّعي</h4><ul class="list num"><li><b>أعمل نموذجًا:</b> أعمل شقًّا عرضيًّا صغيرًا في منتصف ماصَّة العصير، بحيث يسهل ثنيها في اتجاهٍ واحد.</li><li>أثبِّت قطعة معجونٍ كبيرةً على أحد طرفَي الماصة، وقطعةً أخرى أصغر حجمًا على الطرف الآخر.</li><li>أغرس مشابك ورقٍ في كل قطعةٍ وبشكلٍ عمودي، وأربط خيطًا في المشبك الورقيِّ المثبَّت في القطعة الصغيرة.</li><li>أسحب الخيط ليمرَّ من خلال مشبك الورق المغروس في الكرة الكبيرة.</li><li><b>أجرِّب:</b> أسحب الخيط لأمثِّل كيف تعمل العضلة، وماذا يحدث عندما تنقبض، وماذا يحدث عندما تعود إلى وضعها الأصلي؟</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>أستخلص النتائج</h2><span class="src">ص ١٢١</span></div>
+<div class="body"><div class="qa"><p class="q">٦ – أيُّ أجزاء النموذج يمثِّل العظام، وأيها يمثِّل العضلات؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>الماصَّة</b> تمثِّل العظام، و<b>الخيط</b> يمثِّل العضلة (والوتر) الذي يسحب العظم عند انقباضه. أما الشقُّ في منتصف الماصة فيمثِّل <b>المفصل</b>.</div></div><div class="qa"><p class="q">٧ – أستنتج: أيُّ عضلات الجسم تشبه هذا النموذج؟ أوضِّح ذلك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> عضلات الذراع (كعضلة العضد) وعضلات الرِّجل؛ فهي ترتبط بالعظام بأوتار، وعندما تنقبض تسحب العظم فينثني المفصل، تمامًا كما سحب الخيطُ الماصَّةَ فانثنت عند الشق.</div></div><div class="qa"><p class="q">٨ – كيف تعمل العضلات؟ وماذا يحدث عندما تنقبض العضلات وعندما تنبسط؟ أوضِّح ذلك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تعمل العضلات <b>بالسحب فقط</b> ولا تدفع أبدًا. فعندما تنقبض العضلة تقصُر فتسحب العظم المرتبط بها فيتحرَّك، وفي الوقت نفسه تنبسط العضلة المقابلة لتسمح للعظم بالحركة. ولهذا تعمل العضلات في <b>أزواجٍ أو مجموعاتٍ متقابلة</b>.</div></div><div class="qa"><p class="q">أستكشف أكثر: ماذا يحدث إذا لم أعمل شقًّا في الماصَّة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span><b>إجابة نموذجية مقترحة:</b> لن تنثني الماصة عند سحب الخيط بل تتحرك كقطعةٍ واحدة؛ لأن الشق يمثِّل المفصل. وهذا يبيِّن أن الحركة تحتاج إلى مفاصلَ بين العظام.</div></div><div class="box safe"><b>أحذر:</b> أستعمل المقص بحذر، ولا أضع المعجون في فمي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>الفكرة الرئيسة للدرس</h2><span class="src">ص ١٢٢</span></div>
+<div class="body"><div class="box idea" style="font-size:bigpx;">يعمل <b>الجهاز الهيكلي</b> و<b>الجهاز العضلي</b> معًا لتمكين الجسم من الحركة، ويعمل <b>الجهاز العصبي</b> و<b>جهاز الغدد الصمَّاء</b> معًا لتنظيم أنشطة الجسم والاستجابة للبيئة.</div><div class="map"><div class="node">أجهزةٌ للحركة والإحساس</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">الهيكلي</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">العظام</span><span class="node leaf">الأربطة</span><span class="node leaf">الأوتار</span></div></div><div class="col"><div class="node sub" style="background:#FBEAE7;border-color:#B03A2E;color:#B03A2E">العضلي</div><div class="line" style="background:#B03A2E"></div><div class="leaves"><span class="node leaf">الانقباض</span><span class="node leaf">الانبساط</span></div></div><div class="col"><div class="node sub" style="background:#E7F4F1;border-color:#1F6E63;color:#1F6E63">العصبي</div><div class="line" style="background:#1F6E63"></div><div class="leaves"><span class="node leaf">الدماغ</span><span class="node leaf">الحبل الشوكي</span><span class="node leaf">الأعصاب</span></div></div><div class="col"><div class="node sub" style="background:#F3EDF7;border-color:#7A4E8C;color:#7A4E8C">الغدد الصمَّاء</div><div class="line" style="background:#7A4E8C"></div><div class="leaves"><span class="node leaf">الهرمونات</span><span class="node leaf">الأدرينالين</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">شرح</span><h2>ما الجهاز الهيكلي؟</h2><span class="src">ص ١٢٢</span></div>
+<div class="body"><p class="t">تحتاج الحيوانات إلى الانتقال من مكانٍ إلى آخر للحصول على الغذاء أو الهرب من الأعداء. وللحيوانات تراكيبُ مختلفةٌ تساعدها على الحركة.</p><p class="t">الفقاريات — ومنها الإنسان — لها <b>جهازٌ هيكليٌّ</b> يتكوَّن من العظام والأربطة والأوتار.</p><table class="cmp"><tr><th style="width:24%">الجزء</th><th>الوصف</th></tr><tr><td>العظام</td><td>نسيجٌ صلبٌ وخفيفٌ وقوي.</td></tr><tr><td>الأربطة</td><td>نسيجٌ يربط العظام بعضها ببعض.</td></tr><tr><td>الأوتار</td><td>نسيجٌ يربط بين العظام والعضلات.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">الجهاز الهيكلي</span><h2>وظيفتا الجهاز الهيكلي</h2><span class="src">ص ١٢٢ – ١٢٣</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">الوظيفة الأولى: الحماية</h4><p class="t">تحمي العظام بعض الأعضاء الطريَّة في الجسم؛ فالقفص الصدري يحمي القلب والرئتين، والجمجمة قاسيةٌ جدًّا لتحمي الدماغ الحسَّاس من الإصابة، كما أنها خفيفة الوزن ليسهُل إبقاء الرأس منتصبًا.</p></div><div style="flex:1 1 0"><h4 class="hl">الوظيفة الثانية: الدعم والحركة</h4><p class="t">توفير هيكلٍ صلبٍ للجسم ليُكسبه شكله، وليساعده على الحركة.</p></div></div><div class="box note">من أجزاء الهيكل في الأرنب: الجمجمة، والفقرة، والضلع، والحوض، والفخذ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الجهاز العضلي</span><h2>ما الجهاز العضلي؟</h2><span class="src">ص ١٢٣</span></div>
+<div class="body"><p class="t">العظام تتحرَّك بسهولة، ولكنها لا تستطيع الحركة وحدها، ومصدر القوة التي تحرِّكها هو <b>الجهاز العضلي</b>.</p><div class="box idea">ترتبط معظم العضلات مع العظام <b>بأوتارٍ مرنةٍ قوية</b>. فعندما تنقبض العضلات تتحرَّك العظام.</div><p class="t">والعضلات التي تسبِّب الحركة تعمل في <b>أزواجٍ أو مجموعاتٍ متقابلة</b>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الجهاز العضلي</span><h2>كيف يركض الأرنب؟</h2><span class="src">ص ١٢٣</span></div>
+<div class="body"><ul class="list num"><li>تُرسَل أوامرُ أو تعليماتٌ على شكل إشاراتٍ كهربائيةٍ من الدماغ إلى العضلات في رجلَيه لتنقبضَ أو تنبسط.</li><li>تقوم العضلات المنقبضة بسحب الوتر الذي يحرِّك عظم الرِّجل.</li><li>تسحب مجموعةٌ من العضلات رِجل الأرنب عاليًا، وتقوم العضلات المقابلة بسحب رجل الأرنب إلى أسفل.</li><li>وعندما تقوم عضلةٌ ما بالانقباض تقوم العضلة المقابلة بالانبساط، وتستمر هذه العملية ما دام الأرنب يركض.</li></ul><div class="box note"><b>العضلات تقوم بعملية السحب، ولا تقوم بعملية الدفع أبدًا.</b></div><div class="muted">ويعمل الجهازان الهيكلي والعضلي في الإنسان بطريقةٍ متشابهةٍ لعملهما في الأرنب.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الهيكل الخارجي</span><h2>الهيكل الخارجي</h2><span class="src">ص ١٢٣</span></div>
+<div class="body"><p class="t">يوجد <b>الهيكل الخارجي</b> للمفصليات على السطح الخارجي لأجسامها، وهو تركيبٌ قاسٍ متماسكٌ مرتبطٌ مع مفاصلَ متحركة.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>عند الفقاريات</b><br>يعمل الجهاز الهيكلي على الحماية وتوفير الدعم والمساعدة على الحركة.</div></div><div style="flex:1 1 0"><div class="box note"><b>عند المفصليات</b><br>ومنها الخنافس: عليها أن تتخلَّص من هيكلها الخارجي وتكوِّن هيكلًا جديدًا حتى تنمو.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٢٣</h2><span class="src">ص ١٢٣</span></div>
+<div class="body"><div class="qa"><p class="q">ألخِّص: ماذا يحدث لعضلات رِجل الأرنب عندما يركض؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>ترسل الدماغ إشاراتٍ كهربائية إلى عضلات الرِّجل، فتنقبض مجموعةٌ من العضلات وتسحب الوتر فترفع الرِّجل، وفي الوقت نفسه تنبسط العضلات المقابلة، ثم تنعكس العملية فتسحب العضلات المقابلة الرِّجلَ إلى أسفل، وتتكرَّر ما دام الأرنب يركض.</div></div><div class="qa"><p class="q">التفكير الناقد: العضلات التي تحرِّك أصابع يدك موجودةٌ في ذراعك، فكيف تستطيع أصابعك أن تتحرَّك؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> ترتبط تلك العضلات بعظام الأصابع بوساطة <b>أوتارٍ طويلة</b> تمتد من الذراع عبر الرسغ إلى الأصابع. فعندما تنقبض العضلة في الذراع تسحب الوتر، فيتحرَّك عظم الإصبع.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الجهاز العصبي</span><h2>ما الأجهزة العصبية؟ وما أجهزة الغدد الصمَّاء؟</h2><span class="src">ص ١٢٤</span></div>
+<div class="body"><p class="t">يشتمل <b>الجهاز العصبي</b> في الفقاريات على الدماغ والحبل الشوكي والأعصاب وأعضاء الحسِّ.</p><table class="cmp"><tr><th style="width:26%">الجزء</th><th>الوظيفة</th></tr><tr><td>الدماغ</td><td>ينظِّم حركات العضلات، ويفسِّر المعلومات التي تصله من أعضاء الحس، وينظِّم وظائف أعضاء الجسم.</td></tr><tr><td>الحبل الشوكي</td><td>يمرِّر المعلومات من الدماغ وإليه.</td></tr><tr><td>الأعصاب</td><td>ترسل معلومات من أجزاء الجسم المختلفة إلى الدماغ.</td></tr><tr><td>الغدتان الكظريتان</td><td>(فوق الكليتين) تفرزان هرمون الأدرينالين، وتهيِّئان الجسم لحالات الطوارئ والإجهاد.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">الغدد الصمَّاء</span><h2>الهرمونات</h2><span class="src">ص ١٢٤</span></div>
+<div class="body"><p class="t">يعمل الجهاز العصبي مع <b>جهاز الغدد الصمَّاء</b> الذي يفرز الهرمونات.</p><div class="box idea"><b>الهرمونات</b> موادُّ كيميائيةٌ تفرز في الدم مباشرةً وتغيِّر أنشطة الجسم.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الاستجابة</span><h2>الأرنب والثعلب: استجابةٌ في أقلَّ من جزءٍ من الثانية</h2><span class="src">ص ١٢٤</span></div>
+<div class="body"><p class="t">افترضْ أن أرنبًا شاهد ثعلبًا يركض في اتجاهه لكي يفترسَه:</p><ul class="list num"><li>تبدأ استجابة الأرنب عندما يرى الثعلب.</li><li>تقوم الخلايا العصبية في عينَي الأرنب بإرسال معلوماتٍ إلى الدماغ.</li><li>يستجيب الدماغ بإرسال أوامرَ ينقلها الجهاز العصبي إلى عضلات الأرجل في أقلَّ من جزءٍ من الثانية ليبدأ الأرنب الركض.</li><li>وفي الوقت نفسه يقوم جهاز الغدد الصمَّاء بإفراز هرمون <b>الأدرينالين</b> الذي يسرِّع من نبضات القلب ليزيدَ من الدم المتدفِّق إلى العضلات.</li><li>وحالما تزداد نبضات القلب يصبح الأرنب مستعدًّا للهرب أو الدفاع عن نفسه.</li></ul><div class="muted">ويعمل الجهاز العصبي وجهاز الغدد الصمَّاء في جسم الإنسان بطريقةٍ مشابهةٍ تقريبًا لعملها في جسم الأرنب.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>كيف تنتقل أوامر الدماغ إلى باقي أجزاء الجسم؟</h2><span class="src">ص ١٢٤</span></div>
+<div class="body"><div class="box ask">كيف تنتقل أوامر الدماغ إلى باقي أجزاء الجسم؟<br><span class="muted">إرشاد: أنظر إلى الأجزاء المتصلة بالدماغ والمنتشرة في الجسم.</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الشكل»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تنتقل الأوامر من الدماغ إلى <b>الحبل الشوكي</b>، ومنه تتفرَّع <b>الأعصاب</b> المنتشرة في الجسم كله لتوصِّل الإشارات إلى العضلات والأعضاء، وتعيد المعلومات من الجسم إلى الدماغ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٢٤</h2><span class="src">ص ١٢٤</span></div>
+<div class="body"><div class="qa"><p class="q">ألخِّص: ماذا يحدث في الجهاز العصبي للأرنب عندما يشاهد ثعلبًا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>ترسل الخلايا العصبية في عينيه معلوماتٍ إلى الدماغ، فيفسِّرها الدماغ ويرسل أوامر عبر الحبل الشوكي والأعصاب إلى عضلات الأرجل لتنقبضَ فيبدأ الركض، ويحدث ذلك في أقلَّ من جزءٍ من الثانية.</div></div><div class="qa"><p class="q">التفكير الناقد: ماذا يمكن أن يحدث إذا استغرقت الأوامر المرسلة من الدماغ إلى رِجل الأرنب دقيقة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> لن يستطيع الأرنب الهرب في الوقت المناسب، فيدركه الثعلب ويفترسه. فسرعة نقل الإشارات العصبية ضروريةٌ لبقاء المخلوق الحي.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط تفاعلي</span><h2>أيُّ جهازٍ يقوم بهذه المهمة؟</h2><span class="src">تدريب إضافي</span></div>
+<div class="body"><p class="t">أختار الجهاز المسؤول عن كل مهمة.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="X">الهيكلي والعضلي</button><button class="simBtn ghost" type="button" data-k="Y">العصبي والغدد الصمَّاء</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تكامل الأجهزة</span><h2>كيف يتكامل عمل أجهزة جسم الإنسان؟</h2><span class="src">ص ١٢٥</span></div>
+<div class="body"><p class="t">تعمل أجهزة الجسم في الإنسان وبعض الحيوانات لبقائها على قيد الحياة، وتجعلها قادرةً على القيام بالعمليات الحيوية المختلفة وأنشطتها المتعددة.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>العضلي والهيكلي</b><br>حركة الجسم تنتج عن انقباض العضلات وانبساطها، ويدعم الجهاز الهيكلي الجسم ويكسبه شكلًا خاصًّا، ويحمي أعضاءه الداخلية ومنها القلب والرئتان والدماغ.</div></div><div style="flex:1 1 0"><div class="box note"><b>الهضمي</b><br>مسؤولٌ عن هضم الطعام وامتصاصه، ويساعده على ذلك أعضاءٌ أخرى منها الكبد والبنكرياس والأوعية الدموية.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تكامل الأجهزة</span><h2>بقية الأجهزة</h2><span class="src">ص ١٢٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>التنفسي</h3><p>يزوِّد الجسم بالأكسجين بعملية الشهيق، ويُخرج ثاني أكسيد الكربون والماء بعملية الزفير.</p></div><div class="card"><h3>الدوران</h3><p>يوزِّع الدم على جميع خلايا الجسم ليحمل إليها الغذاء والأكسجين ويخلِّصها من الفضلات.</p></div><div class="card"><h3>الإخراج</h3><p>يتخلَّص الجسم من الفضلات عن طريق الجلد والجهاز البولي؛ حيث يقومان بتنقية الدم وتصفيته من الفضلات.</p></div></div><div class="box idea">أما <b>الجهاز العصبي</b> فهو المسؤول عن تنظيم جميع أنشطة الجسم.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>تكامل عمل أجهزة الجسم</h2><span class="src">ص ١٢٥</span></div>
+<div class="body"><ul class="list num"><li><b>أجرِّب.</b> أقيس نبضي عندما أكون مستريحًا. لقياس النبض أضغط بأطراف أصابعي برفق على معصمي حتى أشعر بالنبض، ثم أعُدُّ النبضات في ٣٠ ثانية.</li><li>أمشي في مكاني دقيقة، وأقيس نبضي في ٣٠ ثانية، وأسجِّل النتيجة.</li><li>أهرول في مكاني دقيقة، وأقيس نبضي في ٣٠ ثانية، وأسجِّل النتيجة.</li><li><b>أستعمل الأرقام.</b> أمثِّل البيانات التي جمعتُها برسمٍ بيانيٍّ لتوضيح العلاقة بين عدد النبضات والنشاط الذي مارستُه.</li></ul><div class="box safe">إذا شعرتُ بتعبٍ أو دوارٍ أتوقَّف عن النشاط وأخبر المعلم.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نشاط تكامل الأجهزة — الاستنتاج</h2><span class="src">ص ١٢٥</span></div>
+<div class="body"><div class="qa"><p class="q">٥ – أستنتج: كيف تكامل عمل الجهازين الدوراني والعضلي في جسمي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span>كلما زاد نشاط العضلات ازدادت حاجتها إلى الأكسجين والغذاء، فيستجيب جهاز الدوران بزيادة عدد نبضات القلب ليضخَّ دمًا أكثر إلى العضلات. ولهذا زاد عدد النبضات عند المشي، وزاد أكثر عند الهرولة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١٢٥</h2><span class="src">ص ١٢٥</span></div>
+<div class="body"><div class="qa"><p class="q">ألخِّص: ماذا يحدث للطعام في الجهاز الهضمي للإنسان؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يُمضغ الطعام في الفم، ثم ينتقل عبر المريء إلى المعدة حيث يحلِّله الحمض والإنزيمات، ثم إلى الأمعاء الدقيقة حيث تكتمل عملية الهضم وتُمتص المواد الغذائية إلى الدم، وتمتص الأمعاء الغليظة الماء، ويتخلَّص الجسم من الباقي بعملية الإخراج.</div></div><div class="qa"><p class="q">التفكير الناقد: ماذا يحدث للعضلات لو لم تكن متصلةً بأوتارٍ مع العظم؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> لن تستطيع سحب العظام عند انقباضها، فلا يتحرَّك الجسم؛ لأن الوتر هو الذي ينقل قوة سحب العضلة إلى العظم.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>الملخص المصوَّر</h2><span class="src">ص ١٢٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الحركة</h3><p>يعمل الجهاز الهيكلي والجهاز العضلي معًا لتمكين الجسم من الحركة.</p></div><div class="card"><h3>الطوارئ</h3><p>يعمل الجهاز العصبي وجهاز الغدد الصمَّاء معًا في حالات الطوارئ والإجهاد.</p></div><div class="card"><h3>التكامل</h3><p>يتكامل عمل أجهزة جسم الإنسان للقيام بالعمليات الحيوية المختلفة.</p></div></div><div class="box note"><b>المطويات:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمته عن الجهاز الهيكلي والجهاز العضلي والجهاز العصبي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ١ – ٣</h2><span class="src">ص ١٢٦</span></div>
+<div class="body"><div class="qa"><p class="q">١ – الفكرة الرئيسة: كيف يعمل جهاز الدوران، والجهاز التنفسي والعصبي والعضلي والهيكلي معًا على حماية الأرنب من الثعلب؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يرى الأرنب الثعلب فترسل عيناه معلوماتٍ إلى الدماغ، فيرسل <b>الجهاز العصبي</b> أوامر إلى العضلات. ينقبض <b>الجهاز العضلي</b> فيسحب عظام <b>الجهاز الهيكلي</b> فيبدأ الركض. ويسرِّع <b>جهاز الدوران</b> ضخَّ الدم إلى العضلات، ويزوِّد <b>الجهاز التنفسي</b> الدمَ بالأكسجين اللازم لإطلاق الطاقة. فتعمل الأجهزة كلها معًا ليهرب الأرنب.</div></div><div class="qa"><p class="q">٢ – المفردات: تفرَز الهرمونات في الجسم عن طريق ………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>جهاز الغدد الصمَّاء</b>.</div></div><div class="qa"><p class="q">٣ – ألخِّص: كيف ينظِّم الجهاز العصبي عمل أجهزة جسم الأرنب لمساعدته على التخلص من خطرٍ يهدِّد حياته؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يستقبل الدماغ المعلومات من أعضاء الحس، ويفسِّرها، ثم يرسل أوامر عبر الحبل الشوكي والأعصاب إلى العضلات لتنقبضَ فيهرب، ويحفِّز في الوقت نفسه جهازَ الغدد الصمَّاء لإفراز الأدرينالين الذي يسرِّع نبضات القلب ويزيد تدفُّق الدم إلى العضلات.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ٤ – ٦</h2><span class="src">ص ١٢٦</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – التفكير الناقد: كيف تساعد زيادةُ نبضات القلب المخلوقَ الحيَّ على مواجهة الخطر؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>زيادة النبضات تزيد كمية الدم المتدفِّق إلى العضلات، فيصلها أكسجينٌ وغذاءٌ أكثر، فتتحرَّر طاقةٌ أكبر تمكِّن المخلوق من الهرب بسرعةٍ أو الدفاع عن نفسه.</div></div><div class="qa"><p class="q">٥ – أختار الإجابة الصحيحة: أيُّ الأجهزة الآتية يوفِّر القوة اللازمة لتحريك الجسم؟ أ) الجهاز العضلي &nbsp; ب) الجهاز الدوراني &nbsp; جـ) الجهاز العصبي &nbsp; د) جهاز الغدد الصمَّاء</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>أ) الجهاز العضلي.</b></div></div><div class="qa"><p class="q">٦ – أختار الإجابة الصحيحة: أيٌّ ممَّا يأتي له هيكلٌ خارجيٌّ دعامي؟ أ) الأرنب &nbsp; ب) الكلب &nbsp; جـ) الجندب &nbsp; د) السمكة</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>جـ) الجندب.</b> فهو من المفصليات التي لها هيكلٌ خارجي.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم والرياضيات · العلوم والمجتمع</h2><span class="src">ص ١٢٦</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">عدد نبضات القلب</h4><p class="t">إذا علمتَ أن معدَّل نبضات القلب في الدقيقة ٨٠ نبضة، فما معدَّل نبضات القلب في يومٍ واحد؟</p><div class="qa"><p class="q">الحل</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>عدد دقائق اليوم = ٢٤ × ٦٠ = ١٤٤٠ دقيقة.<br>١٤٤٠ × ٨٠ = <b>١١٥٢٠٠ نبضة</b> في اليوم الواحد.</div></div></div><div style="flex:1 1 0"><h4 class="hl">التعاون</h4><p class="t">قال رسول الله ﷺ: «مَثَلُ المؤمنينَ في تَوادِّهم وتَراحُمِهم وتعاطُفِهم كمَثَلِ الجسدِ الواحد؛ إذا اشتكى منهُ عُضوٌ تَداعَى لهُ سائرُ الجسدِ بالسَّهَرِ والحُمَّى».</p><p class="t">أكتب مقالًا عن أهمية التعاون في المجتمع مستشهدًا بأمثلةٍ من تكامُل عمل أجهزة الجسم.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">النسيج الذي يربط بين العظام والعضلات هو:</p><div class="opts"><button class="opt" type="button">الأربطة</button><button class="opt" type="button">الأوتار</button><button class="opt" type="button">الغضاريف</button><button class="opt" type="button">الأعصاب</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">تعمل العضلات دائمًا عن طريق:</p><div class="opts"><button class="opt" type="button">الدفع</button><button class="opt" type="button">السحب</button><button class="opt" type="button">الدوران</button><button class="opt" type="button">التمدُّد فقط</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">العظم الذي يحمي الدماغ هو:</p><div class="opts"><button class="opt" type="button">الضلع</button><button class="opt" type="button">الجمجمة</button><button class="opt" type="button">الحوض</button><button class="opt" type="button">الفخذ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي (٢)</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">الهرمون الذي يسرِّع نبضات القلب في حالات الطوارئ هو:</p><div class="opts"><button class="opt" type="button">الأنسولين</button><button class="opt" type="button">الأدرينالين</button><button class="opt" type="button">الإنزيم</button><button class="opt" type="button">الجلوكوز</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">الجزء الذي يمرِّر المعلومات من الدماغ وإليه هو:</p><div class="opts"><button class="opt" type="button">الحبل الشوكي</button><button class="opt" type="button">القفص الصدري</button><button class="opt" type="button">الوتر</button><button class="opt" type="button">الرباط</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">المخلوق الذي يجب أن يتخلَّص من هيكله الخارجي لينمو هو:</p><div class="opts"><button class="opt" type="button">الأرنب</button><button class="opt" type="button">الخنفساء</button><button class="opt" type="button">الطائر</button><button class="opt" type="button">السمكة</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبل أن أغادر</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أذكر وظيفتي الجهاز الهيكلي.</li><li>أوضِّح كيف تعمل العضلات في أزواجٍ متقابلة.</li><li>أذكر جهازين يعملان معًا عند مواجهة الخطر.</li></ul><div class="box idea">سؤالٌ أفكر فيه: لماذا يشعر الإنسان بتسارع ضربات قلبه عندما يفاجئه صوتٌ عالٍ؟</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: كيف تعمل العضلات؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1300" height="530" viewBox="0 0 1300 530" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l8SvgHost"><rect x="0" y="0" width="1300" height="530" fill="#FBFCFD"/><g><text x="980" y="66" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العضلة تنبسط — الذراع ممدودة</text><text x="980" y="66" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العضلة تنبسط — الذراع ممدودة</text></g><rect x="820" y="236" width="226" height="34" rx="17" fill="#EDE6D8" stroke="#C9BFA8" stroke-width="4"/><rect x="1046" y="236" width="196" height="34" rx="17" fill="#EDE6D8" stroke="#C9BFA8" stroke-width="4"/><circle cx="1046" cy="253" r="26" fill="#D8CEB8" stroke="#B7AB90" stroke-width="4"/><path d="M862 232 q 90 -30 172 -4 q -82 24 -172 4z" fill="#C4564E"/><path d="M862 278 q 90 24 172 2 q -82 -28 -172 -2z" fill="#E0857E"/><g><text x="340" y="66" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العضلة تنقبض — الذراع منثنية</text><text x="340" y="66" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العضلة تنقبض — الذراع منثنية</text></g><rect x="196" y="236" width="228" height="34" rx="17" fill="#EDE6D8" stroke="#C9BFA8" stroke-width="4"/><rect x="424" y="236" width="186" height="34" rx="17" fill="#EDE6D8" stroke="#C9BFA8" stroke-width="4" transform="rotate(-52 424 253)"/><circle cx="424" cy="253" r="26" fill="#D8CEB8" stroke="#B7AB90" stroke-width="4"/><path d="M236 224 q 78 -60 152 -18 q -66 44 -152 18z" fill="#C4564E"/><path d="M238 282 q 78 20 142 -4 q -70 -20 -142 4z" fill="#E0857E"/><g class="eHot" data-k="bone"><path d="M660 388 L900 268" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="900" cy="268" r="6.5" fill="#8A97A0"/><g><text x="660" y="396" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العظام</text><text x="660" y="396" font-size="26" fill="#7A6A48" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العظام</text></g><rect class="hitBox" x="545" y="362" width="230" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="660" y="430" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تدعم الجسم وتحمي الأعضاء</text><text x="660" y="430" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تدعم الجسم وتحمي الأعضاء</text></g><g class="eHot" data-k="flex"><path d="M218 388 L300 222" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="300" cy="222" r="6.5" fill="#8A97A0"/><g><text x="218" y="396" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العضلة القابضة</text><text x="218" y="396" font-size="26" fill="#8E332C" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العضلة القابضة</text></g><rect class="hitBox" x="68" y="362" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="218" y="430" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تنقبض فتسحب العظم</text><text x="218" y="430" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تنقبض فتسحب العظم</text></g><g class="eHot" data-k="ext"><path d="M1086 388 L950 288" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="950" cy="288" r="6.5" fill="#8A97A0"/><g><text x="1086" y="396" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العضلة الباسطة</text><text x="1086" y="396" font-size="26" fill="#8E332C" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العضلة الباسطة</text></g><rect class="hitBox" x="936" y="362" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1086" y="430" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تنبسط في الوقت نفسه</text><text x="1086" y="430" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تنبسط في الوقت نفسه</text></g><g><text x="650" y="492" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العضلات تعمل في أزواجٍ متقابلة — تسحب ولا تدفع أبدًا</text><text x="650" y="492" font-size="26" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العضلات تعمل في أزواجٍ متقابلة — تسحب ولا تدفع أبدًا</text></g></svg><div class="eCap">كيف يعمل الجهازان الهيكلي والعضلي معًا على الحركة.</div></div><div class="eSteps" id="g6l8Pills"><span class="eStepPill" data-s="0">العضلة القابضة</span><span class="eStepPill" data-s="1">العضلة الباسطة</span><span class="eStepPill" data-s="2">العظام</span></div><div class="eInfo" id="g6l8Info">اضغط على العضلة أو العظم لتعرف دوره.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l8Prev">◀ السابق</button><button class="simBtn" type="button" id="g6l8Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ مصوَّرة: المسار العصبي للاستجابة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1300" height="450" viewBox="0 0 1300 450" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l8nSvgHost"><defs><marker id="g6l8nnv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2C6BA0"/></marker></defs><rect x="0" y="0" width="1300" height="450" fill="#FBFCFD"/><circle cx="1150" cy="160" r="50" fill="#FFFFFF" stroke="#9FB4C4" stroke-width="5"/><circle cx="1150" cy="160" r="24" fill="#2C6BA0"/><circle cx="1150" cy="160" r="10" fill="#16283A"/><g transform="translate(622,82) scale(1.3)"><path d="M40 30 q -20 4 -18 22 q -14 10 -2 24 q -4 18 16 20 q 6 12 22 8 l0 -76 q -12 -6 -18 2z" fill="#E4A0AE"/><path d="M80 30 q 20 4 18 22 q 14 10 2 24 q 4 18 -16 20 q -6 12 -22 8 l0 -76 q 12 -6 18 2z" fill="#D98C9C"/><path d="M60 32 v72" stroke="#B06A78" stroke-width="4"/></g><g transform="translate(172,82) scale(1.3)"><path d="M18 78 q 2 -16 16 -18 q 10 -22 32 -20 q 26 2 30 26 q 4 24 -18 30 q -26 8 -44 -4 q -12 -6 -16 -14z" fill="#C4564E"/><path d="M34 60 q 16 -12 32 -6 M30 74 q 20 -10 38 -4" stroke="#8E332C" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="14" y="74" width="26" height="16" rx="8" fill="#E4C8A8"/><rect x="88" y="46" width="22" height="16" rx="8" fill="#E4C8A8" transform="rotate(18 88 46)"/></g><path id="g6l8npIn2" d="M1094 160 H 812" stroke="#2C6BA0" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l8nnv)"/><path id="g6l8npOut2" d="M600 160 H 336" stroke="#2C6BA0" stroke-width="8" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l8nnv)"/><g><text x="950" y="108" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">إشارةٌ إلى الدماغ</text><text x="950" y="108" font-size="25" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">إشارةٌ إلى الدماغ</text></g><g><text x="466" y="108" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أوامرُ إلى العضلات</text><text x="466" y="108" font-size="25" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أوامرُ إلى العضلات</text></g><g><text x="1150" y="268" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">العين ترى الخطر</text><text x="1150" y="268" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">العين ترى الخطر</text></g><g><text x="706" y="268" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الدماغ يفسِّر ويأمر</text><text x="706" y="268" font-size="26" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الدماغ يفسِّر ويأمر</text></g><g><text x="250" y="268" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">عضلات الأرجل</text><text x="250" y="268" font-size="26" fill="#8E332C" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">عضلات الأرجل</text></g><g><text x="660" y="348" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يحدث ذلك كلُّه في أقلَّ من جزءٍ من الثانية</text><text x="660" y="348" font-size="27" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يحدث ذلك كلُّه في أقلَّ من جزءٍ من الثانية</text></g><g><text x="660" y="408" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ويُفرز هرمون الأدرينالين فيسرِّع نبضات القلب استعدادًا للهرب</text><text x="660" y="408" font-size="24" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ويُفرز هرمون الأدرينالين فيسرِّع نبضات القلب استعدادًا للهرب</text></g></svg><div class="eCap">مسار الاستجابة: من العين إلى الدماغ ثم إلى العضلات.</div></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — آلةٌ محكمة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>في جسم الإنسان البالغ <b>أكثر من ٢٠٠ عظمة</b>، وأصغرها عظامٌ دقيقةٌ داخل الأذن الوسطى.</p></div><div class="fFact"><div class="n">٢</div><p>حين تنسحب يدك فجأةً عن شيءٍ ساخن، تكون العضلة قد تحرَّكت قبل أن <b>تشعر</b> بالألم؛ لسرعة الإشارة العصبية.</p></div><div class="fFact"><div class="n">٣</div><p>الابتسامة والعبوس كلاهما يحتاج إلى <b>عضلاتٍ في الوجه</b> تعمل في مجموعاتٍ متقابلة.</p></div></div><div class="fCap">العظام والعضلات والأعصاب تعمل فريقًا واحدًا.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6h1"><div class="fCard"><div class="fIn"><div class="fF"><span>الجهاز الهيكلي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>يتكوَّن من العظام والأربطة والأوتار، ويحمي الأعضاء ويدعم الجسم.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الجهاز العضلي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مصدر القوة التي تحرِّك العظام.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الجهاز العصبي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>يشتمل على الدماغ والحبل الشوكي والأعصاب وأعضاء الحس.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>جهاز الغدد الصمَّاء</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>جهازٌ يفرز الهرمونات.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الهرمون</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مادةٌ كيميائيةٌ تفرز في الدم مباشرةً وتغيِّر أنشطة الجسم.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6h1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: صواب أم خطأ</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fQ" id="s6h2Q">—</div><div class="fOpts" style="max-width:760px"><button class="fOpt" type="button" id="s6h2T">صواب ✔</button><button class="fOpt" type="button" id="s6h2F">خطأ ✖</button></div><div class="fFb" id="s6h2Fb"></div><div class="fBar"><span class="fPill" id="s6h2Sc">النتيجة</span><button class="fBtn ghost" type="button" id="s6h2R">↻ إعادة</button></div></div><div class="fCap">اقرأ العبارة ثم اختر.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>جرِّب الآن</h4><p>ضع يدك اليسرى على عضلة ذراعك اليمنى ثم اثنِ ذراعك: ستحسُّ العضلة القابضة وقد <b>قصُرت وانتفخت</b>.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا يحتاج لاعب كرة القدم إلى عظامٍ قويةٍ وعضلاتٍ مرنةٍ وأعصابٍ سريعة؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: الحركة والإحساس">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">ما الأجهزة التي تتعاون عندما ترى كرة وتحرّك يدك لالتقاطها؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/skeleton.jpg" alt="مجسّم للهيكل العظمي البشري مع بعض العلامات والصفائح الطبية" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>مجسّم تعليمي للهيكل العظمي يوضح العظام والمفاصل التي تدعم الجسم وتساعده على الحركة.</figcaption><p class="se-credit">الصورة: Mrshaxas · <a href="https://commons.wikimedia.org/wiki/File:Full_body_anatomical_skeleton_model_with_surgical_plates_at_exhibition.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>تسحب العضلات الهيكلية العظام عبر الأوتار؛ وتعمل عضلات متقابلة لتغيير اتجاه الحركة عند كثير من المفاصل.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>تحول المستقبلات الحسية المؤثرات إلى إشارات، ويعالج الجهاز العصبي المعلومات وينسق كثيرًا من استجابات الجسم.</span></p>
+<p class="se-fact"><span aria-hidden="true">💪</span><span>تحمل الدماء الهرمونات من الغدد إلى خلايا تستجيب لها؛ وتتكامل الإشارات الهرمونية والعصبية لتنظيم وظائف الجسم.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/biology-2e/pages/38-4-muscle-contraction-and-locomotion" target="_blank" rel="noopener noreferrer">OpenStax: انقباض العضلات والحركة</a></li><li><a href="https://www.ninds.nih.gov/health-information/public-education/brain-basics" target="_blank" rel="noopener noreferrer">NINDS: أساسيات الدماغ</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: من رؤية الكرة إلى تحريك اليد">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>من رؤية الكرة إلى تحريك اليد</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="من رؤية الكرة إلى تحريك اليد"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">👁️</span><span class="se-node-label">العين</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🧠</span><span class="se-node-label">الجهاز العصبي</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">⚡</span><span class="se-node-label">الأعصاب الحركية</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">💪</span><span class="se-node-label">العضلات والعظام</span></button></div>
+
+<p class="se-diagram-caption">مسار مبسط لحركة إرادية؛ توجد استجابات منعكسة تختلف في مسارها العصبي.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">👁️</span><div><strong data-detail-title>العين</strong><p data-detail-text>تستقبل معلومات الضوء.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: شاهد تبادل عمل عضلتي ثني المرفق">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>شاهد تبادل عمل عضلتي ثني المرفق</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف تتغير وضعية الساعد عندما نغيّر أمر الحركة في النموذج نفسه؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">أمر الحركة</p><div class="se-options" role="group" aria-label="أمر الحركة"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">مد الساعد</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">ثني جزئي</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">ثني أكبر</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">الرسم يبين وضعية المفصل، لا قوة العضلة أو طولها الحقيقي؛ العضلات الواقعية تعمل بتنسيق أعقد من مفتاح تشغيل.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي لمقدار ثني المرفق</p><div class="se-model" role="img" data-model aria-label="الساعد أقرب إلى المد"><span class="se-symbol se-active" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span><span class="se-symbol" aria-hidden="true">💪</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>الساعد أقرب إلى المد</p><p class="se-observation" data-observation>ثني قليل في المرفق.</p></div><p class="se-explanation" data-explanation>عند أمر المد تعمل العضلة الباسطة على سحب العظام في اتجاه المد، بينما يتغير نشاط العضلة المقابلة للسماح بالحركة.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا تحتاج حركة الثني والمد إلى عضلات تعمل في اتجاهين متقابلين؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثانية: عمليات الحياة · الفصل الرابع: عمليات الحياة في الإنسان والحيوانات · الدرس الثاني: الحركة والإحساس<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٢٠ – ١٢٦ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+(function(){
+  var D=[
+    ["رفع الذراع لحمل حقيبة","X","انقباض العضلة يسحب العظم فتتحرَّك الذراع."],
+    ["تفسير ما تراه العين","Y","الدماغ يفسِّر المعلومات الواصلة من أعضاء الحس."],
+    ["حماية القلب والرئتين","X","القفص الصدري من الجهاز الهيكلي يحميهما."],
+    ["إفراز الأدرينالين عند الخوف","Y","الغدتان الكظريتان من جهاز الغدد الصمَّاء."],
+    ["نقل الإشارات إلى عضلات الرِّجل","Y","الأعصاب تنقل أوامر الدماغ إلى العضلات."]
+  ];
+  var i=0,ok=0,n=0;
+  var card=document.getElementById('aCard'), tag=document.getElementById('aTag');
+  var msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+  if(!card) return;
+  function ar(x){var s=String(x),o='';for(var k=0;k<s.length;k++){o+='٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(k)-48];}return o;}
+  function show(){
+    if(i>=D.length){card.querySelector('.nm').textContent='انتهى النشاط';tag.textContent='—';
+      msg.textContent='أحسنت! عرفت وظيفة كل جهاز.';msg.className='simMsg good';return;}
+    card.querySelector('.nm').textContent=D[i][0];tag.textContent='؟';
+  }
+  function upd(){sc.textContent='النتيجة: '+ar(ok)+' / '+ar(n);}
+  document.querySelectorAll('#simA .simBtn[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(i>=D.length) return;
+      n++;
+      if(b.getAttribute('data-k')===D[i][1]){ok++;msg.textContent='إجابة صحيحة ✓ — '+D[i][2];msg.className='simMsg good';}
+      else{msg.textContent='أعد التفكير ✗ — '+D[i][2];msg.className='simMsg';}
+      tag.textContent=(D[i][1]==='X'?'الهيكلي والعضلي':'العصبي والغدد');
+      i++;upd();setTimeout(show,900);
+    });
+  });
+  document.getElementById('aReset').addEventListener('click',function(){
+    i=0;ok=0;n=0;msg.textContent='أبدأ التصنيف.';msg.className='simMsg';upd();show();
+  });
+  upd();show();
+})();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g6l8SvgHost','g6l8Info',{'flex':'<span><b>العضلة القابضة</b> — عندما <b>تنقبض</b> تقصُر وتسحب العظم عبر الوتر فتنثني الذراع.</span>','ext':'<span><b>العضلة الباسطة</b> — <b>تنبسط</b> في الوقت نفسه لتسمح للعظم بالحركة؛ فالعضلات تعمل في أزواجٍ متقابلة.</span>','bone':'<span><b>العظام</b> — نسيجٌ صلبٌ خفيفٌ قوي؛ يدعم الجسم ويحمي الأعضاء، ويتحرَّك بقوة العضلات.</span>'},'');
+ERT.stepper({pills:'g6l8Pills', info:'g6l8Info', svg:'g6l8SvgHost', next:'g6l8Next', prev:'g6l8Prev', stages:[['flex','العضلة القابضة','عندما <b>تنقبض</b> تقصُر وتسحب العظم عبر الوتر فتنثني الذراع.'],['ext','العضلة الباسطة','<b>تنبسط</b> في الوقت نفسه لتسمح للعظم بالحركة؛ فالعضلات تعمل في أزواجٍ متقابلة.'],['bone','العظام','نسيجٌ صلبٌ خفيفٌ قوي؛ يدعم الجسم ويحمي الأعضاء، ويتحرَّك بقوة العضلات.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6h1');
+EG.tf({q:'s6h2Q', fb:'s6h2Fb', score:'s6h2Sc', btnT:'s6h2T', btnF:'s6h2F', reset:'s6h2R', data:[['العضلات تدفع العظام لتحرِّكها.','F','العضلات <b>تسحب ولا تدفع أبدًا</b>؛ ولهذا تعمل في أزواجٍ متقابلة.'],['الجمجمة تحمي الدماغ.','T','وهي قاسيةٌ جدًّا وخفيفة الوزن في الوقت نفسه.'],['الأوتار تربط العظام بعضها ببعض.','F','الأوتار تربط <b>العضلة بالعظم</b>؛ أما التي تربط العظام فهي الأربطة.'],['الحبل الشوكي يمرِّر المعلومات من الدماغ وإليه.','T','وهو حلقة الوصل بين الدماغ وأعصاب الجسم.'],['جهاز الغدد الصمَّاء يفرز الهرمونات في الدم.','T','ومنها الأدرينالين الذي يسرِّع نبضات القلب.']]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/02_عمليات_الحياة/04_عمليات_الحياة_في_الإنسان_والحيوانات/02_الحركة_والإحساس/علوم_سادس_ابتدائي_ف1_الدرس_الثاني_الحركة_والإحساس.html","title":"الحركة والإحساس","grade":6,"emoji":"💪","photoTopic":"body","observeQuestion":"ما الأجهزة التي تتعاون عندما ترى كرة وتحرّك يدك لالتقاطها؟","facts":["تسحب العضلات الهيكلية العظام عبر الأوتار؛ وتعمل عضلات متقابلة لتغيير اتجاه الحركة عند كثير من المفاصل.","تحول المستقبلات الحسية المؤثرات إلى إشارات، ويعالج الجهاز العصبي المعلومات وينسق كثيرًا من استجابات الجسم.","تحمل الدماء الهرمونات من الغدد إلى خلايا تستجيب لها؛ وتتكامل الإشارات الهرمونية والعصبية لتنظيم وظائف الجسم."],"diagram":{"title":"من رؤية الكرة إلى تحريك اليد","relation":"sequence","nodes":[{"emoji":"👁️","label":"العين","detail":"تستقبل معلومات الضوء."},{"emoji":"🧠","label":"الجهاز العصبي","detail":"يعالج المعلومات ويخطط للحركة."},{"emoji":"⚡","label":"الأعصاب الحركية","detail":"تنقل إشارات إلى العضلات."},{"emoji":"💪","label":"العضلات والعظام","detail":"تتحرك الذراع نحو الكرة."}],"caption":"مسار مبسط لحركة إرادية؛ توجد استجابات منعكسة تختلف في مسارها العصبي."},"lab":{"title":"شاهد تبادل عمل عضلتي ثني المرفق","question":"كيف تتغير وضعية الساعد عندما نغيّر أمر الحركة في النموذج نفسه؟","controlLabel":"أمر الحركة","options":["مد الساعد","ثني جزئي","ثني أكبر"],"states":[{"label":"الساعد أقرب إلى المد","emoji":"💪","amount":1,"explanation":"عند أمر المد تعمل العضلة الباسطة على سحب العظام في اتجاه المد، بينما يتغير نشاط العضلة المقابلة للسماح بالحركة.","observation":"ثني قليل في المرفق."},{"label":"الساعد يبدأ الثني","emoji":"💪","amount":5,"explanation":"يرسل الجهاز العصبي أمر الثني؛ فتقصر العضلة القابضة وتسحب الساعد نحو العضد مع تنسيق نشاط العضلات المقابلة.","observation":"ثني متوسط في المرفق."},{"label":"الساعد أكثر ثنيًا","emoji":"💪","amount":9,"explanation":"مع استمرار حركة الثني في النموذج، يرتفع الساعد أكثر نحو العضد. العضلة تسحب العظم ولا تدفعه مباشرة في الاتجاه المعاكس.","observation":"ثني أكبر في المرفق."}],"quantityLabel":"مؤشر وصفي لمقدار ثني المرفق","modelNote":"الرسم يبين وضعية المفصل، لا قوة العضلة أو طولها الحقيقي؛ العضلات الواقعية تعمل بتنسيق أعقد من مفتاح تشغيل.","tryPrompt":"لماذا تحتاج حركة الثني والمد إلى عضلات تعمل في اتجاهين متقابلين؟"},"sources":[{"title":"OpenStax: انقباض العضلات والحركة","url":"https://openstax.org/books/biology-2e/pages/38-4-muscle-contraction-and-locomotion"},{"title":"NINDS: أساسيات الدماغ","url":"https://www.ninds.nih.gov/health-information/public-education/brain-basics"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

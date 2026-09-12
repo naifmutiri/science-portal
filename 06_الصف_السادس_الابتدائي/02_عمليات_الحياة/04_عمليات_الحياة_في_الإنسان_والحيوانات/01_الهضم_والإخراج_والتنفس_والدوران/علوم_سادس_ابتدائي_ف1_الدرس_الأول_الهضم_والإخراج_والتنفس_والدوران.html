@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – الدرس الأول: الهضم والإخراج والتنفس والدوران</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>الهضم والإخراج والتنفس والدوران</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الثانية: عمليات الحياة<br>الفصل الرابع: عمليات الحياة في الإنسان والحيوانات — الدرس الأول</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن الآن؟</h2><span class="src">ص ١٠٨</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة</h3><p>الوحدة الثانية: عمليات الحياة</p></div><div class="card"><h3>الفصل</h3><p>الفصل الرابع: عمليات الحياة في الإنسان والحيوانات</p></div><div class="card"><h3>الدرس</h3><p>الدرس الأول: الهضم والإخراج والتنفس والدوران</p></div></div><div class="box idea"><b>السؤال الأساسي:</b> كيف تتم عمليات الهضم والإخراج والتنفس والدوران في كلٍّ من الإنسان والحيوانات؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أعرِّف الهضم والإخراج وأوضِّح أهميتهما.</li><li>أقارن بين أجهزة الهضم في اللافقاريات والفقاريات.</li><li>أوضِّح معنى التنفس وأصف الجهاز التنفسي في الإنسان.</li><li>أميِّز بين جهاز الدوران المفتوح وجهاز الدوران المغلق.</li><li>أتتبَّع مسار الدم في الدورة الدموية.</li><li>أقارن بين الحيوانات متغيرة درجة الحرارة وثابتة درجة الحرارة.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أنظر وأتساءل</span><h2>تمهيد</h2><span class="src">ص ١٠٨</span></div>
+<div class="body"><p class="t">تحتاج أجهزة الحاسوب والسيارات والأجهزة الأخرى التي نستعملها في حياتنا إلى الطاقة لتعمل.</p><div class="box ask">ما أوجه الشبه بين الحيوانات وهذه الآلات؟ وكيف يحصل الحيوان — كحيوان الباندا — على حاجته من الماء والطاقة؟ وكيف يستخدمهما لكي يتمكَّن من العيش؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما الذي أعرفه من قبل؟</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الغذاء والطاقة</h3><p>تحصل المخلوقات الحية على الطاقة من الغذاء.</p></div><div class="card"><h3>الأجهزة</h3><p>يتكوَّن الجهاز من أعضاء تعمل معًا لأداء وظيفة.</p></div><div class="card"><h3>الفقاريات واللافقاريات</h3><p>الفقاريات لها عمودٌ فقري، واللافقاريات ليس لها.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ١١٠</span></div>
+<div class="body"><div class="cards"><div class="card"><h4>الهضم</h4><p class="term">عمليةٌ يتم فيها ابتلاع الغذاء وتفكيكه إلى أجزاءٍ ومركباتٍ بسيطة.</p></div><div class="card"><h4>الإخراج</h4><p class="term">عمليةٌ يتم فيها تخليص الجسم من الفضلات.</p></div><div class="card"><h4>التنفُّس</h4><p class="term">عملية إطلاق الطاقة المختزَنة في جزيئات الجلوكوز.</p></div></div><div class="cards"><div class="card"><h4>الدوران</h4><p class="term">حركة المواد المهمة — ومنها الأكسجين والجلوكوز والفضلات — في الجسم.</p></div><div class="card"><h4>متغيرة درجة الحرارة</h4><p class="term">تتغيَّر درجة حرارة جسمها تبعًا للوسط المحيط.</p></div><div class="card"><h4>ثابتة درجة الحرارة</h4><p class="term">تبقى درجة حرارة جسمها ثابتةً مهما تغيَّر الوسط.</p></div></div><div class="muted">مهارة القراءة في هذا الدرس: <b>المشكلة والحل</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>كيف تساعد الأمعاء الغليظة على عملية الهضم؟</h2><span class="src">ص ١٠٩</span></div>
+<div class="body"><div class="box idea"><b>أتوقَّع:</b> إذا استخدمتُ الورق لعمل نموذجٍ يبيِّن كيف تقوم الأمعاء الغليظة بامتصاص الماء، فأيُّ أنواع الورق أختار ليقوم بامتصاص ماءٍ أكثر؟ وكيف يمكن تمثيل نموذجٍ للأمعاء الغليظة؟</div><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">أحتاج إلى</h4><ul class="list"><li>مقص</li><li>مناشف ورقية من الألياف</li><li>مناشف ورقية عادية</li><li>ورق تجليد</li><li>ورق طباعة خاص بالحاسوب</li><li>مخبار مدرَّج</li><li>ماء</li><li>ساعة إيقاف</li></ul></div><div style="flex:1 1 0"><h4 class="hl">أختبر توقُّعي</h4><ul class="list num"><li><b>أحذر.</b> أقطع كل نوعٍ من الورق إلى أشرطة بالحجم نفسه، ثم أثني هذه الأشرطة بحيث يمكن إدخالها في المخبار المدرَّج.</li><li>أملأ المخبار المدرَّج إلى منتصفه بالماء، وأدوِّن في الجدول الرقم الذي يشير إلى مستوى الماء فيه.</li><li>أُدخل أحد أشرطة الورق إلى المخبار المدرَّج بحيث ينغمر نصفه في الماء، وأتركه فيه مدة دقيقة.</li><li>بعد مرور الدقيقة، أُخرج شريط الورق من الماء، وأسجِّل المستوى الجديد للماء، وأحسب كمية الماء التي تم امتصاصها. ثم أكرِّر التجربة مع كل نوعٍ من الورق مبتدئًا بالخطوة الثانية.</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف</span><h2>أستخلص النتائج</h2><span class="src">ص ١٠٩</span></div>
+<div class="body"><div class="qa"><p class="q">٥ – أستنتج: أيُّ أنواع الورق امتص أكبر كميةٍ من الماء؟ أفسِّر ذلك حسب اعتقادي. ما الخصائص التي يشترك فيها الورق مع الأمعاء الغليظة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> امتصت <b>المناشف الورقية المصنوعة من الألياف</b> أكبر كميةٍ من الماء؛ لأن سطحها مساميٌّ وذو مساحةٍ كبيرة، بخلاف ورق التجليد الأملس. والخاصية المشتركة مع الأمعاء الغليظة هي <b>اتساع المساحة السطحية الداخلية</b> التي تمكِّنها من امتصاص الماء من بقايا الطعام.</div></div><div class="qa"><p class="q">أستكشف أكثر: ما العوامل الأخرى التي تؤثر في عملية الهضم ويمكن اختبارها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span><b>إجابة نموذجية مقترحة:</b> من العوامل: نوع الطعام، وحجم قطع الطعام (المضغ)، ومدة بقاء الطعام في الجهاز الهضمي، ودرجة الحرارة. ويمكن تصميم تجربةٍ نغيِّر فيها عاملًا واحدًا ونثبِّت البقية.</div></div><div class="box safe"><b>أحذر:</b> أستعمل المقص بحذر، وأنظِّف مكان العمل بعد انتهاء النشاط.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الفكرة الرئيسة</span><h2>الفكرة الرئيسة للدرس</h2><span class="src">ص ١١٠</span></div>
+<div class="body"><div class="box idea" style="font-size:bigpx;">تعمل أجهزة <b>الهضم</b> و<b>الإخراج</b> و<b>التنفس</b> و<b>الدوران</b> معًا؛ لتوفير الطاقة والمواد التي تحتاج إليها الخلايا، وللتخلُّص من الفضلات.</div><div class="map"><div class="node">عمليات الحياة</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#FBEAE7;border-color:#B03A2E;color:#B03A2E">الهضم</div><div class="line" style="background:#B03A2E"></div><div class="leaves"><span class="node leaf">تفكيك الغذاء</span><span class="node leaf">الامتصاص</span></div></div><div class="col"><div class="node sub" style="background:#F3EDF7;border-color:#7A4E8C;color:#7A4E8C">الإخراج</div><div class="line" style="background:#7A4E8C"></div><div class="leaves"><span class="node leaf">الكليتان</span><span class="node leaf">الجلد والكبد</span></div></div><div class="col"><div class="node sub" style="background:#E7F4F1;border-color:#1F6E63;color:#1F6E63">التنفس</div><div class="line" style="background:#1F6E63"></div><div class="leaves"><span class="node leaf">الشهيق</span><span class="node leaf">الزفير</span></div></div><div class="col"><div class="node sub" style="background:#FBF3DF;border-color:#B8860B;color:#B8860B">الدوران</div><div class="line" style="background:#B8860B"></div><div class="leaves"><span class="node leaf">القلب</span><span class="node leaf">الأوعية الدموية</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">شرح</span><h2>ما الهضم؟ وما الإخراج؟</h2><span class="src">ص ١١٠</span></div>
+<div class="body"><p class="t">من خصائص المخلوقات الحية أنها تستخلص الطاقة من الغذاء. فالمخلوقات التي تقوم بعملية البناء الضوئي تصنع غذاءها بنفسها، أما معظم المخلوقات الحية الأخرى فتحصل على غذائها من البيئة المحيطة بها.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>الهضم</b><br>عمليةٌ يتم فيها ابتلاع الغذاء وتفكيكه إلى أجزاءٍ ومركباتٍ بسيطةٍ يمكن للخلايا الاستفادة منها، ثم ينتقل إلى الخلايا في أنحاء الجسم المختلفة.</div></div><div style="flex:1 1 0"><div class="box note"><b>الإخراج</b><br>عمليةٌ يتم فيها تخليص الجسم من الفضلات. وهذه الفضلات لا قيمة لها، وقد تؤدِّي إلى تسمُّم الخلايا والأنسجة إذا بقيت في الجسم.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>الطاقة من الغذاء</h2><span class="src">ص ١١٠</span></div>
+<div class="body"><div class="box ask">كيف تكون البيضة مصدر طاقةٍ للأفعى؟<br><span class="muted">إرشاد: أنظر إلى الأفعى وقد ابتلعت البيضة. ماذا يحدث للبيضة؟</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الصورة»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>تبتلع الأفعى البيضة كاملة، ثم يقوم جهازها الهضمي <b>بتفكيكها</b> إلى موادَّ بسيطةٍ تمتصها وتنقلها إلى خلاياها، فتُستخلص منها الطاقة المختزنة في الغذاء، ويُتخلَّص من الباقي بعملية الإخراج.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الهضم في اللافقاريات</span><h2>اللافقاريات</h2><span class="src">ص ١١١</span></div>
+<div class="body"><p class="t">تستخدم اللافقاريات طرائقَ عدة لهضم الطعام والتخلص من الفضلات.</p><div class="cards"><div class="card"><h3>الإسفنجيات</h3><p>تستخلص غذاءها من المواد العالقة في الماء وتصفِّيه ممَّا فيه، عند مروره خلال الثقوب في أجسامها.</p></div><div class="card"><h3>اللاسعات والديدان المفلطحة</h3><p>يدخل الغذاء إلى تجويفٍ هضميٍّ من فتحةٍ خاصة، وتهضمه خلايا متخصصة، ثم يُتخلَّص من الفضلات عبر الفتحة نفسها.</p></div><div class="card"><h3>دودة الأرض</h3><p>جهازٌ هضميٌّ من أنبوبين، أحدهما يمرُّ في الآخر، وله فتحتان: واحدةٌ لابتلاع الغذاء والأخرى للتخلص من الفضلات.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الهضم في الفقاريات</span><h2>الفقاريات</h2><span class="src">ص ١١١</span></div>
+<div class="body"><p class="t">خلق الله عز وجل للحيوانات الأكثر تعقيدًا أجهزة هضمٍ أكثر تخصُّصًا، وتتنوَّع التراكيب المكوِّنة لأجهزتها الهضمية لتتمكَّن من التعامل مع الأغذية المختلفة.</p><div class="box note">تتغذى <b>الأرانب والأبقار والفِيَلة</b> على النباتات، لذا يكون لها أسنانٌ قادرةٌ على طحن الغذاء النباتي جيدًا، كما أن أجهزتها الهضمية تحتوي على <b>بكتيريا</b> تساعد على هضم الأنسجة النباتية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الهضم في الإنسان</span><h2>جهاز الهضم في الإنسان</h2><span class="src">ص ١١١</span></div>
+<div class="body"><p class="t">في الإنسان يحدث الهضم في <b>الفم والمعدة والأمعاء الدقيقة</b>؛ وتقوم الأمعاء الدقيقة بامتصاص المواد الغذائية ونقلها إلى الدم. ويتم التخلص من الفضلات خارج الجسم بعملية الإخراج.</p><table class="cmp"><tr><th style="width:26%">الجزء</th><th>الوظيفة</th></tr><tr><td>الفم</td><td>تبدأ فيه عملية الهضم بالمضغ.</td></tr><tr><td>المريء</td><td>ينقل الغذاء إلى المعدة.</td></tr><tr><td>المعدة</td><td>يحلِّل الحمض والإنزيم الغذاء إلى دقائق صغيرة.</td></tr><tr><td>الكبد والبنكرياس</td><td>تحلِّل العصارة الهضمية التي تفرزها الغدد الهضمية البروتين والنشويات والدهون.</td></tr><tr><td>الأمعاء الدقيقة</td><td>تمتص المواد الغذائية وتنقلها إلى الدم.</td></tr><tr><td>الأمعاء الغليظة</td><td>تمتص الماء من بقايا الطعام.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">الإخراج</span><h2>أعضاءٌ تخلِّص الجسم من الفضلات</h2><span class="src">ص ١١١</span></div>
+<div class="body"><p class="t">وكذلك تعمل <b>الكليتان</b> و<b>الرئتان</b> و<b>الكبد</b> و<b>الجلد</b> على تخليص الجسم من الفضلات.</p><div class="box safe"><b>توضيح إضافي:</b> شرب الماء الكافي يساعد الكليتين على أداء وظيفتهما في تخليص الجسم من الفضلات.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١١١</h2><span class="src">ص ١١١</span></div>
+<div class="body"><div class="qa"><p class="q">مشكلةٌ وحلٌّ: كيف حلَّت أجهزة الهضم في الحيوانات مشكلة هضم الطعام؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> الغذاء يدخل الجسم بصورةٍ لا تستطيع الخلايا الاستفادة منها. <b>الخطوات نحو الحل:</b> تنوَّعت تراكيب أجهزة الهضم بحسب نوع الغذاء — تصفيةٌ في الإسفنجيات، وتجويفٌ هضميٌّ بفتحةٍ واحدة في اللاسعات، وأنبوبٌ بفتحتين في دودة الأرض، وأسنانٌ طاحنةٌ وبكتيريا في آكلات النباتات. <b>الحل:</b> تفكيك الغذاء إلى موادَّ بسيطةٍ يمكن امتصاصها ونقلها إلى الخلايا.</div></div><div class="qa"><p class="q">التفكير الناقد: لماذا تُعَدُّ عملية الإخراج عمليةً مهمةً للحيوان؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>لأنها تخلِّص الجسم من الفضلات التي لا قيمة لها، والتي قد تؤدِّي إلى تسمُّم الخلايا والأنسجة إذا بقيت في الجسم.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">التنفس</span><h2>ما التنفُّس؟</h2><span class="src">ص ١١٢</span></div>
+<div class="body"><p class="t">بعد أن تتم عملية الهضم، يجب تحرير الطاقة من جزيئات الطعام. وفي الحيوانات وسائر المخلوقات الحية الأخرى تكون جزيئات الطعام الناتجة عن عملية هضم النشويات هي <b>الجلوكوز</b>، وهو سكرٌ بسيط.</p><div class="box idea"><b>التنفُّس</b> عملية إطلاق الطاقة المختزَنة في جزيئات الجلوكوز، وتحدث هذه العملية في الخلايا في وجود الأكسجين.</div><p class="t">وجميع المخلوقات الحية — ومنها النباتات — تقوم بعملية التنفس للحصول على طاقتها من الغذاء.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">التنفس</span><h2>التنفس الميكانيكي: الشهيق والزفير</h2><span class="src">ص ١١٢</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>الشهيق</b><br>يزوِّد الجسم بالأكسجين الضروري لإطلاق الطاقة من الغذاء.</div></div><div style="flex:1 1 0"><div class="box note"><b>الزفير</b><br>يساعد الجسم على التخلص من الفضلات، ومنها ثاني أكسيد الكربون والماء الناتجان عن عملية التنفس الخلوي.</div></div></div><div class="box idea"><b>الرئتان</b> عضوان من أعضاء الجهاز التنفسي، ووظيفتهما تزويد الجسم بالأكسجين الذي يوزَّع إلى الخلايا، والتخلُّص من ثاني أكسيد الكربون.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">التنفس في اللافقاريات</span><h2>التنفس في اللافقاريات</h2><span class="src">ص ١١٢ – ١١٣</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الديدان المفلطحة</h3><p>عمليةٌ بسيطةٌ لتبادل الغازات عن طريق الانتشار، ولا بد أن تكون سطوحها رطبة؛ ولهذا تعيش كثيرٌ من الديدان في أماكن رطبة.</p></div><div class="card"><h3>الرخويات والقشريات</h3><p>خياشيمُ غنيةٌ بالأوعية الدموية تنتشر قرب سطح الجسم، ويتم تبادل الغازات عن طريقها.</p></div><div class="card"><h3>العناكب</h3><p>يتم تبادل الغازات في معظمها عن طريق رئاتٍ تشبه صفحات الكتاب.</p></div></div><div class="box note"><b>الحشرات:</b> لها أنابيبُ شديدة التفرُّع داخل أجسامها تُسمَّى <b>القُصَيبات</b>، تشكِّل شبكةً توصِّل الهواء الغنيَّ بالأكسجين إلى كل خليةٍ في جسم الحيوان، والتخلُّص من ثاني أكسيد الكربون.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">التنفس في الفقاريات</span><h2>التنفس في الفقاريات</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><ul class="list"><li><b>البرمائيات:</b> تتبادل صغارها الغازات بوساطة الخياشيم والجلد، ومعظمها عند بلوغها تستخدم الرئات وتستمر في استخدام جلدها لتبادل الغازات.</li><li><b>الزواحف:</b> جلدها المغطَّى بالحراشف لا يسمح للهواء بالنفاذ منه، لذا تستخدم الرئات في تنفسها.</li><li><b>الطيور والثدييات:</b> تستخدم الرئات بصورةٍ رئيسةٍ في التنفس.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">الجهاز التنفسي</span><h2>مسار الهواء في جسم الإنسان</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><ul class="list num"><li>يدخل الهواء عبر <b>الفم والأنف</b> إلى <b>البلعوم</b>.</li><li>ثم إلى <b>الحنجرة</b>، فـ<b>القصبة الهوائية</b>.</li><li>ثم إلى <b>الشعبتين الهوائيتين</b> اللتين تتفرَّعان إلى <b>شُعَيبات هوائية</b> أدقَّ فأدقَّ.</li><li>حتى تنتهي بأكياسٍ صغيرةٍ تُسمَّى <b>الحويصلات الهوائية</b>، وعندها يحدث تبادل الغازات بين الدم والهواء عبر جدرانها الرقيقة.</li></ul><div class="box idea">ينقبض <b>الحجاب الحاجز</b> وينبسط لينظِّم عملية التنفس: الشهيق والزفير.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>من أين يدخل الهواء إلى جسم الإنسان؟</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><div class="box ask">من أين يدخل الهواء إلى جسم الإنسان؟<br><span class="muted">إرشاد: أتَّبع مسار دخول الهواء من الخارج إلى الداخل، والأجزاء التي يدخل إليها.</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الصورة»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يدخل الهواء من <b>الأنف والفم</b>، ثم البلعوم، فالحنجرة، فالقصبة الهوائية، ثم الشعبتين الهوائيتين، فالشعيبات الهوائية، وينتهي في الحويصلات الهوائية داخل الرئتين.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١١٣</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><div class="qa"><p class="q">مشكلةٌ وحلٌّ: لماذا تحتاج الخلايا إلى الأكسجين؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> الطاقة مختزَنةٌ في جزيئات الجلوكوز ولا تستطيع الخلية استعمالها مباشرة. <b>الحل:</b> تحتاج الخلية إلى الأكسجين لتتم عملية التنفس التي تُطلق هذه الطاقة، فتستخدمها في القيام بأنشطتها الحيوية.</div></div><div class="qa"><p class="q">التفكير الناقد: أعطي مثالًا على عملية انتشارٍ تحدث في المطبخ، وأوضِّحها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> انتشار رائحة الطعام في أرجاء المنزل عند الطبخ؛ إذ تنتقل جزيئات الرائحة من المكان الأكثر تركيزًا (قرب القِدر) إلى الأماكن الأقل تركيزًا حتى تنتشر في الهواء كله.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الدوران</span><h2>ما الدوران؟</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><p class="t">يعمل جهازا الهضم والتنفس معًا للحفاظ على حياة المخلوقات الحية: فالهضم يوفِّر سكر الجلوكوز للخلايا، والتنفس يوفِّر الأكسجين اللازم لتحويل السكر إلى طاقةٍ تستخدمها الخلية للقيام بأنشطتها الحيوية.</p><div class="box idea"><b>الدوران</b> هو حركة المواد المهمة — ومنها الأكسجين والجلوكوز والفضلات — في الجسم.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الدوران</span><h2>جهاز الدوران المفتوح والمغلق</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">الدوران المفتوح</h4><p class="t">كما في <b>المفصليات والرخويات</b>: يدفع القلب الدم مباشرةً إلى أنسجة الجسم؛ ليتمَّ تبادل المواد مع الخلايا مباشرة.</p></div><div style="flex:1 1 0"><h4 class="hl">الدوران المغلق</h4><p class="t">كما في <b>الفقاريات</b>: يُدفع الدم خلال شبكةٍ من الأوعية الدموية لا يمكنه مغادرتها، ويتم تبادل المواد مع الأنسجة بالانتشار عبر جدران الأوعية.</p></div></div><div class="box note">تعمل <b>صمامات</b> خاصةٌ في هذه الأجهزة على تدفُّق الدم في اتجاهٍ واحدٍ لمنعه من التدفُّق في اتجاهٍ خاطئ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الدوران</span><h2>أمثلةٌ من الكتاب</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:20%">المخلوق</th><th>نوع الدوران</th></tr><tr><td>الإسفنج</td><td>أبسط أشكال الدوران يحدث بوساطة عملية الانتشار؛ حيث يتدفَّق الماء عبر أنابيبَ في أجسام اللافقاريات الطرية، فتنقل الماء والجلوكوز والفضلات في الجسم.</td></tr><tr><td>الجرادة</td><td>لها جهاز دورانٍ مفتوح؛ يتحرَّك الدم مباشرةً من القلب إلى الأنسجة، ثم يُجمع في فتحاتٍ خاصةٍ تسمى الجيوب، ويعود إلى القلب.</td></tr><tr><td>السمكة</td><td>تستخدم الخياشيم، ولها جهاز دورانٍ مغلق، يتحرك فيه الدم في دورةٍ بسيطةٍ من القلب إلى الخياشيم، ومنها إلى خلايا الجسم، ثم يعود إلى القلب.</td></tr><tr><td>القط (الثدييات)</td><td>له رئاتٌ للتنفس، ويمرُّ الدم في دورتين مغلقتين: الأولى بين القلب والرئتين، والثانية من القلب إلى باقي أجزاء الجسم.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">درجة حرارة الجسم</span><h2>متغيرة وثابتة درجة الحرارة</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><p class="t">العديد من النشاطات الحيوية في أجسام الحيوانات لا تتم إلا في درجات حرارةٍ محددة.</p><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><div class="box note"><b>متغيرة درجة الحرارة</b><br>تتغيَّر درجة حرارة جسمها تبعًا لدرجة حرارة الهواء أو الماء المحيط بها، مثل: البرمائيات والزواحف ومعظم الأسماك. فالثعابين تستدفئ بالشمس، أو تحفر في التربة أو تحت الصخور لتبرد.</div></div><div style="flex:1 1 0"><div class="box note"><b>ثابتة درجة الحرارة</b><br>تبقى درجة حرارة أجسامها ثابتةً حتى لو تغيَّرت حرارة الوسط المحيط، مثل: <b>الثدييات والطيور</b>.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">درجة حرارة الجسم</span><h2>وسائل المحافظة على ثبات الحرارة</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><p class="t">وقد وهب الله تعالى لهذه المخلوقات وسائل مختلفةً للمحافظة على ثبات درجة حرارة أجسامها:</p><ul class="list"><li>إذا ارتفعت درجة حرارتها، يمكنها التخلص من الحرارة الزائدة عبر الجلد وإفراز العرق.</li><li>ولمنع فقدان الحرارة تستخدم بعض الحيوانات <b>العزل الحراري</b> كالفرو، كما في الدب القطبي.</li><li>أو <b>تخزين طبقاتٍ من الدهون</b> تحت الجلد، كما في بعض الحيتان التي تعيش في المياه الباردة.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط أسري</span><h2>حوارٌ حول حرارة الجسم</h2><span class="src">ص ١١٥</span></div>
+<div class="body"><p class="t"><b>فوَّاز:</b> نورة، أشعر بأن حرارة جسمي مُرتفعة.<br><b>نورة:</b> تفضَّل يا أخي كمَّادة الماء وضعها على رأسك.<br><b>فوَّاز:</b> نورة، هل تعلمين أن درجة حرارة الجسم الطبيعيِّ ٣٧ °مئوية؟<br><b>نورة مندهشة:</b> ومَنْ أخبرك ذلك؟<br><b>فوَّاز:</b> أمي أخبرتني بذلك.</p><div class="box note">حاوِر ابنك في أسباب ارتفاع درجة حرارة جسمه. <span class="muted">(نشاطٌ أسريٌّ من الكتاب.)</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نموذجٌ لصمامٍ في الوريد</h2><span class="src">ص ١١٥</span></div>
+<div class="body"><ul class="list num"><li>أقطع شقًّا أفقيًّا عند منتصف الأنبوب الكرتوني يبلغ نصف عرض الأنبوب.</li><li>أقطع شقًّا طوله ١٫٥ سم، مقابل الشق الأول وأسفل منه بنحو ٠٫٦ سم.</li><li>أقص قطعتين من الورق تناسب كلٌّ منهما أحد الشقين، وأُدخل كلًّا منهما في الشق المناسب، وأهذِّب أطراف الورقة في الشق العلوي بحيث تغلق الأنبوب ولكن يمكنها الحركة رأسيًّا. ثم أقص الورقة التي سأُدخلها في الشق السفلي بحيث تكون عريضةً لتدخل في الأنبوب بشكلٍ جزئي، وأثبِّت الأطراف الخارجية للأوراق بجوانب الأنبوب.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط الكتاب</span><h2>نموذج الصمام — الملاحظة والاستنتاج</h2><span class="src">ص ١١٥</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – ألاحظ: أُسقط بذور فاصولياء أو فول من أعلى الأنبوب وأدعها تمرُّ خلاله. وأجرِّب إسقاطها من الطرف الآخر، ثم أفسِّر النتائج.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span>تمرُّ البذور بسهولةٍ في اتجاهٍ واحدٍ لأن الورقة تنفتح أمامها، أما في الاتجاه المعاكس فتنغلق الورقة وتمنع مرورها. وهذا يفسِّر أن الصمام يسمح بالمرور في اتجاهٍ واحدٍ فقط.</div></div><div class="qa"><p class="q">٥ – أستنتج: أبيِّن أوجه الشبه بين تركيب وعمل الأوردة في جسمي وبين النموذج الذي عملته.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">نشاط الكتاب</span>الأنبوب يمثِّل <b>الوريد</b>، وقطعتا الورق تمثِّلان <b>الصمامات</b> داخله، والبذور تمثِّل <b>الدم</b>. وكما سمح النموذج بمرور البذور في اتجاهٍ واحد، تسمح صمامات الأوردة بتدفق الدم في اتجاهٍ واحدٍ نحو القلب وتمنع رجوعه.</div></div><div class="box safe"><b>أحذر:</b> أستعمل المقص بحذر، ولا أضع البذور في فمي أو أنفي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الدورة الدموية</span><h2>الدورة الدموية في الإنسان</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><ul class="list num"><li>يتدفَّق الدم غير المؤكسج (غير المحمَّل بالأكسجين) إلى القلب.</li><li>يَضخُّ القلب الدم غير المؤكسج إلى الرئتين.</li><li>يتخلص الدم في الرئتين من ثاني أكسيد الكربون ويُحمَّل بالأكسجين.</li><li>يتدفَّق الدم المؤكسج (المحمَّل بالأكسجين) إلى القلب، ثم يُضخُّ إلى سائر أجزاء الجسم.</li></ul><div class="box idea">في الرئة داخل <b>الحويصلة الهوائية</b> يتم تبادل الغازات: ينتقل الأكسجين من تجويف الحويصلات إلى الدم، وفي الوقت نفسه ينتقل ثاني أكسيد الكربون إلى تجويف الحويصلة ثم إلى خارج الجسم مع هواء الزفير.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الدورة الدموية</span><h2>من القلب إلى الخلايا وبالعكس</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><p class="t">يعود الدم المؤكسج إلى القلب، حيث يُضخُّ إلى جميع أجزاء الجسم، وعندما يصل إلى الأمعاء الدقيقة يُحمَّل بالمواد الغذائية.</p><ul class="list num"><li>ينتقل الدم المؤكسج المحمَّل بالمواد الغذائية إلى جميع أجزاء الجسم عبر أوعيةٍ دموية.</li><li>حتى يصل إلى أوعيةٍ دقيقةٍ تُسمَّى <b>الشعيرات</b>، فتنتقل المواد الغذائية والأكسجين عبر جدرانها الرقيقة ليصل إلى الخلايا.</li><li>وتقوم الخلايا بتمرير فضلاتها عبر جدران الشعيرات الدموية إلى الدم.</li><li>ويصبح الدم غير مؤكسج، وينتقل مرةً أخرى إلى القلب، وتستمر هذه العملية.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>أين يُضخُّ الدم غير المؤكسج؟</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><div class="box ask">أين يُضخُّ الدم غير المؤكسج؟<br><span class="muted">إرشاد: يشير اللون الأحمر إلى الدم المؤكسج، أما اللون الأزرق فيشير إلى الدم غير المؤكسج.</span></div><div class="qa"><p class="q">إجابة سؤال «أقرأ الشكل»</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>يُضخُّ الدم غير المؤكسج من القلب إلى <b>الرئتين</b>؛ ليتخلَّص فيهما من ثاني أكسيد الكربون ويُحمَّل بالأكسجين، ثم يعود إلى القلب.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط تفاعلي</span><h2>مؤكسج أم غير مؤكسج؟</h2><span class="src">تدريب إضافي</span></div>
+<div class="body"><p class="t">أحدِّد حالة الدم في كل موضع.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="X">دم مؤكسج</button><button class="simBtn ghost" type="button" data-k="Y">دم غير مؤكسج</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة صفحة ١١٦</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><div class="qa"><p class="q">مشكلةٌ وحلٌّ: لماذا يشعر متسلِّقو الجبال الشاهقة بالإرهاق والتعب؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> يقلُّ الأكسجين في الهواء كلما ارتفعنا عن سطح الأرض. <b>الخطوات نحو الحل:</b> يقلُّ ما يصل إلى الدم من أكسجين، فيقلُّ ما يصل إلى الخلايا. <b>النتيجة:</b> تقلُّ الطاقة المتحرِّرة من الغذاء في الخلايا، فيشعر المتسلِّق بالإرهاق والتعب.</div></div><div class="qa"><p class="q">التفكير الناقد: هل جهاز التنفس جزءٌ من جهاز الإخراج؟ وضِّح ذلك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> جهاز التنفس جهازٌ مستقل، لكنه يشارك في الإخراج؛ لأن الزفير يخلِّص الجسم من فضلات التنفس الخلوي، وهي <b>ثاني أكسيد الكربون وبخار الماء</b>. فهو يؤدِّي وظيفةً إخراجيةً إلى جانب وظيفته الأساسية في تبادل الغازات.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>الملخص المصوَّر</h2><span class="src">ص ١١٧</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الهضم والإخراج</h3><p>الجهاز الهضمي يُحلل الغذاء إلى موادَّ يمكن استخدامها. أما الجهاز الإخراجي فيخلِّص الجسم من الفضلات.</p></div><div class="card"><h3>التنفس</h3><p>الجهاز التنفسي يساعد على إطلاق الطاقة من جزيئات الغذاء في وجود الأكسجين.</p></div><div class="card"><h3>الدوران</h3><p>يعمل جهاز الدوران على حركة المواد المهمة (موادَّ غذائيةٍ أو فضلات) في جسم الحيوان.</p></div></div><div class="box note"><b>المطويات:</b> أعمل مطويةً ألخِّص فيها ما تعلَّمته عن الهضم والتنفس والدوران، وأكمل العبارات، وأضيف بعض التفاصيل الداعمة لكل عنوانٍ داخل المطوية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ١ – ٣</h2><span class="src">ص ١١٧</span></div>
+<div class="body"><div class="qa"><p class="q">١ – المفردات: حركة المواد خلال جسم الحيوان تُسمَّى ………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>الدوران</b>.</div></div><div class="qa"><p class="q">٢ – مشكلةٌ وحلٌّ: كيف تحصل الفقاريات على الأكسجين وتوزِّعه على خلايا الجسم؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>المشكلة:</b> تحتاج كل خليةٍ إلى الأكسجين ولا تستطيع أخذه من الهواء مباشرة. <b>الخطوات نحو الحل:</b> يدخل الهواء عبر الأنف والفم إلى القصبة الهوائية فالرئتين، وفي الحويصلات الهوائية ينتقل الأكسجين إلى الدم، ثم يضخُّ القلب الدم المؤكسج في الأوعية الدموية. <b>الحل:</b> تنتقل المواد عبر جدران الشعيرات الدموية الرقيقة إلى الخلايا.</div></div><div class="qa"><p class="q">٣ – التفكير الناقد: ما ميزة أن يكون الحيوان ثابت درجة الحرارة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>إجابة نموذجية مقترحة:</b> يبقى نشطًا في الأوقات والأماكن الباردة أو الحارة؛ لأن نشاطاته الحيوية تتم في درجة حرارةٍ ثابتة، فلا يحتاج إلى الاستدفاء بالشمس أو الاختباء تحت الصخور، ويمكنه العيش في بيئاتٍ متنوعة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أسئلة ٤ – ٦</h2><span class="src">ص ١١٧</span></div>
+<div class="body"><div class="qa"><p class="q">٤ – أختار الإجابة الصحيحة: المخلوقات الحية التي تستخدم الخياشيم والجلد في تنفسها هي: أ) الطيور &nbsp; ب) البرمائيات &nbsp; جـ) الثدييات &nbsp; د) الأسماك</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>ب) البرمائيات.</b> فصغارها تتبادل الغازات بوساطة الخياشيم والجلد، وتستمر عند بلوغها في استخدام جلدها إلى جانب الرئات.</div></div><div class="qa"><p class="q">٥ – أختار الإجابة الصحيحة: جهاز الدوران الذي يدفع الدم مباشرةً في أنسجة الحيوان هو: أ) جهاز الانتشار &nbsp; ب) جهاز الدوران المغلق &nbsp; جـ) الجهاز الدعامي &nbsp; د) جهاز الدوران المفتوح</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>د) جهاز الدوران المفتوح.</b></div></div><div class="qa"><p class="q">٦ – السؤال الأساسي: كيف تتم عمليات الهضم والإخراج والتنفس والدوران في كلٍّ من الإنسان والحيوانات؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span><b>الهضم:</b> يُبتلع الغذاء ويُفكَّك إلى موادَّ بسيطة — في الإنسان في الفم والمعدة والأمعاء الدقيقة، وفي الحيوانات بطرائقَ متنوِّعةٍ حسب نوع الغذاء. <b>الإخراج:</b> تخلِّص الكليتان والرئتان والكبد والجلد الجسمَ من الفضلات. <b>التنفس:</b> تُطلق الطاقة من الجلوكوز في وجود الأكسجين، ويدخل الهواء عبر الجهاز التنفسي حتى الحويصلات الهوائية. <b>الدوران:</b> ينقل الدم الأكسجين والغذاء والفضلات عبر جهاز دورانٍ مفتوحٍ أو مغلق.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم والرياضيات · العلوم والفن</h2><span class="src">ص ١١٧</span></div>
+<div class="body"><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:1 1 0"><h4 class="hl">العلوم والرياضيات — آلة الضخ</h4><p class="t">إذا كان القلب يقوم بضخِّ ٧٥٠٠ لتر من الدم خلال جهاز الدوران في جسم الإنسان في اليوم الواحد، فما كمية الدم التي تدور في الجسم خلال ساعةٍ واحدة؟</p><div class="qa"><p class="q">الحل</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب</span>عدد ساعات اليوم = ٢٤ ساعة.<br>٧٥٠٠ ÷ ٢٤ = <b>٣١٢٫٥ لتر</b> في الساعة الواحدة.</div></div></div><div style="flex:1 1 0"><h4 class="hl">العلوم والفن — كتاب أجهزة الجسم</h4><p class="t">أعمل كتابًا للصف يتعلَّق بأعضاء الحيوانات اللافقارية والفقارية وأجهزتها. وأرسم كل عضوٍ أو جهاز، وأكتب اسمه على الرسم، وأذكر أمثلةً على حيواناتٍ يوجد فيها الجهاز، والوظائف التي يؤدِّيها.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">العملية التي يتم فيها تخليص الجسم من الفضلات هي:</p><div class="opts"><button class="opt" type="button">الهضم</button><button class="opt" type="button">الإخراج</button><button class="opt" type="button">الدوران</button><button class="opt" type="button">الانتشار</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الجزء الذي يمتص المواد الغذائية وينقلها إلى الدم هو:</p><div class="opts"><button class="opt" type="button">المريء</button><button class="opt" type="button">الأمعاء الدقيقة</button><button class="opt" type="button">الحنجرة</button><button class="opt" type="button">القصبة الهوائية</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الأكياس الصغيرة التي يحدث فيها تبادل الغازات في الرئة هي:</p><div class="opts"><button class="opt" type="button">الشعيبات الهوائية</button><button class="opt" type="button">الحويصلات الهوائية</button><button class="opt" type="button">القصيبات</button><button class="opt" type="button">الجيوب</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أختبر فهمي (٢)</h2><span class="src">تقويم تفاعلي</span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">تتنفس الحشرات بوساطة:</p><div class="opts"><button class="opt" type="button">الخياشيم</button><button class="opt" type="button">القصيبات</button><button class="opt" type="button">رئاتٍ تشبه صفحات الكتاب</button><button class="opt" type="button">الجلد</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">من الحيوانات ثابتة درجة الحرارة:</p><div class="opts"><button class="opt" type="button">الثعبان</button><button class="opt" type="button">الضفدع</button><button class="opt" type="button">الطائر</button><button class="opt" type="button">السمكة</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">العضلة التي تنقبض وتنبسط لتنظِّم الشهيق والزفير هي:</p><div class="opts"><button class="opt" type="button">الحجاب الحاجز</button><button class="opt" type="button">عضلة القلب</button><button class="opt" type="button">عضلة المعدة</button><button class="opt" type="button">عضلة الحنجرة</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة الخروج</span><h2>قبل أن أغادر</h2><span class="src"></span></div>
+<div class="body"><ul class="list num"><li>أذكر وظيفةً واحدةً لكلٍّ من: الجهاز الهضمي، الجهاز التنفسي، جهاز الدوران.</li><li>أذكر فرقًا واحدًا بين جهاز الدوران المفتوح والمغلق.</li><li>أعطي مثالًا لحيوانٍ متغيِّر درجة الحرارة وآخر ثابت درجة الحرارة.</li></ul><div class="box idea">سؤالٌ أفكر فيه: لماذا يزداد عدد أنفاسي ونبضات قلبي عند الجري؟</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: رحلة الطعام في الجهاز الهضمي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="620" viewBox="0 0 1360 620" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l7aSvgHost"><defs><marker id="g6l7adg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#B0682E"/></marker></defs><rect x="0" y="0" width="1360" height="620" fill="#FBFCFD"/><ellipse cx="650" cy="330" rx="230" ry="290" fill="#E8F0F6" stroke="#9FB4C4" stroke-width="4"/><circle cx="650" cy="86" r="58" fill="#E8F0F6" stroke="#9FB4C4" stroke-width="4"/><ellipse cx="650" cy="120" rx="30" ry="14" fill="#C0392B"/><rect x="634" y="132" width="32" height="118" rx="16" fill="#D98A5A" stroke="#B06A38" stroke-width="4"/><path d="M634 250 q -84 12 -96 92 q -8 74 62 84 q 60 8 74 -50 q 12 -52 -22 -70 q -20 -12 -18 -56z" fill="#D98A5A" stroke="#B06A38" stroke-width="5"/><path d="M700 262 q 106 -14 122 46 q -60 26 -122 6z" fill="#A0563C" stroke="#7E3F2A" stroke-width="4"/><path d="M688 356 q 76 -8 106 26 q -52 22 -106 4z" fill="#E0B85C" stroke="#B08B2E" stroke-width="4"/><path d="M520 402 v-40 h280 v190 h-40" stroke="#C98A5A" stroke-width="30" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="M600 416 q 60 -14 62 24 q 2 34 -52 30 q -56 -4 -50 32 q 6 34 60 26 q 54 -8 58 26 q 4 32 -54 30" stroke="#E4A06A" stroke-width="22" fill="none" stroke-linecap="round"/><path id="g6l7apFood" d="M650 138 C 648 200, 646 250, 616 292" stroke="#B0682E" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7adg)"/><path id="g6l7apFood2" d="M600 470 C 640 500, 690 512, 740 520" stroke="#B0682E" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7adg)"/><g class="eHot" data-k="mouth"><path d="M250 88 L616 118" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="616" cy="118" r="6.5" fill="#8A97A0"/><g><text x="250" y="96" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الفم</text><text x="250" y="96" font-size="26" fill="#8E2018" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الفم</text></g><rect class="hitBox" x="140" y="62" width="220" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="250" y="130" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يبدأ الهضم بالمضغ</text><text x="250" y="130" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يبدأ الهضم بالمضغ</text></g><g class="eHot" data-k="eso"><path d="M250 206 L630 190" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="630" cy="190" r="6.5" fill="#8A97A0"/><g><text x="250" y="214" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">المريء</text><text x="250" y="214" font-size="26" fill="#7A4410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">المريء</text></g><rect class="hitBox" x="130" y="180" width="240" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="250" y="248" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ينقل الغذاء إلى المعدة</text><text x="250" y="248" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ينقل الغذاء إلى المعدة</text></g><g class="eHot" data-k="stom"><path d="M250 336 L560 340" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="560" cy="340" r="6.5" fill="#8A97A0"/><g><text x="250" y="344" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">المعدة</text><text x="250" y="344" font-size="26" fill="#7A4410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">المعدة</text></g><rect class="hitBox" x="130" y="310" width="240" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="250" y="378" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">حمضٌ وإنزيمٌ يحلِّلان الغذاء</text><text x="250" y="378" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">حمضٌ وإنزيمٌ يحلِّلان الغذاء</text></g><g class="eHot" data-k="small"><path d="M250 478 L594 452" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="594" cy="452" r="6.5" fill="#8A97A0"/><g><text x="250" y="486" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الأمعاء الدقيقة</text><text x="250" y="486" font-size="26" fill="#7A4410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الأمعاء الدقيقة</text></g><rect class="hitBox" x="100" y="452" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="250" y="520" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تمتصُّ المواد الغذائية إلى الدم</text><text x="250" y="520" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تمتصُّ المواد الغذائية إلى الدم</text></g><g class="eHot" data-k="liver"><path d="M1046 192 L800 288" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="800" cy="288" r="6.5" fill="#8A97A0"/><g><text x="1046" y="200" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الكبد والبنكرياس</text><text x="1046" y="200" font-size="26" fill="#7E3F2A" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الكبد والبنكرياس</text></g><rect class="hitBox" x="881" y="166" width="330" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1046" y="234" font-size="20" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">عصارةٌ تحلِّل البروتين والنشا والدهون</text><text x="1046" y="234" font-size="20" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">عصارةٌ تحلِّل البروتين والنشا والدهون</text></g><g class="eHot" data-k="large"><path d="M1046 364 L800 420" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="800" cy="420" r="6.5" fill="#8A97A0"/><g><text x="1046" y="372" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الأمعاء الغليظة</text><text x="1046" y="372" font-size="26" fill="#7A4410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الأمعاء الغليظة</text></g><rect class="hitBox" x="891" y="338" width="310" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1046" y="406" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تمتصُّ الماء من بقايا الطعام</text><text x="1046" y="406" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تمتصُّ الماء من بقايا الطعام</text></g><g class="eHot" data-k="exc"><path d="M1046 508 L762 528" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="762" cy="528" r="6.5" fill="#8A97A0"/><g><text x="1046" y="516" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الإخراج</text><text x="1046" y="516" font-size="26" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الإخراج</text></g><rect class="hitBox" x="931" y="482" width="230" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1046" y="550" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التخلُّص من الفضلات</text><text x="1046" y="550" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التخلُّص من الفضلات</text></g></svg><div class="eCap">رحلة الطعام في الجهاز الهضمي عند الإنسان.</div></div><div class="eSteps" id="g6l7aPills"><span class="eStepPill" data-s="0">الفم</span><span class="eStepPill" data-s="1">المريء</span><span class="eStepPill" data-s="2">المعدة</span><span class="eStepPill" data-s="3">الكبد والبنكرياس</span><span class="eStepPill" data-s="4">الأمعاء الدقيقة</span><span class="eStepPill" data-s="5">الأمعاء الغليظة</span><span class="eStepPill" data-s="6">الإخراج</span></div><div class="eInfo" id="g6l7aInfo">اضغط على أيِّ عضوٍ لتعرف دوره، أو تابع رحلة الطعام بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l7aPrev">◀ السابق</button><button class="simBtn" type="button" id="g6l7aNext">التالي ▶</button><button class="simBtn ghost" type="button" id="g6l7aPlay">▶ تشغيل الحركة</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: الجهاز التنفسي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="600" viewBox="0 0 1360 600" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l7bSvgHost"><defs><marker id="g6l7bin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2C7FB8"/></marker><marker id="g6l7bout" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#B0682E"/></marker></defs><rect x="0" y="0" width="1360" height="600" fill="#FBFCFD"/><circle cx="640" cy="94" r="60" fill="#E8F0F6" stroke="#9FB4C4" stroke-width="4"/><path d="M596 108 q -18 8 -18 18 q 0 10 18 10" fill="none" stroke="#9FB4C4" stroke-width="5"/><ellipse cx="620" cy="140" rx="26" ry="12" fill="#C0392B"/><rect x="622" y="150" width="36" height="112" rx="18" fill="#C9A063" stroke="#9E7A42" stroke-width="4"/><line x1="622" y1="170" x2="658" y2="170" stroke="#9E7A42" stroke-width="4"/><line x1="622" y1="190" x2="658" y2="190" stroke="#9E7A42" stroke-width="4"/><line x1="622" y1="210" x2="658" y2="210" stroke="#9E7A42" stroke-width="4"/><line x1="622" y1="230" x2="658" y2="230" stroke="#9E7A42" stroke-width="4"/><line x1="622" y1="250" x2="658" y2="250" stroke="#9E7A42" stroke-width="4"/><path d="M640 262 L520 306 M640 262 L760 306" stroke="#C9A063" stroke-width="20" stroke-linecap="round"/><path d="M520 306 C 402 336, 384 452, 448 528 c 30 34 92 22 96 -22 c 6 -66 -8 -142 -24 -200z" fill="#E4949E" stroke="#C0707E" stroke-width="4"/><path d="M760 306 C 878 336, 896 452, 832 528 c -30 34 -92 22 -96 -22 c -6 -66 8 -142 24 -200z" fill="#E4949E" stroke="#C0707E" stroke-width="4"/><circle cx="478" cy="400" r="16" fill="#F2C2C8" stroke="#C0707E" stroke-width="3"/><circle cx="516" cy="452" r="16" fill="#F2C2C8" stroke="#C0707E" stroke-width="3"/><circle cx="452" cy="470" r="16" fill="#F2C2C8" stroke="#C0707E" stroke-width="3"/><circle cx="802" cy="400" r="16" fill="#F2C2C8" stroke="#C0707E" stroke-width="3"/><circle cx="764" cy="452" r="16" fill="#F2C2C8" stroke="#C0707E" stroke-width="3"/><circle cx="828" cy="470" r="16" fill="#F2C2C8" stroke="#C0707E" stroke-width="3"/><path d="M420 548 q 220 46 440 0" stroke="#B06A78" stroke-width="14" fill="none" stroke-linecap="round"/><path id="g6l7bpIn" d="M640 60 C 640 130, 638 200, 636 296" stroke="#2C7FB8" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7bin)"/><path id="g6l7bpOut" d="M676 296 C 678 200, 680 130, 680 60" stroke="#B0682E" stroke-width="7" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7bout)"/><g class="eHot" data-k="nose"><path d="M226 84 L596 116" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="596" cy="116" r="6.5" fill="#8A97A0"/><g><text x="226" y="92" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الأنف والفم</text><text x="226" y="92" font-size="26" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الأنف والفم</text></g><rect class="hitBox" x="91" y="58" width="270" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="226" y="126" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مدخل الهواء</text><text x="226" y="126" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مدخل الهواء</text></g><g class="eHot" data-k="tra"><path d="M226 208 L618 200" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="618" cy="200" r="6.5" fill="#8A97A0"/><g><text x="226" y="216" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">القصبة الهوائية</text><text x="226" y="216" font-size="26" fill="#7A5410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">القصبة الهوائية</text></g><rect class="hitBox" x="76" y="182" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="226" y="250" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تنقل الهواء إلى الرئتين</text><text x="226" y="250" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تنقل الهواء إلى الرئتين</text></g><g class="eHot" data-k="bron"><path d="M226 332 L540 300" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="540" cy="300" r="6.5" fill="#8A97A0"/><g><text x="226" y="340" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الشُّعَب الهوائية</text><text x="226" y="340" font-size="26" fill="#7A5410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الشُّعَب الهوائية</text></g><rect class="hitBox" x="76" y="306" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="226" y="374" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تتفرَّع إلى شُعيباتٍ أدقَّ</text><text x="226" y="374" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تتفرَّع إلى شُعيباتٍ أدقَّ</text></g><g class="eHot" data-k="alv"><path d="M1046 372 L800 404" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="800" cy="404" r="6.5" fill="#8A97A0"/><g><text x="1046" y="380" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الحويصلات الهوائية</text><text x="1046" y="380" font-size="26" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الحويصلات الهوائية</text></g><rect class="hitBox" x="871" y="346" width="350" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1046" y="414" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">هنا يتم تبادل الغازات مع الدم</text><text x="1046" y="414" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">هنا يتم تبادل الغازات مع الدم</text></g><g class="eHot" data-k="dia"><path d="M1046 520 L740 552" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="740" cy="552" r="6.5" fill="#8A97A0"/><g><text x="1046" y="528" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الحجاب الحاجز</text><text x="1046" y="528" font-size="26" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الحجاب الحاجز</text></g><rect class="hitBox" x="896" y="494" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1046" y="562" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">ينقبض وينبسط فينظِّم التنفس</text><text x="1046" y="562" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">ينقبض وينبسط فينظِّم التنفس</text></g><g class="eHot" data-k="lung"><path d="M1046 232 L856 356" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="856" cy="356" r="6.5" fill="#8A97A0"/><g><text x="1046" y="240" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الرئتان</text><text x="1046" y="240" font-size="26" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الرئتان</text></g><rect class="hitBox" x="931" y="206" width="230" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1046" y="274" font-size="21" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تزوِّدان الجسم بالأكسجين</text><text x="1046" y="274" font-size="21" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تزوِّدان الجسم بالأكسجين</text></g></svg><div class="eCap">الجهاز التنفسي: مسار الهواء من الأنف إلى الحويصلات الهوائية.</div></div><div class="eLegend"><span class="eChip"><i style="background:#2C7FB8"></i>الشهيق — هواءٌ غنيٌّ بالأكسجين</span><span class="eChip"><i style="background:#B0682E"></i>الزفير — ثاني أكسيد الكربون وبخار الماء</span></div><div class="eSteps" id="g6l7bPills"><span class="eStepPill" data-s="0">الأنف والفم</span><span class="eStepPill" data-s="1">القصبة الهوائية</span><span class="eStepPill" data-s="2">الشُّعَب الهوائية</span><span class="eStepPill" data-s="3">الحويصلات الهوائية</span><span class="eStepPill" data-s="4">الرئتان</span><span class="eStepPill" data-s="5">الحجاب الحاجز</span></div><div class="eInfo" id="g6l7bInfo">اضغط على أيِّ جزءٍ لتعرف وظيفته.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l7bPrev">◀ السابق</button><button class="simBtn" type="button" id="g6l7bNext">التالي ▶</button><button class="simBtn ghost" type="button" id="g6l7bPlay">▶ تشغيل الحركة</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: الدورة الدموية</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1360" height="600" viewBox="0 0 1360 600" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l7cSvgHost"><defs><marker id="g6l7cred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C0392B"/></marker><marker id="g6l7cblu" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2C6BA0"/></marker></defs><rect x="0" y="0" width="1360" height="600" fill="#FBFCFD"/><rect x="470" y="52" width="420" height="120" rx="34" fill="#F2C2C8" stroke="#C0707E" stroke-width="5"/><g><text x="680" y="122" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الرئتان</text><text x="680" y="122" font-size="30" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الرئتان</text></g><path d="M680 380 C 560 300, 574 214, 634 208 C 664 204, 676 228, 680 244 C 684 228, 696 204, 726 208 C 786 214, 800 300, 680 380z" fill="#C0392B"/><g><text x="680" y="300" font-size="30" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">القلب</text><text x="680" y="300" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">القلب</text></g><rect x="470" y="452" width="420" height="120" rx="34" fill="#DCE9F1" stroke="#9FB4C4" stroke-width="5"/><g><text x="680" y="522" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">خلايا الجسم</text><text x="680" y="522" font-size="30" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">خلايا الجسم</text></g><path id="g6l7cpA" d="M742 250 C 860 236, 900 180, 890 140" stroke="#2C6BA0" stroke-width="9" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7cblu)"/><path id="g6l7cpB" d="M840 172 C 810 236, 776 250, 744 264" stroke="#C0392B" stroke-width="9" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7cred)"/><path id="g6l7cpC" d="M620 350 C 520 400, 480 430, 476 452" stroke="#C0392B" stroke-width="9" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7cred)"/><path id="g6l7cpD" d="M520 500 C 448 470, 430 380, 560 322" stroke="#2C6BA0" stroke-width="9" fill="none" stroke-linecap="round" opacity="1" marker-end="url(#g6l7cblu)"/><g class="eHot" data-k="lung"><path d="M1128 84 L894 112" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="894" cy="112" r="6.5" fill="#8A97A0"/><g><text x="1128" y="92" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تبادل الغازات</text><text x="1128" y="92" font-size="25" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تبادل الغازات</text></g><rect class="hitBox" x="978" y="58" width="300" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1128" y="126" font-size="19" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">يترك الدمُ ثاني أكسيد الكربون ويحمل الأكسجين</text><text x="1128" y="126" font-size="19" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">يترك الدمُ ثاني أكسيد الكربون ويحمل الأكسجين</text></g><g class="eHot" data-k="heart"><path d="M1128 260 L762 288" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="762" cy="288" r="6.5" fill="#8A97A0"/><g><text x="1128" y="268" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">القلب يضخُّ الدم</text><text x="1128" y="268" font-size="25" fill="#8E2018" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">القلب يضخُّ الدم</text></g><rect class="hitBox" x="968" y="234" width="320" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="1128" y="302" font-size="19" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">إلى الرئتين ثم إلى سائر الجسم</text><text x="1128" y="302" font-size="19" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">إلى الرئتين ثم إلى سائر الجسم</text></g><g class="eHot" data-k="cap"><path d="M232 462 L484 494" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="484" cy="494" r="6.5" fill="#8A97A0"/><g><text x="232" y="470" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الشعيرات الدموية</text><text x="232" y="470" font-size="25" fill="#2C4A5E" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الشعيرات الدموية</text></g><rect class="hitBox" x="67" y="436" width="330" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="232" y="504" font-size="19" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">جدرانها رقيقةٌ فتنتقل عبرها المواد</text><text x="232" y="504" font-size="19" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">جدرانها رقيقةٌ فتنتقل عبرها المواد</text></g><g class="eHot" data-k="art"><path d="M232 206 L596 268" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="596" cy="268" r="6.5" fill="#8A97A0"/><g><text x="232" y="214" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">شريان — دمٌ مؤكسج</text><text x="232" y="214" font-size="25" fill="#8E2018" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">شريان — دمٌ مؤكسج</text></g><rect class="hitBox" x="52" y="180" width="360" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="vein"><path d="M232 312 L566 336" stroke="#8A97A0" stroke-width="3" stroke-dasharray="7 5" fill="none"/><circle cx="566" cy="336" r="6.5" fill="#8A97A0"/><g><text x="232" y="320" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">وريد — دمٌ غير مؤكسج</text><text x="232" y="320" font-size="25" fill="#2C6BA0" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">وريد — دمٌ غير مؤكسج</text></g><rect class="hitBox" x="42" y="286" width="380" height="46" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">الدورة الدموية: دورةٌ بين القلب والرئتين، وأخرى بين القلب وسائر الجسم.</div></div><div class="eLegend"><span class="eChip"><i style="background:#C0392B"></i>دمٌ مؤكسج</span><span class="eChip"><i style="background:#2C6BA0"></i>دمٌ غير مؤكسج</span></div><div class="eSteps" id="g6l7cPills"><span class="eStepPill" data-s="0">القلب</span><span class="eStepPill" data-s="1">الرئتان</span><span class="eStepPill" data-s="2">الدم المؤكسج</span><span class="eStepPill" data-s="3">الشعيرات الدموية</span><span class="eStepPill" data-s="4">الدم غير المؤكسج</span></div><div class="eInfo" id="g6l7cInfo">اضغط على أيِّ جزءٍ لتتبُّع مسار الدم.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l7cPrev">◀ السابق</button><button class="simBtn" type="button" id="g6l7cNext">التالي ▶</button><button class="simBtn ghost" type="button" id="g6l7cPlay">▶ تشغيل الحركة</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — أجهزةٌ تعمل بلا توقُّف</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p><b>الأمعاء الدقيقة</b> أطول من جسمك بعدة أضعاف؛ وهي مطويةٌ داخل بطنك لتتَّسع لها مساحةٌ صغيرة.</p></div><div class="fFact"><div class="n">٢</div><p>في رئتيك <b>ملايين الحويصلات الهوائية</b>؛ ولو فُرِدت جدرانها لغطَّت مساحةً أكبر بكثيرٍ من مساحة جلدك.</p></div><div class="fFact"><div class="n">٣</div><p>قلبك ينبض وأنت نائمٌ ومستيقظ، ولا يأخذ إجازةً واحدة طوال عمرك.</p></div></div><div class="fCap">أجهزة جسمك تتكامل في صمتٍ لتبقيك حيًّا.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6g1"><div class="fCard"><div class="fIn"><div class="fF"><span>الهضم</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عمليةٌ يتم فيها ابتلاع الغذاء وتفكيكه إلى أجزاءٍ ومركباتٍ بسيطة.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الإخراج</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عمليةٌ يتم فيها تخليص الجسم من الفضلات.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التنفُّس</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عملية إطلاق الطاقة المختزَنة في جزيئات الجلوكوز.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الدوران</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حركة المواد المهمة — ومنها الأكسجين والجلوكوز والفضلات — في الجسم.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>متغيرة درجة الحرارة</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تتغيَّر درجة حرارة جسمها تبعًا للوسط المحيط.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>ثابتة درجة الحرارة</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تبقى درجة حرارة جسمها ثابتةً مهما تغيَّر الوسط.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6g1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب رحلة الطعام</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s6g2P"><button class="fChip" type="button" data-i="0">الفم</button><button class="fChip" type="button" data-i="2">المعدة</button><button class="fChip" type="button" data-i="1">المريء</button><button class="fChip" type="button" data-i="3">الأمعاء الدقيقة</button><button class="fChip" type="button" data-i="4">الأمعاء الغليظة</button></div><div class="fSlots" id="s6g2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div><div class="fSlot">٥</div></div><div class="fFb" id="s6g2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6g2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب رحلة الطعام في الجهاز الهضمي.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>لاحظ بنفسك</h4><p>ضع يدك على صدرك وخذ نفسًا عميقًا: ستشعر بالقفص الصدري يتَّسع بفعل <b>الحجاب الحاجز</b>.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا يُنصَح بمضغ الطعام جيدًا قبل بلعه؟ فكِّر في عمل المعدة بعدها.</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: الهضم والإخراج والتنفس والدوران">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">كيف يصل الغذاء والأكسجين إلى خلية بعيدة عن المعدة والرئتين؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/heart-compact.png" alt="صورتان لمجسّم تعليمي للقلب مع علامات تحدد أجزائه" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>صور لمجسّم تعليمي للقلب من جهتين؛ تساعد النماذج على دراسة أجزاء الجسم.</figcaption><p class="se-credit">الصورة: RWhitwam · <a href="https://commons.wikimedia.org/wiki/File:Heart_model_front_back_views.png" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>يفكك الهضم الطعام إلى مواد أصغر، وتمتص الأمعاء الدقيقة معظم المغذيات لينقلها الدم أو اللمف.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>ينتقل الأكسجين من الرئتين إلى الدم، ويسهم جهاز الدوران في إيصاله مع المغذيات إلى خلايا الجسم.</span></p>
+<p class="se-fact"><span aria-hidden="true">🫀</span><span>تطرح الكليتان فضلات ذائبة في البول، وتطرح الرئتان ثاني أكسيد الكربون؛ وتتعاون الأعضاء للمحافظة على بيئة الخلايا.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.niddk.nih.gov/health-information/digestive-diseases/digestive-system-how-it-works" target="_blank" rel="noopener noreferrer">NIDDK: الجهاز الهضمي وكيف يعمل</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: تعاون أجهزة الجسم لخدمة الخلايا الحية">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>تعاون أجهزة الجسم لخدمة الخلايا الحية</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="تعاون أجهزة الجسم لخدمة الخلايا الحية"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🥣</span><span class="se-node-label">الهضم</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🫁</span><span class="se-node-label">التنفس</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🫀</span><span class="se-node-label">الدوران</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">💧</span><span class="se-node-label">الإخراج</span></button></div>
+
+<p class="se-diagram-caption">هذه وظائف متعاونة تحدث في الوقت نفسه؛ وليست مراحل لهضم الطعام وحده.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🥣</span><div><strong data-detail-title>الهضم</strong><p data-detail-text>تفكيك الطعام وامتصاص المغذيات.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: تتبع ماء الطعام خلال الأمعاء افتراضيًا">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>تتبع ماء الطعام خلال الأمعاء افتراضيًا</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير الماء المتبقي في محتوى الأمعاء خلال رحلة العينة نفسها؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">موضع عينة المحتوى</p><div class="se-options" role="group" aria-label="موضع عينة المحتوى"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">بداية الأمعاء الدقيقة</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">نهاية الأمعاء الدقيقة</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">بعد الأمعاء الغليظة</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">نموذج مراحل تعليمي؛ لا يمثل أحجام ماء أو زمن عبور أو تقييمًا لصحة شخص.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر وصفي للماء المتبقي داخل محتوى الأمعاء</p><div class="se-model" role="img" data-model aria-label="محتوى غني بالماء"><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol se-active" aria-hidden="true">💧</span><span class="se-symbol" aria-hidden="true">💧</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>محتوى غني بالماء</p><p class="se-observation" data-observation>ماء أكثر داخل المحتوى.</p></div><p class="se-explanation" data-explanation>نتتبع محتوى نموذجيًا واحدًا يدخل الأمعاء الدقيقة، وفيه ماء من الطعام والشراب والعصارات الهضمية قبل امتصاص معظمه.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا يختلف طرح البراز عن ترشيح الكليتين لفضلات الدم؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثانية: عمليات الحياة · الفصل الرابع: عمليات الحياة في الإنسان والحيوانات · الدرس الأول: الهضم والإخراج والتنفس والدوران<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٠٨ – ١١٧ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+(function(){
+  var D=[
+    ["الدم الخارج من القلب إلى الرئتين","Y","دمٌ غير مؤكسج، يذهب ليتخلَّص من ثاني أكسيد الكربون."],
+    ["الدم العائد من الرئتين إلى القلب","X","تحمَّل بالأكسجين في الحويصلات الهوائية."],
+    ["الدم المضخوخ من القلب إلى أجزاء الجسم","X","دمٌ مؤكسج محمَّلٌ بالأكسجين والمواد الغذائية."],
+    ["الدم العائد من خلايا الجسم إلى القلب","Y","سلَّم الأكسجين وحمل فضلات الخلايا."]
+  ];
+  var i=0,ok=0,n=0;
+  var card=document.getElementById('aCard'), tag=document.getElementById('aTag');
+  var msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+  if(!card) return;
+  function ar(x){var s=String(x),o='';for(var k=0;k<s.length;k++){o+='٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(k)-48];}return o;}
+  function show(){
+    if(i>=D.length){card.querySelector('.nm').textContent='انتهى النشاط';tag.textContent='—';
+      msg.textContent='أحسنت! تتبَّعت مسار الدم كاملًا.';msg.className='simMsg good';return;}
+    card.querySelector('.nm').textContent=D[i][0];tag.textContent='؟';
+  }
+  function upd(){sc.textContent='النتيجة: '+ar(ok)+' / '+ar(n);}
+  document.querySelectorAll('#simA .simBtn[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(i>=D.length) return;
+      n++;
+      if(b.getAttribute('data-k')===D[i][1]){ok++;msg.textContent='إجابة صحيحة ✓ — '+D[i][2];msg.className='simMsg good';}
+      else{msg.textContent='أعد التفكير ✗ — '+D[i][2];msg.className='simMsg';}
+      tag.textContent=(D[i][1]==='X'?'مؤكسج':'غير مؤكسج');
+      i++;upd();setTimeout(show,900);
+    });
+  });
+  document.getElementById('aReset').addEventListener('click',function(){
+    i=0;ok=0;n=0;msg.textContent='أبدأ التصنيف.';msg.className='simMsg';upd();show();
+  });
+  upd();show();
+})();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g6l7aSvgHost','g6l7aInfo',{'mouth':'<span><b>الفم</b> — تبدأ عملية الهضم بـ<b>المضغ</b>، فتتفتَّت قطع الطعام وتختلط باللعاب.</span>','eso':'<span><b>المريء</b> — أنبوبٌ عضليٌّ يدفع الغذاء من الفم إلى <b>المعدة</b>.</span>','stom':'<span><b>المعدة</b> — يحلِّل <b>الحمض والإنزيم</b> الغذاءَ إلى دقائقَ صغيرة.</span>','liver':'<span><b>الكبد والبنكرياس</b> — تفرز الغددُ الهضمية <b>العصارة الهضمية</b> التي تحلِّل البروتين والنشويات والدهون.</span>','small':'<span><b>الأمعاء الدقيقة</b> — تُمتصُّ فيها <b>المواد الغذائية</b> وتنتقل إلى الدم لتصل إلى الخلايا.</span>','large':'<span><b>الأمعاء الغليظة</b> — تمتصُّ <b>الماء</b> من بقايا الطعام.</span>','exc':'<span><b>الإخراج</b> — يتخلَّص الجسم من <b>الفضلات</b>؛ ولو بقيت لسمَّمت الخلايا والأنسجة.</span>'},'');
+ERT.stepper({pills:'g6l7aPills', info:'g6l7aInfo', svg:'g6l7aSvgHost', next:'g6l7aNext', prev:'g6l7aPrev', stages:[['mouth','الفم','تبدأ عملية الهضم بـ<b>المضغ</b>، فتتفتَّت قطع الطعام وتختلط باللعاب.'],['eso','المريء','أنبوبٌ عضليٌّ يدفع الغذاء من الفم إلى <b>المعدة</b>.'],['stom','المعدة','يحلِّل <b>الحمض والإنزيم</b> الغذاءَ إلى دقائقَ صغيرة.'],['liver','الكبد والبنكرياس','تفرز الغددُ الهضمية <b>العصارة الهضمية</b> التي تحلِّل البروتين والنشويات والدهون.'],['small','الأمعاء الدقيقة','تُمتصُّ فيها <b>المواد الغذائية</b> وتنتقل إلى الدم لتصل إلى الخلايا.'],['large','الأمعاء الغليظة','تمتصُّ <b>الماء</b> من بقايا الطعام.'],['exc','الإخراج','يتخلَّص الجسم من <b>الفضلات</b>؛ ولو بقيت لسمَّمت الخلايا والأنسجة.']]});
+ERT.flow({svg:'g6l7aSvgHost', btn:'g6l7aPlay', items:[
+  {path:'g6l7apFood', color:'#8FC456', r:10, n:3, dur:3000},
+  {path:'g6l7apFood2', color:'#C9A063', r:9, n:3, dur:3000}
+]});
+
+ERT.hotspots('g6l7bSvgHost','g6l7bInfo',{'nose':'<span><b>الأنف والفم</b> — يدخل الهواء من الأنف والفم إلى <b>البلعوم</b> ثم الحنجرة.</span>','tra':'<span><b>القصبة الهوائية</b> — أنبوبٌ يحمل الهواء نحو الرئتين.</span>','bron':'<span><b>الشُّعَب الهوائية</b> — تتفرَّع إلى <b>شُعيباتٍ</b> أدقَّ فأدقَّ داخل الرئتين.</span>','alv':'<span><b>الحويصلات الهوائية</b> — أكياسٌ صغيرةٌ جدرانها رقيقة، فيها ينتقل <b>الأكسجين إلى الدم</b> ويخرج ثاني أكسيد الكربون.</span>','lung':'<span><b>الرئتان</b> — عضوان يزوِّدان الجسم بالأكسجين ويتخلَّصان من ثاني أكسيد الكربون.</span>','dia':'<span><b>الحجاب الحاجز</b> — عضلةٌ تنقبض وتنبسط فتنظِّم <b>الشهيق والزفير</b>.</span>'},'');
+ERT.stepper({pills:'g6l7bPills', info:'g6l7bInfo', svg:'g6l7bSvgHost', next:'g6l7bNext', prev:'g6l7bPrev', stages:[['nose','الأنف والفم','يدخل الهواء من الأنف والفم إلى <b>البلعوم</b> ثم الحنجرة.'],['tra','القصبة الهوائية','أنبوبٌ يحمل الهواء نحو الرئتين.'],['bron','الشُّعَب الهوائية','تتفرَّع إلى <b>شُعيباتٍ</b> أدقَّ فأدقَّ داخل الرئتين.'],['alv','الحويصلات الهوائية','أكياسٌ صغيرةٌ جدرانها رقيقة، فيها ينتقل <b>الأكسجين إلى الدم</b> ويخرج ثاني أكسيد الكربون.'],['lung','الرئتان','عضوان يزوِّدان الجسم بالأكسجين ويتخلَّصان من ثاني أكسيد الكربون.'],['dia','الحجاب الحاجز','عضلةٌ تنقبض وتنبسط فتنظِّم <b>الشهيق والزفير</b>.']]});
+ERT.flow({svg:'g6l7bSvgHost', btn:'g6l7bPlay', items:[
+  {path:'g6l7bpIn', color:'#7EC1E8', r:10, n:4, dur:2800},
+  {path:'g6l7bpOut', color:'#D3A87A', r:10, n:4, dur:2800}
+]});
+
+ERT.hotspots('g6l7cSvgHost','g6l7cInfo',{'heart':'<span><b>القلب</b> — يضخُّ الدم <b>غير المؤكسج</b> إلى الرئتين، ثم يضخُّ الدم <b>المؤكسج</b> إلى سائر الجسم.</span>','lung':'<span><b>الرئتان</b> — في <b>الحويصلات الهوائية</b> يترك الدم ثاني أكسيد الكربون ويُحمَّل بالأكسجين.</span>','art':'<span><b>الدم المؤكسج</b> — يخرج من القلب محمَّلًا بالأكسجين، ويحمل المواد الغذائية من الأمعاء الدقيقة.</span>','cap':'<span><b>الشعيرات الدموية</b> — أوعيةٌ دقيقةٌ جدرانها رقيقة، تنتقل عبرها المواد إلى <b>الخلايا</b> وتعود منها الفضلات.</span>','vein':'<span><b>الدم غير المؤكسج</b> — يعود إلى القلب حاملًا الفضلات، ثم يُضخُّ إلى الرئتين لتبدأ الدورة من جديد.</span>'},'');
+ERT.stepper({pills:'g6l7cPills', info:'g6l7cInfo', svg:'g6l7cSvgHost', next:'g6l7cNext', prev:'g6l7cPrev', stages:[['heart','القلب','يضخُّ الدم <b>غير المؤكسج</b> إلى الرئتين، ثم يضخُّ الدم <b>المؤكسج</b> إلى سائر الجسم.'],['lung','الرئتان','في <b>الحويصلات الهوائية</b> يترك الدم ثاني أكسيد الكربون ويُحمَّل بالأكسجين.'],['art','الدم المؤكسج','يخرج من القلب محمَّلًا بالأكسجين، ويحمل المواد الغذائية من الأمعاء الدقيقة.'],['cap','الشعيرات الدموية','أوعيةٌ دقيقةٌ جدرانها رقيقة، تنتقل عبرها المواد إلى <b>الخلايا</b> وتعود منها الفضلات.'],['vein','الدم غير المؤكسج','يعود إلى القلب حاملًا الفضلات، ثم يُضخُّ إلى الرئتين لتبدأ الدورة من جديد.']]});
+ERT.flow({svg:'g6l7cSvgHost', btn:'g6l7cPlay', items:[
+  {path:'g6l7cpA', color:'#6E9CC8', r:10, n:3, dur:2600},
+  {path:'g6l7cpB', color:'#E07A6E', r:10, n:3, dur:2600},
+  {path:'g6l7cpC', color:'#E07A6E', r:10, n:3, dur:3000},
+  {path:'g6l7cpD', color:'#6E9CC8', r:10, n:3, dur:3000}
+]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6g1');
+EG.order({pool:'s6g2P', slots:'s6g2S', fb:'s6g2Fb', reset:'s6g2R', n:5});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/02_عمليات_الحياة/04_عمليات_الحياة_في_الإنسان_والحيوانات/01_الهضم_والإخراج_والتنفس_والدوران/علوم_سادس_ابتدائي_ف1_الدرس_الأول_الهضم_والإخراج_والتنفس_والدوران.html","title":"الهضم والإخراج والتنفس والدوران","grade":6,"emoji":"🫀","photoTopic":"body","observeQuestion":"كيف يصل الغذاء والأكسجين إلى خلية بعيدة عن المعدة والرئتين؟","facts":["يفكك الهضم الطعام إلى مواد أصغر، وتمتص الأمعاء الدقيقة معظم المغذيات لينقلها الدم أو اللمف.","ينتقل الأكسجين من الرئتين إلى الدم، ويسهم جهاز الدوران في إيصاله مع المغذيات إلى خلايا الجسم.","تطرح الكليتان فضلات ذائبة في البول، وتطرح الرئتان ثاني أكسيد الكربون؛ وتتعاون الأعضاء للمحافظة على بيئة الخلايا."],"diagram":{"title":"تعاون أجهزة الجسم لخدمة الخلايا الحية","relation":"comparison","nodes":[{"emoji":"🥣","label":"الهضم","detail":"تفكيك الطعام وامتصاص المغذيات."},{"emoji":"🫁","label":"التنفس","detail":"تبادل الأكسجين وثاني أكسيد الكربون."},{"emoji":"🫀","label":"الدوران","detail":"نقل المواد بين الأعضاء والخلايا."},{"emoji":"💧","label":"الإخراج","detail":"طرح الفضلات والمحافظة على الاتزان."}],"caption":"هذه وظائف متعاونة تحدث في الوقت نفسه؛ وليست مراحل لهضم الطعام وحده."},"lab":{"title":"تتبع ماء الطعام خلال الأمعاء افتراضيًا","question":"كيف يتغير الماء المتبقي في محتوى الأمعاء خلال رحلة العينة نفسها؟","controlLabel":"موضع عينة المحتوى","options":["بداية الأمعاء الدقيقة","نهاية الأمعاء الدقيقة","بعد الأمعاء الغليظة"],"states":[{"label":"محتوى غني بالماء","emoji":"💧","amount":9,"explanation":"نتتبع محتوى نموذجيًا واحدًا يدخل الأمعاء الدقيقة، وفيه ماء من الطعام والشراب والعصارات الهضمية قبل امتصاص معظمه.","observation":"ماء أكثر داخل المحتوى."},{"label":"امتصاص معظم الماء","emoji":"💧","amount":4,"explanation":"تمتص الأمعاء الدقيقة معظم الماء وكثيرًا من المغذيات؛ فيبقى في المحتوى المتجه إلى الأمعاء الغليظة ماء أقل.","observation":"الماء المتبقي أقل."},{"label":"استرجاع ماء إضافي","emoji":"💧","amount":1,"explanation":"تمتص الأمعاء الغليظة مزيدًا من الماء من البقايا، فيصبح محتواها أكثر تماسكًا قبل طرحه خارج الجسم.","observation":"بقايا أكثر تماسكًا."}],"quantityLabel":"مؤشر وصفي للماء المتبقي داخل محتوى الأمعاء","modelNote":"نموذج مراحل تعليمي؛ لا يمثل أحجام ماء أو زمن عبور أو تقييمًا لصحة شخص.","tryPrompt":"لماذا يختلف طرح البراز عن ترشيح الكليتين لفضلات الدم؟"},"sources":[{"title":"NIDDK: الجهاز الهضمي وكيف يعمل","url":"https://www.niddk.nih.gov/health-information/digestive-diseases/digestive-system-how-it-works"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

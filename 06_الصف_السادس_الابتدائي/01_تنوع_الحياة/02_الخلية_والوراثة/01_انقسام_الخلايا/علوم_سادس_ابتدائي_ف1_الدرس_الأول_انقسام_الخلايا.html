@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – سادس ابتدائي – ف1 – انقسام الخلايا</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#9C7B4A;--g-dark:#634C2E;--g-light:#F6F1E8}
+.card{border-color:#E0D0B4}
+.cover{background:linear-gradient(140deg,#634C2E 0%,#9C7B4A 55%,#C4A87A 100%)}
+.endS{background:linear-gradient(140deg,#634C2E,#9C7B4A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>انقسام الخلايا</h1><div class="rule"></div>
+<div class="meta">الصف السادس الابتدائي<br>الوحدة الأولى: تنوع الحياة<br>الفصل الثاني: الخلية والوراثة — الدرس الأول</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ٥٠</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الأولى</h3><p>تنوع الحياة</p></div><div class="card"><h3>الفصل الثاني</h3><p>الخلية والوراثة</p></div><div class="card"><h3>الدرس الأول</h3><p>انقسام الخلايا</p></div></div><div class="box idea" style="font-size:33px;">السؤال الأساسي: كيف تُنتج الخلية خلايا جديدة؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:25px"><li>أُعرِّف دورة الخلية وأذكر مرحلتَيها.</li><li>أُبيِّن محدِّدات حجم الخلية.</li><li>أَصِف علاقة مرض السرطان بدورة الخلية.</li><li>أُعرِّف الكروموسوم والانقسام المتساوي.</li><li>أُرتِّب مراحل الانقسام المتساوي الخمس.</li><li>أُعرِّف الانقسام المنصِّف والمشيج والخلية المخصبة.</li><li>أُقارن بين الانقسام المتساوي والمنصِّف.</li><li>أُفرِّق بين مدَّة الحياة والعمر المتوقَّع.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:31px;">خلية بكتيرية واحدة تستطيع أن تُنتج ملايين الخلايا خلال ساعات قليلة! كيف؟</div><p class="c">بـ<b>انقسام الخلية</b>. وهي عملية منظَّمة لها مراحل، ولها نوعان. لنتعرَّفهما.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>نظرية الخلية</h3><p>تنتج الخلايا عن خلايا موجودة.</p></div><div class="card center" style="text-align:center;"><h3>النواة والكروموسومات</h3><p>النواة مركز التحكُّم وفيها أشرطة من الأحماض النووية.</p></div><div class="card center" style="text-align:center;"><h3>التكاثر الجنسي</h3><p>اتِّحاد مشيج مذكَّر مع مشيج مؤنث في الإخصاب.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ٥٢</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(4,1fr)"><div class="card"><h3>دورة الخلية</h3><p style="font-size:25px">العملية المستمرة من النموِّ والانقسام والتعويض.</p></div><div class="card"><h3>الكروموسوم</h3><p style="font-size:25px">شريط صغير داخل نواة الخلية يحمل تفاصيلَ كاملةً عن المخلوق الحيِّ.</p></div><div class="card"><h3>الانقسام المتساوي</h3><p style="font-size:25px">عملية تنقسم فيها الخلية لتنتج خليتين متماثلتين.</p></div><div class="card"><h3>مشيج مذكَّر (الحيوان المنويُّ)</h3><p style="font-size:25px">الخلية الجنسية الذكرية، صغيرة جدًّا وقادرة على الحركة ذاتيًّا.</p></div><div class="card"><h3>مشيج مؤنث (البُوَيضة)</h3><p style="font-size:25px">الخلية الجنسية الأنثوية، أكبر من الحيوان المنويِّ ولا تتحرَّك ذاتيًّا.</p></div><div class="card"><h3>الخلية المخصبة (اللاقحة)</h3><p style="font-size:25px">تتكوَّن باتِّحاد المشيج المذكَّر والمشيج المؤنث.</p></div><div class="card"><h3>الانقسام المنصِّف (الاختزاليُّ)</h3><p style="font-size:25px">انقسام خلويٌّ تنقسم فيه النواة مرتين فتنتج أربع خلايا جنسية.</p></div></div><div class="box note" style="font-size:28px;">مهارة القراءة في هذا الدرس: <b>التتابع</b> (الأول ← التالي ← الأخير).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>كيف تصبح الخلية الواحدة عدة خلايا؟</h2><span class="src">ص ٥١ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:24px;"><b>الهدف:</b> كيف تصبح خلية واحدة مخلوقًا حيًّا مكتمل النموِّ؟ أفحص عددًا من الشرائح التي تبيِّن خلايا في مراحل مختلفة من الانقسام الخلويِّ، تلك العملية التي تؤدِّي إلى إنتاج المَزيد من الخلايا.</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:0 0 250px"><p class="c"><b>أحتاج إلى:</b></p><ul class="list" style="font-size:23px"><li>شرائح جاهزة تبيِّن الانقسام الخلويَّ</li><li>مجهر مركب</li><li>لوحة كرتونية</li><li>مقصٌّ</li><li>شريط لاصق شفاف</li><li>بطاقات فهرس بيضاء</li></ul></div><div style="flex:1 1 0"><p class="c"><b>الخطوات:</b></p><ul class="list num" style="font-size:21px"><li><b>ألاحظ.</b> أفحص الشريحة الأولى بقوة التكبير الصغرى للمجهر المركب، وأستخدم الضابط الكبير لرؤية الخلايا بصورة واضحة. وأستخدم الضابط الصغير لجعل الرؤية أكثر وضوحًا. أكرِّر ما قمت به مستخدمًا قوة تكبير أكبر. أسجِّل التفاصيل التي ألاحظها، وأرسم عينات من الخلايا التي شاهدتها على بطاقات الفهرسة. وأكرِّر هذه العملية لكلِّ شريحة.</li><li><b>أتواصل.</b> أقارن ما رسمتُه برسوم زملائي في الصفِّ. أحدِّد أيَّ الخلايا تبدو في المرحلة نفسها من الانقسام، وأيُّها يمرُّ بمراحل مختلفة، وأناقش ذلك مع أحد زملائي.</li><li><b>أصنِّف.</b> أحذر عندما أقصُّ أشكال الخلايا التي رسمتُها، وأجمع الأشكال التي تمرُّ بمرحلة الانقسام نفسها في مجموعة واحدة، ثم أقارن رسومي برسوم زملائي في الصفِّ. أقرِّر مع زملائي في الصفِّ عدد مجموعات الصور التي تمثِّل مراحل الانقسام.</li></ul></div></div><div class="box safe" style="font-size:24px;"><b>أحذر</b> عند استعمال المقصِّ، وأتعامل مع الشرائح والمجهر بحذر بإشراف معلِّمي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ٥١ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. أختار رسمًا يمثِّل كلَّ مرحلة من مراحل الانقسام وألصقها بالتسلسل على لوحة كرتونية؛ لعمل مخطَّط يبيِّن مراحل الانقسام، وأحتفظ بالمخطَّط لاستخدامه مرجعًا خلال هذا الدرس.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥١</span>إجابة نموذجية مقترحة: أرتِّب الرسوم على اللوحة بحسب مراحل الانقسام المتساوي الخمس: (١) تشاهَد النواة بوضوح ويتضاعف عدد الكروموسومات ← (٢) تصبح الكروموسومات مرئيةً ويبدأ الغلاف المحيط بالنواة في التلاشي ← (٣) تصطفُّ الكروموسومات المتضاعفة عند وسط الخلية ← (٤) تنفصل الكروموسومات وتتحرَّك في اتجاهين متضادَّين وتستطيل الخلية ← (٥) يتكوَّن غلاف نوويٌّ حول كلِّ مجموعة، وينقسم السيتوبلازم وينتج خليتان.</div></div><div class="box ask" style="font-size:25px;"><b>أستكشف أكثر:</b> هل يمكن ملاحظة المراحل نفسها في الخلايا النباتية والخلايا الحيوانية؟ ترى، في أيِّ أجزاء النبات تحدث؟ أصمِّم استقصاءً لاختبار توقُّعي. وأجرِّب ذلك، وأشارك زملاء صفِّي في النتائج.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما دورة الخلية؟</h2><span class="src">ص ٥٢</span></div>
+<div class="body"><p class="c">تتكوَّن المخلوقات الحية جميعها من خلية واحدة أو أكثر. وتنمو الخلايا لفترة زمنية محدَّدة، ثم تتوقَّف عن النموِّ. وبعد أن يكتمل نموُّها تموت بعض الخلايا، وينقسم بعضها الآخر لينتج خلايا جديدة لتعويض الخلايا الميتة.</p><div class="box idea" style="font-size:31px;">وتُسمَّى هذه العملية المستمرة من النموِّ والانقسام والتعويض <b>دورة الخلية</b>.</div><div class="box note" style="font-size:23px;">قد تكون دورة الخلية سريعةً أو بطيئةً. ويعتمد ذلك على نوع المخلوق الحيِّ ونوع النسيج الذي توجد فيه الخلية. فالخلية البكتيرية مثلًا تستطيع أن تُنتج خليتين جديدتين كلَّ <b>٢٠ دقيقةً</b>، والخليتان الجديدتان تُنتجان أربع خلايا جديدة، وهكذا، وخلال ساعات قليلة تستطيع خلية واحدة أن تنتج ملايين الخلايا.</div><div class="box note" style="font-size:27px;"><b>حقيقة:</b> يقوم جسم الإنسان باستبدال جميع خلايا الدم الحمراء كلَّ <b>١٢٠ يومًا</b> تقريبًا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>محدِّدات حجم الخلية</h2><span class="src">ص ٥٣</span></div>
+<div class="body"><p class="c">تنمو الخلايا إلى أحجام مختلفة. ومعظم الخلايا صغيرة جدًّا لا يمكن مشاهدتها إلا بالمجهر. وهناك عوامل متعددة تمنع استمرار نموِّ الخلية، وتحدِّد حجمها. ومن هذه العوامل <b>النسبة بين مساحة الغشاء البلازميِّ وحجم الخلية</b>.</p><div class="box idea" style="font-size:25px;">فكلُّ خلية تحتاج إلى الأكسجين والسكر وموادَّ مغذية أخرى. ويجب أن تتخلَّص الخلية من الفضلات. وهذه المواد يجب أن تمرَّ عبر الغشاء البلازميِّ.</div><div class="box note" style="font-size:22px;">وكلَّما نمت الخلية ازداد حجمها، وازدادت كمية المواد التي تحتاج إلى تبادلها مع الوسط الخارجيِّ. لذلك لا بدَّ أن يقابل الزيادة في حجم الخلية زيادة في مساحة الغشاء البلازميِّ. إلا أن <b>الغشاء البلازميَّ ينمو بمعدل أقلَّ من نموِّ حجم الخلية</b>، فتصبح مساحة الغشاء غير كافية لحصول الخلية على المواد التي تحتاج إليها، أو لتخلُّصها من الفضلات التي تنتجها، لذلك تتوقَّف الخلية عن النموِّ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>مرض السرطان ودورة الخلية</h2><span class="src">ص ٥٣</span></div>
+<div class="body"><p class="c">تعمل بعض البروتينات والموادُّ الكيميائية في المخلوقات الحية على نموِّ الخلايا وانقسامها. وعندما يحدث خلل قد يسبِّب مشكلات خطيرة. ومن هذه المشكلات <b>مرض السرطان</b>.</p><div class="box idea" style="font-size:25px;">يحدث هذا المرض عندما لا يتمُّ السيطرة على انقسام الخلايا ونموِّها. وقد يؤدِّي النموُّ السريع للخلايا إلى تكوُّن الأورام، أو تكوُّن تجمُّعات للخلايا السرطانية. وبعض أنواع السرطان تهدِّد حياة الإنسان.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٥٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أتتبَّع.</b> أكتب مراحل دورة حياة الخلية.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٣</span><b>الأول:</b> نموُّ الخلية لفترة زمنية محدَّدة.<br><b>التالي:</b> التهيُّؤ للانقسام.<br><b>الأخير:</b> انقسام الخلية لينتج خلايا جديدة تُعوِّض الخلايا الميتة، ثم تبدأ الدورة من جديد. فدورة الخلية عملية مستمرة من <b>النموِّ والانقسام والتعويض</b>.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> أيُّ الخليتين يمكن أن ينمو حجمها أكبر: الخلية المنبسطة أم الخلية المكعبة الشكل؟ أوضِّح إجابتي.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٣</span><b>الخلية المنبسطة</b>؛ لأن الذي يحدُّ حجم الخلية هو النسبة بين مساحة الغشاء البلازميِّ وحجم الخلية. والخلية المنبسطة لها مساحة سطح أكبر بالنسبة إلى حجمها، فيستطيع غشاؤها تبادل ما يكفي من المواد مع الوسط الخارجيِّ والتخلُّص من الفضلات. أمَّا المكعبة فيزداد حجمها أسرع من مساحة غشائها فتتوقَّف عن النموِّ مبكرًا.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الانقسام المتساوي؟</h2><span class="src">ص ٥٤</span></div>
+<div class="body"><p class="c">توجد داخل نواة الخلية أشرطة صغيرة، تحمل في داخلها تفاصيلَ كاملةً عن المخلوق الحيِّ تُسمَّى <b>الكروموسومات</b>. ومعظم خلايا الإنسان تحتوي على <b>٤٦ كروموسومًا</b>.</p><div class="box ask" style="font-size:25px;">فهل إذا انقسمت الخلية إلى جزأين بالتساوي ستحتوي كلُّ خلية جديدة على نصف العدد الأصليِّ من الكروموسومات؟ لو حدث ذلك لسبَّب مشكلات خطيرة لجميع أنواع الخلايا.</div><div class="box idea" style="font-size:23px;">أمَّا ما يحدث فهو أن الخلية <b>تضاعف كروموسوماتها</b> حتى يكون لديها مجموعة ثانية مماثلة، ثم تنقسم الخلية. وعندئذٍ تتكوَّن خليتان متماثلتان، في نواة كلٍّ منهما مجموعة كاملة من الكروموسومات. وتُسمَّى هذه العملية <b>الانقسام المتساوي</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الانقسام المتساوي في النباتات والحيوانات</h2><span class="src">ص ٥٤</span></div>
+<div class="body"><p class="c">يحدث الانقسام المتساوي عند أيِّ عملية انقسام في نوع معيَّن من خلايا الجسم يُسمَّى <b>الخلايا الجسميَّة</b>، ومنها خلايا الجلد، وخلايا العظام، وخلايا الدم البيضاء وخلايا العضلات.</p><div class="box note" style="font-size:26px;">وفي عام <b>١٨٧٩م</b> لاحظ العالم الألمانيُّ والتر فليمنج خلايا في أطوار مختلفة من الانقسام عن طريق إضافة صبغة إلى شريحة خلِّية، ثم رسم ما شاهده بالمجهر.</div><p class="c">عندما تبدأ الخلية الجسميَّة في الانقسام إلى خليتين متماثلتين تتضاعف الكروموسومات داخل الخلية، ثم تبدأ في الاصطفاف لتكوين مجموعتين منفصلتين ومتماثلتين من الكروموسومات في الخلية. ثم تنتقل كلُّ مجموعة من الكروموسومات إلى أحد طرفَي الخلية.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>نتيجة الانقسام المتساوي</h2><span class="src">ص ٥٥</span></div>
+<div class="body"><p class="c">وعندما تنقسم الخلية إلى خليتين جديدتين تحتوي كلُّ خلية جسميَّة جديدة على مجموعة كاملة من الكروموسومات المماثلة تمامًا لكروموسومات الخلية الأصلية.</p><div class="cards"><div class="card"><h3>في الخلية النباتية</h3><p style="font-size:25px">وتمرُّ الخلايا النباتية والخلايا الحيوانية بالانقسام المتساوي. ولكن بسبب وجود جدار خلويٍّ حول الخلية النباتية تتكوَّن <b>صفيحة خلوية</b> تشبه امتدادًا للجدار الخلويِّ تفصل بين الخليتين الجديدتين.</p></div><div class="card"><h3>في الخلية الحيوانية</h3><p style="font-size:25px">أمَّا في الخلايا الحيوانية فإن <b>الغشاء البلازميَّ يضيق إلى الداخل</b> من وسط الخلية.</p></div></div><div class="box idea" style="font-size:25px;">ويَنتج عن الانقسام المتساوي في كلٍّ من الخلية النباتية والخلية الحيوانية <b>خليتان تماثل كلٌّ منهما الخلية الأصلية</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>مراحل الانقسام المتساوي</h2><span class="src">ص ٥٥</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:12%">المرحلة</th><th>ماذا يحدث؟</th></tr><tr><td>١</td><td>تشاهَد النواة بوضوح، وعند بدء الانقسام المتساوي يتضاعف عدد الكروموسومات في نواة الخلية.</td></tr><tr><td>٢</td><td>تصبح الكروموسومات مرئيةً، ويبدأ الغلاف المحيط بالنواة في التلاشي.</td></tr><tr><td>٣</td><td>تصطفُّ الكروموسومات المتضاعفة عند وسط الخلية.</td></tr><tr><td>٤</td><td>تنفصل الكروموسومات المتضاعفة بعضها عن بعض، وتبدأ الحركة في اتجاهين متضادَّين، وتستطيل الخلية.</td></tr><tr><td>٥</td><td>يتكوَّن غلاف نوويٌّ حول كلِّ مجموعة من الكروموسومات. بعد ذلك ينقسم السيتوبلازم، ويُنتج خليتين، ثم تبدأ كلُّ خلية في الانقسام.</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ٥٥</span></div>
+<div class="body"><div class="qa"><p class="q">ماذا يحدث للكروموسومات في المرحلة الأخيرة من مراحل الانقسام المتساوي؟ <br><span class="muted" style="font-size:24px">إرشاد: أقارن بين ترتيب الكروموسومات وموقعها في الخطوتين ٤ و٥.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٥</span>في المرحلة ٤ تكون الكروموسومات قد انفصلت وتحرَّكت في اتجاهين متضادَّين نحو طرفَي الخلية. وفي المرحلة الأخيرة (٥) <b>يتكوَّن غلاف نوويٌّ حول كلِّ مجموعة من الكروموسومات</b>، فتصبح كلُّ مجموعة داخل نواة جديدة، ثم ينقسم السيتوبلازم فتنتج خليتان.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٥٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أتتبَّع.</b> ما الخطوة الأولى في الانقسام المتساوي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٥</span>الخطوة الأولى هي أن <b>تشاهَد النواة بوضوح، ويتضاعف عدد الكروموسومات في نواة الخلية</b>؛ حتى يكون لدى الخلية مجموعة ثانية مماثلة قبل أن تنقسم.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> تحتوي خلايا جسم القط على ٣٨ كروموسومًا. ما عدد الكروموسومات في كلٍّ من الخليتين الجديدتين الناتجتين عند اكتمال الانقسام المتساوي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٥</span><b>٣٨ كروموسومًا</b> في كلِّ خلية؛ لأن الانقسام المتساوي ينتج خليتين تحتوي كلٌّ منهما على مجموعة كاملة من الكروموسومات مماثلة تمامًا لكروموسومات الخلية الأصلية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الانقسام المنصِّف؟</h2><span class="src">ص ٥٦</span></div>
+<div class="body"><p class="c">تَنتج المخلوقات الحية بالتكاثر. وتتكاثر المخلوقات الوحيدة الخلية عن طريق انقسام الخلية. أمَّا في معظم الحيوانات والنباتات فتتَّحد كروموسومات من الأبوين معًا في عملية تُسمَّى <b>التكاثر الجنسيَّ</b>.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>المشيج المذكَّر (الحيوان المنويُّ)</h3><p style="font-size:26px">الخلية الجنسية الذكرية، وهو صغير جدًّا، وقادر على الحركة ذاتيًّا.</p></div><div class="card center" style="text-align:center;"><h3>المشيج المؤنث (البُوَيضة)</h3><p style="font-size:26px">الخلية الجنسية الأنثوية، وهي أكبر من الحيوان المنويِّ، ولا تتحرَّك ذاتيًّا.</p></div></div><div class="box idea" style="font-size:25px;">وتتَّحد هاتان الخليتان معًا لتكوِّنا <b>خليةً مخصبةً</b> (تُسمَّى الزَّيجُوت أو اللاقحة). وتنمو الخلية المخصبة فتصبح مخلوقًا حيًّا جديدًا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>لماذا نحتاج إلى الانقسام المنصِّف؟</h2><span class="src">ص ٥٦</span></div>
+<div class="body"><p class="c">تحتوي معظم خلايا جسم الإنسان على <b>٤٦ كروموسومًا</b>. فإذا كان عدد الكروموسومات في المشيج المذكَّر ٤٦ وفي المشيج المؤنث ٤٦ كروموسومًا، فماذا يمكن أن يحدث عندما يندمجان معًا؟ هل تحتوي الخلية المخصبة الجديدة على <b>٩٢ كروموسومًا</b>، وهو ضعف العدد الذي يجب أن يكون في كلِّ خلية؟</p><div class="box idea" style="font-size:22px;">إن الخلية المخصبة لا تحتوي فعلًا على ضعف عدد الكروموسومات الموجودة في الخلية العادية. ويرجع ذلك إلى أن كلًّا من المشيج المذكَّر والمشيج المؤنث يتكوَّنان بفعل انقسام خلويٍّ يُسمَّى <b>الانقسام المنصِّف (الاختزاليَّ)</b>، حيث تنقسم النواة <b>مرتين</b>، فينتج <b>أربع خلايا جنسية جديدة</b> في نواة كلٍّ منها <b>نصف</b> العدد الأصليِّ من كروموسومات الخلية الأصلية.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>من ٢٣ إلى ٤٦</h2><span class="src">ص ٥٦</span></div>
+<div class="body"><p class="c">وكلُّ خلية جنسية في الإنسان تحتوي على <b>٢٣ كروموسومًا</b>. ويتَّحد المشيج المذكَّر مع المشيج المؤنث لتكوين الخلية المخصبة، التي تحتوي على <b>٤٦ كروموسومًا</b>، فتشبه بذلك الخلية الأصلية الأمَّ عند كِلا الأبوين.</p><div class="box idea" style="font-size:29px;">ونتيجةً لذلك ينتقل إلى الابن كروموسومات من كِلا الأبوين، وتنتقل إليه <b>صفات وراثية من الأبوين</b>.</div><div class="map"><div class="node">خطوات الانقسام المنصِّف من الشكل</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">١</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">الخلية الأصلية</span><span class="node leaf">تتضاعف الكروموسومات</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#9C7B4A;color:#9C7B4A">٢</div><div class="line" style="background:#9C7B4A"></div><div class="leaves"><span class="node leaf">تصطفُّ الكروموسومات في أزواج</span><span class="node leaf">ثم تبتعد أزواج الكروموسومات</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">٣</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">تنقسم الخلية (الانقسام الأول)</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#9C7B4A;color:#9C7B4A">٤</div><div class="line" style="background:#9C7B4A"></div><div class="leaves"><span class="node leaf">تصطفُّ أزواج الكروموسومات المزدوجة</span><span class="node leaf">ثم تنقسم الخلية (الانقسام الثاني)</span><span class="node leaf">فتنتج أربع خلايا</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>المقارنة بين الانقسام المتساوي والمنصِّف</h2><span class="src">ص ٥٧</span></div>
+<div class="body"><p class="c">الانقسام المتساوي يشبه نوعًا ما الانقسام المنصِّف. وكلاهما يبدأ في النواة، وبعد مضاعفة الكروموسومات تكون الخلايا في كِلا الانقسامين أكثر من الخلايا الأصلية. ومع ذلك، فهناك فروق واضحة بين نوعَي الانقسام.</p><table class="cmp"><tr><th style="width:24%">وجه المقارنة</th><th>الانقسام المتساوي</th><th>الانقسام المنصِّف</th></tr><tr><td>عدد الكروموسومات في الخلايا الناتجة</td><td>تحتوي على العدد نفسه من كروموسومات الخلية الأصلية</td><td>تحتوي الخلية الناتجة على نصف العدد الأصليِّ من الكروموسومات</td></tr><tr><td>عدد الانقسامات</td><td>يحدث انقسام واحد</td><td>يحدث انقسامان</td></tr><tr><td>عدد الخلايا الناتجة</td><td>خليتان جديدتان</td><td>أربع خلايا جديدة</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>متساوٍ أم منصِّف؟</h2><span class="src">ص ٥٤ — ٥٧</span></div>
+<div class="body center"><p class="t' style='font-size:29px">أقرأ العبارة، ثم أختار نوع الانقسام الذي تصفه.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="mit">الانقسام المتساوي</button><button class="simBtn ghost" type="button" data-k="mei">الانقسام المنصِّف</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>الانقسام المتساوي</h2><span class="src">ص ٥٧ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:25px"><li>أتفحَّص مجموعة صور مختلفة لأطوار الانقسام المتساوي. وأستعمل الرسوم التي رسمتُها في نشاط أستكشف إن وجدت.</li><li><b>أقارن.</b> أدقِّق جيدًا في كلِّ صورة آخذًا في الاعتبار أطوار الانقسام المتساوي. فإذا كانت الصور من الطور نفسه أضعُها معًا.</li><li><b>أصنِّف</b> ما المجموعة التي تنتمي إليها كلُّ صورة؟ أضع الصور في فئات المجموعات المناسبة، وأكون مستعدًّا لتوضيح ذلك.</li><li><b>أفسِّر البيانات.</b> أعمل ضمن مجموعة من زملائي لترتيب الصور بحسب أطوارها. وأكتب تعريفَ كلِّ طور، وشروحات عنه، مع رسم توضيحيٍّ.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٥٧</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أتتبَّع.</b> أبيِّن أطوار الانقسام المنصِّف.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٧</span><b>الأول:</b> تتضاعف الكروموسومات في الخلية الأصلية (خلال الأطوار المبكرة يتمُّ نسخ الكروموسومات وتضاعفها).<br><b>التالي:</b> تصطفُّ الكروموسومات في أزواج، ثم تبتعد أزواج الكروموسومات بعضها عن بعض، فتنقسم الخلية (<b>الانقسام الأول</b>).<br><b>ثم:</b> تصطفُّ أزواج الكروموسومات المزدوجة، ثم تبتعد بعضها عن بعض.<br><b>الأخير:</b> تنقسم الخلية (<b>الانقسام الثاني</b>) فتنتج <b>أربع خلايا</b>، في كلٍّ منها نصف العدد الأصليِّ من الكروموسومات مقارنةً بالخلية الأصلية.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما أهمية أن يُختزل عدد الكروموسومات في بعض الخلايا إلى النصف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٧</span>لأن الخلية المخصبة تتكوَّن باتِّحاد المشيج المذكَّر مع المشيج المؤنث. فلو كان في كلٍّ منهما ٤٦ كروموسومًا لصار في الخلية المخصبة ٩٢ كروموسومًا — أي ضعف العدد الذي يجب أن يكون في كلِّ خلية — ولسبَّب ذلك مشكلات خطيرة. فاختزال العدد إلى ٢٣ في كلِّ خلية جنسية يجعل الخلية المخصبة تحتوي على ٤٦ كروموسومًا فتشبه الخلية الأصلية الأمَّ، وينتقل إلى الابن كروموسومات وصفات وراثية من كِلا الأبوين.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما مدَّة الحياة؟</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><p class="c">كما يوجد للخلية دورة حياة، فإن المخلوقات الحية لها دورات نموٍّ وتكاثر، ثم تموت. ومراحل نموِّ المخلوق الحيِّ تكوِّن دورة حياته. وتشتمل دورة حياة الحيوان على <b>الولادة والنضج والتكاثر والهرم والموت</b>.</p><div class="box note" style="font-size:28px;">يقول تعالى: ﴿وَقَدْ خَلَقَكُمْ أَطْوَارًا﴾ <span class="muted" style="font-size:23px">سورة نوح: الآية ١٤</span></div><div class="box idea" style="font-size:22px;">وأطول فترة زمنية يعيشُها المخلوق في أفضل الظروف تُسمَّى <b>مدَّة الحياة</b>. ومدَّة حياة المخلوق الحيِّ صفة مشتركة بين أفراد نوعه. ومن ذلك مثلًا أن النباتات الحولية نباتات زهرية مدَّة حياتها سنة تقريبًا. ونبات الصنوبر ذو المخاريط الشوكية له مدَّة حياة أكثر من <b>٧٠٠٠ سنة</b>.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>العمر المتوقَّع</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><div class="box idea" style="font-size:27px;">و<b>العمر المتوقَّع</b> هو مقدار الزمن الذي سيعيشه المخلوق الحيُّ. ويختلف مقدار العمر المتوقَّع للمخلوق الحيِّ اعتمادًا على الظروف التي يعيشها.</div><p class="c">وتؤثِّر الظروف البيئية في العمر المتوقَّع، ومنها توافر كمية الغذاء والماء. لكنَّ هذه العوامل لا تؤثِّر في مدَّة الحياة.</p><div class="box note" style="font-size:22px;">ومثال ذلك، فإن متوسط العمر للناس في المملكة العربية السعودية حوالي <b>٧٣ سنةً</b>، ولكنَّ مدَّة الحياة التي يعيشها الإنسان لا يعلمها إلا الله، فقد تمتدُّ إلى أكثر من ١٠٠ سنة. يقول تعالى: ﴿وَلِكُلِّ أُمَّةٍ أَجَلٌ ۖ فَإِذَا جَاءَ أَجَلُهُمْ لَا يَسْتَأْخِرُونَ سَاعَةً ۖ وَلَا يَسْتَقْدِمُونَ﴾ <span class="muted" style="font-size:23px">سورة الأعراف: الآية ٣٤</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الجدول</span><h2>العمر المتوقَّع ومدَّة الحياة</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:26%">المخلوق الحيُّ</th><th>معدَّل العمر المتوقَّع</th><th>أطول مدَّة حياة</th></tr><tr><td>ذبابة المنزل</td><td>١٥ – ٣٠ يومًا</td><td>٧٢ يومًا</td></tr><tr><td>الكلب</td><td>١٢ سنةً</td><td>٢٩ سنةً</td></tr><tr><td>القط</td><td>١٥ سنةً</td><td>٣٤ سنةً</td></tr><tr><td>الدلفين</td><td>٢٠ سنةً</td><td>٥٠ سنةً</td></tr><tr><td>الحصان</td><td>٢٥ سنةً</td><td>٦٢ سنةً</td></tr><tr><td>السلحفاة</td><td>١٠٠ سنة</td><td>أكثر من ١٠٠ سنة</td></tr><tr><td>قصب السكر</td><td>١٠٠ سنة</td><td>٢٥٠ سنةً</td></tr><tr><td>الصنوبر ذو المخاريط الشوكية</td><td>حتى ٧٠٠٠ سنة</td><td>إذ يقدَّر عمرها بأربعة آلاف وسبعمائة عامًا</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الجدول</span><h2>سؤال الكتاب</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><div class="qa"><p class="q">كم مرةً يساوي أطولُ مدَّة حياة لكلٍّ من هذه المخلوقات الحية معدَّلَ العمر المتوقَّع له؟ <br><span class="muted" style="font-size:24px">إرشاد: أقسم أطول مدَّة حياة لكلِّ مخلوق حيٍّ على معدَّل العمر المتوقَّع له.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٨</span><b>ذبابة المنزل:</b> ٧٢ ÷ ٣٠ ≈ ٢٫٤ مرة (أو ٧٢ ÷ ١٥ ≈ ٤٫٨).<br><b>الكلب:</b> ٢٩ ÷ ١٢ ≈ ٢٫٤ مرة &nbsp;·&nbsp; <b>القط:</b> ٣٤ ÷ ١٥ ≈ ٢٫٣ مرة.<br><b>الدلفين:</b> ٥٠ ÷ ٢٠ = ٢٫٥ مرة &nbsp;·&nbsp; <b>الحصان:</b> ٦٢ ÷ ٢٥ ≈ ٢٫٥ مرة.<br><b>قصب السكر:</b> ٢٥٠ ÷ ١٠٠ = ٢٫٥ مرة.<br><b>الخلاصة:</b> أطول مدَّة حياة تساوي تقريبًا <b>ضعفين إلى ضعفين ونصف</b> من معدَّل العمر المتوقَّع.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أتتبَّع.</b> أرسم دورة حياة الإنسان.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٨</span>دورة حياة الإنسان تشتمل على: <b>الولادة ← النموُّ والنضج ← التكاثر ← الهرم ← الموت</b>. وأرسمها على شكل دائرة أو خطٍّ متتابع، وأكتب اسم كل مرحلة تحت رسمها.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> بالإضافة إلى توافر الغذاء والماء، ما العوامل الأخرى التي تؤثِّر في العمر المتوقَّع للمخلوق الحيِّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٨</span>إجابة نموذجية مقترحة: الظروف البيئية عمومًا — كدرجة الحرارة والمناخ، ونقاء الهواء والماء من التلوُّث، ووجود المفترسات، والأمراض والعدوى، وتوافر المأوى، والرعاية الصحية والتطعيمات عند الإنسان، والعادات الصحية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ٥٩</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">تتضمَّن <b>دورة الخلية</b> نموَّ الخلية وانقسامَها.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px"><b>الانقسام المتساوي</b> عملية تنقسم فيها الخلية لتنتج خليتين متماثلتين.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px"><b>الانقسام المنصِّف</b> عملية ينتج عنها أربع خلايا، كلُّ خلية تحتوي على نصف عدد الكروموسومات في الخلية الأصلية.</p></div></div><div class="box note" style="font-size:24px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطويةً كالمبيَّنة في الشكل ألخِّص فيها ما تعلَّمتُه حول انقسام الخلية: (دورة الخلية · الانقسام المتساوي · الانقسام المنصِّف) — الأفكار الرئيسة، وماذا تعلَّمت؟ ورسوم.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">انقسام الخلايا</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">دورة الخلية</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">نموٌّ · تهيُّؤ · انقسام</span><span class="node leaf">محدِّدات حجم الخلية</span><span class="node leaf">السرطان: خلل في التحكُّم</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#9C7B4A;color:#9C7B4A">الانقسام المتساوي</div><div class="line" style="background:#9C7B4A"></div><div class="leaves"><span class="node leaf">في الخلايا الجسميَّة</span><span class="node leaf">انقسام واحد</span><span class="node leaf">خليتان بالعدد نفسه</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#634C2E;color:#634C2E">الانقسام المنصِّف</div><div class="line" style="background:#634C2E"></div><div class="leaves"><span class="node leaf">في الخلايا الجنسية</span><span class="node leaf">انقسامان</span><span class="node leaf">أربع خلايا بنصف العدد</span></div></div><div class="col"><div class="node sub" style="background:#F6F1E8;border-color:#9C7B4A;color:#9C7B4A">مدَّة الحياة</div><div class="line" style="background:#9C7B4A"></div><div class="leaves"><span class="node leaf">أطول فترة في أفضل الظروف</span><span class="node leaf">العمر المتوقَّع يتأثَّر بالظروف</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكِّر وأتحدَّث وأكتب</h2><span class="src">ص ٥٩ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> العملية المستمرة من النموِّ والانقسام والتعويض تُسمَّى …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span><b>دورة الخلية</b>.</div></div><div class="qa"><p class="q">٢. <b>أتتبَّع.</b> فيمَ تشبه مراحل الانقسام المنصِّف مراحل الانقسام المتساوي، وفيمَ تختلف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span><b>التشابه:</b> كلاهما يبدأ في النواة، وفي كليهما تتضاعف الكروموسومات أولًا، ثم تصطفُّ وتنفصل وتنتقل إلى طرفَي الخلية، ثم ينقسم السيتوبلازم فتنتج خلايا أكثر من الخلية الأصلية.<br><b>الاختلاف:</b> في المتساوي <b>انقسام واحد</b> ينتج <b>خليتين</b> بالعدد نفسه من الكروموسومات. وفي المنصِّف <b>انقسامان</b> ينتجان <b>أربع خلايا</b> في كلٍّ منها <b>نصف</b> العدد الأصليِّ، وتصطفُّ فيه الكروموسومات في <b>أزواج</b>.</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> فيمَ تتشابه الخلايا الناتجة عن الانقسام المنصِّف عن الخلايا الأمِّ، وفيمَ تختلف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span><b>التشابه:</b> هي خلايا حية تحمل كروموسومات مأخوذةً من الخلية الأمِّ، وتحمل معلومات وراثية منها.<br><b>الاختلاف:</b> تحتوي كلُّ خلية ناتجة على <b>نصف</b> العدد الأصليِّ من الكروموسومات (٢٣ في الإنسان بدل ٤٦)، وهي <b>خلايا جنسية</b> (مشيج مذكَّر أو مؤنث) لا خلايا جسميَّة، وعددها أربع لا اثنتان، وليست متماثلةً تمامًا مع الأمِّ كما في الانقسام المتساوي.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ٥٩ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> أطول فترة زمنية يعيشُها المخلوق الحيُّ في أفضل الظروف هي:<br>أ. مدَّة الحياة &nbsp;&nbsp; ب. دورة الخلية &nbsp;&nbsp; جـ. العمر المتوقَّع &nbsp;&nbsp; د. دورة الحياة</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span><b>أ - مدَّة الحياة</b>؛ وهي صفة مشتركة بين أفراد النوع الواحد ولا تتأثَّر بتوافر الغذاء والماء.</div></div><div class="qa"><p class="q">٥. <b>أختار الإجابة الصحيحة.</b> ما عدد الكروموسومات الموجودة في الخلية الجنسية عند الإنسان؟<br>أ. ١٢ &nbsp;&nbsp; ب. ٢٣ &nbsp;&nbsp; جـ. ٤٦ &nbsp;&nbsp; د. ٩٢</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span><b>ب - ٢٣</b>؛ فكلُّ خلية جنسية في الإنسان تحتوي على ٢٣ كروموسومًا، ويتَّحد المشيجان لتكوين خلية مخصبة فيها ٤٦ كروموسومًا.</div></div><div class="qa"><p class="q">٦. <b>السؤال الأساسي.</b> كيف تُنتج الخلية خلايا جديدةً؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span>بـ<b>الانقسام</b> ضمن دورة الخلية. ففي <b>الانقسام المتساوي</b> — الذي يحدث في الخلايا الجسميَّة — تتضاعف الكروموسومات ثم تصطفُّ وتنفصل وتنتقل إلى طرفَي الخلية، ثم ينقسم السيتوبلازم فتنتج <b>خليتان متماثلتان</b> بالعدد نفسه من الكروموسومات. وفي <b>الانقسام المنصِّف</b> — الذي تتكوَّن به الخلايا الجنسية — تنقسم النواة <b>مرتين</b> فتنتج <b>أربع خلايا</b> في كلٍّ منها <b>نصف</b> العدد الأصليِّ من الكروموسومات.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والرياضيات · العلوم والمجتمع</h2><span class="src">ص ٥٩ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والرياضيات — أحسب نموَّ الخلية.</b> يُنتج جسم الإنسان ٢٫٣ مليون خلية دم حمراء تقريبًا كلَّ ثانية. ما عدد خلايا الدم التي ينتجها في دقيقة واحدة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span>٢٫٣ مليون × ٦٠ ثانيةً = <b>١٣٨ مليون خلية</b> في الدقيقة الواحدة.</div></div><div class="qa"><p class="q"><b>العلوم والمجتمع — أبحث في العمر المتوقَّع.</b> أبحث كيف تغيَّر متوسط العمر المتوقَّع للإنسان في المملكة العربية السعودية قديمًا وحديثًا، وما سبب هذا التغيُّر؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span>إجابة نموذجية مقترحة: هذا سؤال بحثيٌّ يرجع فيه الطالب إلى مصادر موثوقة. ويرتبط بالدرس في أن <b>الظروف البيئية تؤثِّر في العمر المتوقَّع</b> — ومنها توافر كمية الغذاء والماء — وأن متوسط العمر في المملكة اليوم حوالي <b>٧٣ سنةً</b>. ومن أسباب التغيُّر: تحسُّن الرعاية الصحية والتطعيمات، وتوافر الماء النظيف والغذاء، ومكافحة الأمراض المعدية، وتحسُّن مستوى المعيشة. <span class="muted">(الأرقام التفصيلية من المصادر لا تُنسب إلى صفحات الدرس.)</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="2"><p class="q">عدد الكروموسومات في معظم خلايا الإنسان:</p><div class="opts"><button class="opt" type="button">٢٣</button><button class="opt" type="button">٣٨</button><button class="opt" type="button">٤٦</button><button class="opt" type="button">٩٢</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الانقسام الذي يحدث في الخلايا الجسميَّة هو:</p><div class="opts"><button class="opt" type="button">المنصِّف</button><button class="opt" type="button">المتساوي</button><button class="opt" type="button">الاختزاليُّ</button><button class="opt" type="button">البلعمة</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">عدد الخلايا الناتجة عن الانقسام المنصِّف:</p><div class="opts"><button class="opt" type="button">اثنتان</button><button class="opt" type="button">ثلاث</button><button class="opt" type="button">أربع</button><button class="opt" type="button">ست</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">الخلية الناتجة عن اتِّحاد المشيج المذكَّر والمؤنث تسمَّى:</p><div class="opts"><button class="opt" type="button">الكروموسوم</button><button class="opt" type="button">الخلية المخصبة (اللاقحة)</button><button class="opt" type="button">الخلية الجسميَّة</button><button class="opt" type="button">النواة</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">تستطيع الخلية البكتيرية أن تنتج خليتين جديدتين كلَّ:</p><div class="opts"><button class="opt" type="button">٢٠ دقيقةً</button><button class="opt" type="button">٢٠ ساعةً</button><button class="opt" type="button">١٢٠ يومًا</button><button class="opt" type="button">سنةً</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">يحدث مرض السرطان عندما:</p><div class="opts"><button class="opt" type="button">يتوقَّف انقسام الخلايا</button><button class="opt" type="button">لا يتمُّ السيطرة على انقسام الخلايا ونموِّها</button><button class="opt" type="button">تكبر الفجوات</button><button class="opt" type="button">يزداد الكلوروفيل</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أُرتِّب مراحل الانقسام المتساوي الخمس.</li><li>أُفرِّق بجملة واحدة بين الانقسام المتساوي والمنصِّف.</li><li>أُفرِّق بين مدَّة الحياة والعمر المتوقَّع.</li></ul><div class="box idea" style="font-size:26px;">الفكرة الرئيسة: تُنتج الخلية خلايا جديدة بالانقسام؛ متساوٍ ينتج خليتين مماثلتين، ومنصِّف ينتج أربع خلايا بنصف عدد الكروموسومات.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>محاكاة: مراحل الانقسام المتساوي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1340" height="620" viewBox="0 0 1340 620" xmlns="http://www.w3.org/2000/svg" role="img" id="g6l3SvgHost"><defs><marker id="g6l3mt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><rect x="0" y="0" width="1340" height="620" fill="#FBFCFD"/><g class="eHot" data-k="inter"><circle cx="1090" cy="160" r="62" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><circle cx="1090" cy="160" r="30" fill="#C9B0E0" stroke="#7A5AA8" stroke-width="4"/><path d="M1070 160 q 10 -12 20 0 q 10 12 20 0" stroke="#6B4A92" stroke-width="5" fill="none" stroke-linecap="round"/><g><text x="1090" y="272" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الطور البيني</text><text x="1090" y="272" font-size="25" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الطور البيني</text></g><circle cx="1208" cy="98" r="20" fill="#5F4275"/><text x="1208" y="106" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">١</text><rect class="hitBox" x="958" y="76" width="264" height="172" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M948 160 H 812" stroke="#6B7889" stroke-width="6" stroke-linecap="round" marker-end="url(#g6l3mt)"/><g class="eHot" data-k="pro"><circle cx="670" cy="160" r="62" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><circle cx="670" cy="160" r="34" fill="none" stroke="#9C7BC4" stroke-width="3" stroke-dasharray="7 6"/><path d="M648 151 l14 -9 M648 141 l14 9" stroke="#C0392B" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M670 161 l14 -9 M670 151 l14 9" stroke="#C0392B" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M656 179 l14 -9 M656 169 l14 9" stroke="#C0392B" stroke-width="7" stroke-linecap="round" fill="none"/><g><text x="670" y="272" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الطور التمهيدي</text><text x="670" y="272" font-size="25" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الطور التمهيدي</text></g><circle cx="788" cy="98" r="20" fill="#5F4275"/><text x="788" y="106" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٢</text><rect class="hitBox" x="538" y="76" width="264" height="172" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M528 160 H 392" stroke="#6B7889" stroke-width="6" stroke-linecap="round" marker-end="url(#g6l3mt)"/><g class="eHot" data-k="meta"><circle cx="250" cy="160" r="62" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><path d="M194 160 L244 136 M194 160 L244 184 M306 160 L256 136 M306 160 L256 184" stroke="#8A97A0" stroke-width="2.5" fill="none"/><path d="M236 136 h28" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/><path d="M236 160 h28" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/><path d="M236 184 h28" stroke="#C0392B" stroke-width="9" stroke-linecap="round"/><line x1="250" y1="106" x2="250" y2="214" stroke="#8A97A0" stroke-width="3" stroke-dasharray="6 6"/><g><text x="250" y="272" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الطور الاستوائي</text><text x="250" y="272" font-size="25" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الطور الاستوائي</text></g><circle cx="368" cy="98" r="20" fill="#5F4275"/><text x="368" y="106" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٣</text><rect class="hitBox" x="118" y="76" width="264" height="172" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="ana"><circle cx="1090" cy="430" r="62" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><path d="M1042 408 h22" stroke="#C0392B" stroke-width="8" stroke-linecap="round"/><path d="M1116 408 h22" stroke="#C0392B" stroke-width="8" stroke-linecap="round"/><path d="M1042 430 h22" stroke="#C0392B" stroke-width="8" stroke-linecap="round"/><path d="M1116 430 h22" stroke="#C0392B" stroke-width="8" stroke-linecap="round"/><path d="M1042 452 h22" stroke="#C0392B" stroke-width="8" stroke-linecap="round"/><path d="M1116 452 h22" stroke="#C0392B" stroke-width="8" stroke-linecap="round"/><path d="M1077 390 h26 M1077 470 h26" stroke="#8A97A0" stroke-width="3" stroke-dasharray="5 5"/><g><text x="1090" y="542" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الطور الانفصالي</text><text x="1090" y="542" font-size="25" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الطور الانفصالي</text></g><circle cx="1208" cy="368" r="20" fill="#5F4275"/><text x="1208" y="376" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٤</text><rect class="hitBox" x="958" y="346" width="264" height="172" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M948 430 H 812" stroke="#6B7889" stroke-width="6" stroke-linecap="round" marker-end="url(#g6l3mt)"/><g class="eHot" data-k="telo"><ellipse cx="636" cy="430" rx="52" ry="62" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><ellipse cx="704" cy="430" rx="52" ry="62" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><circle cx="630" cy="430" r="24" fill="#C9B0E0" stroke="#7A5AA8" stroke-width="4"/><circle cx="710" cy="430" r="24" fill="#C9B0E0" stroke="#7A5AA8" stroke-width="4"/><g><text x="670" y="542" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الطور النهائي</text><text x="670" y="542" font-size="25" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الطور النهائي</text></g><circle cx="788" cy="368" r="20" fill="#5F4275"/><text x="788" y="376" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٥</text><rect class="hitBox" x="538" y="346" width="264" height="172" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M528 430 H 392" stroke="#6B7889" stroke-width="6" stroke-linecap="round" marker-end="url(#g6l3mt)"/><g class="eHot" data-k="two"><circle cx="178" cy="430" r="52" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><circle cx="178" cy="430" r="23" fill="#C9B0E0" stroke="#7A5AA8" stroke-width="4"/><circle cx="322" cy="430" r="52" fill="#F3E7F8" stroke="#7A5AA8" stroke-width="6"/><circle cx="322" cy="430" r="23" fill="#C9B0E0" stroke="#7A5AA8" stroke-width="4"/><g><text x="250" y="542" font-size="25" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">خليتان جديدتان</text><text x="250" y="542" font-size="25" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">خليتان جديدتان</text></g><circle cx="368" cy="368" r="20" fill="#5F4275"/><text x="368" y="376" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">٦</text><rect class="hitBox" x="118" y="346" width="264" height="172" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><path d="M250 306 C 250 348, 1090 322, 1090 350" stroke="#6B7889" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="12 9" marker-end="url(#g6l3mt)"/></svg><div class="eCap">مراحل الانقسام المتساوي: من خليةٍ واحدةٍ إلى خليتين متماثلتين.</div></div><div class="eSteps" id="g6l3Pills"><span class="eStepPill" data-s="0">الطور البيني</span><span class="eStepPill" data-s="1">الطور التمهيدي</span><span class="eStepPill" data-s="2">الطور الاستوائي</span><span class="eStepPill" data-s="3">الطور الانفصالي</span><span class="eStepPill" data-s="4">الطور النهائي</span><span class="eStepPill" data-s="5">خليتان جديدتان</span></div><div class="eInfo" id="g6l3Info">اضغط على أيِّ مرحلةٍ أو تابع بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g6l3Prev">◀ السابقة</button><button class="simBtn" type="button" id="g6l3Next">التالية ▶</button></div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — لماذا تنقسم الخلايا؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>حين يُجرَح جلدك ثم يلتئم، فإن الذي أغلق الجرح هو <b>انقسام الخلايا</b> وإنتاجها خلايا جديدة.</p></div><div class="fFact"><div class="n">٢</div><p>نموُّك في الطول ليس تضخُّمًا في حجم خلاياك، بل <b>ازديادٌ في عددها</b> بالانقسام.</p></div><div class="fFact"><div class="n">٣</div><p>الخليتان الناتجتان عن الانقسام المتساوي <b>متماثلتان تمامًا</b> في عدد الكروموسومات؛ ولذلك تبقى صفاتُ الجسم ثابتة.</p></div></div><div class="fCap">الانقسام سرُّ النموِّ وسرُّ التئام الجروح.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s6c1"><div class="fCard"><div class="fIn"><div class="fF"><span>دورة الخلية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>العملية المستمرة من النموِّ والانقسام والتعويض.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الكروموسوم</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>شريط صغير داخل نواة الخلية يحمل تفاصيلَ كاملةً عن المخلوق الحيِّ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الانقسام المتساوي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>عملية تنقسم فيها الخلية لتنتج خليتين متماثلتين.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>مشيج مذكَّر (الحيوان المنويُّ)</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الخلية الجنسية الذكرية، صغيرة جدًّا وقادرة على الحركة ذاتيًّا.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>مشيج مؤنث (البُوَيضة)</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>الخلية الجنسية الأنثوية، أكبر من الحيوان المنويِّ ولا تتحرَّك ذاتيًّا.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الخلية المخصبة (اللاقحة)</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تتكوَّن باتِّحاد المشيج المذكَّر والمشيج المؤنث.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6c1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب مراحل الانقسام</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s6c2P"><button class="fChip" type="button" data-i="0">الطور البيني</button><button class="fChip" type="button" data-i="1">التمهيدي</button><button class="fChip" type="button" data-i="4">النهائي</button><button class="fChip" type="button" data-i="3">الانفصالي</button><button class="fChip" type="button" data-i="2">الاستوائي</button></div><div class="fSlots" id="s6c2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div><div class="fSlot">٥</div></div><div class="fFb" id="s6c2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s6c2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب مراحل الانقسام المتساوي بالترتيب الصحيح.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>لاحظ بنفسك</h4><p>تأمَّل خدشًا قديمًا في يدك: كيف اختفى؟ خلايا جديدةٌ حلَّت محلَّ التالفة.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لو توقَّفت خلايا جسمك عن الانقسام، فما الذي سيحدث للجروح؟ وللنموِّ؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="6" aria-label="إثراء مصور: انقسام الخلايا">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">لماذا تحتاج الخلية إلى نسخ مادتها الوراثية قبل توزيعها على الخلايا الناتجة؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/cells.jpg" alt="صورة مجهرية لخلايا بشرة البصل المتجاورة" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>خلايا من بشرة البصل كما تظهر بالمجهر الضوئي؛ يمكن ملاحظة الجدران التي تحدد شكل الخلايا.</figcaption><p class="se-credit">الصورة: Mccloughlin · <a href="https://commons.wikimedia.org/wiki/File:Onion_epidermis_high_power.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>تنسخ الخلية مادتها الوراثية قبل الانقسام، ثم توزع النسخ وفق خطوات منظمة على الخلايا الناتجة.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>ينتج الانقسام المتساوي عادة خليتين لهما العدد نفسه من الكروموسومات الموجود في الخلية الأصلية.</span></p>
+<p class="se-fact"><span aria-hidden="true">🧬</span><span>يخفض الانقسام المنصف عدد مجموعات الكروموسومات إلى النصف، وتعيد عملية الإخصاب جمع مجموعتين.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.genome.gov/genetics-glossary/Cell-Cycle" target="_blank" rel="noopener noreferrer">NHGRI: دورة الخلية</a></li><li><a href="https://www.genome.gov/genetics-glossary/Meiosis" target="_blank" rel="noopener noreferrer">NHGRI: الانقسام المنصف</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="6" aria-label="رسم توضيحي: قارن نواتج المتساوي والمنصف من خلية">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>قارن نواتج المتساوي والمنصف من خلية</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="قارن نواتج المتساوي والمنصف من خلية"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🧫</span><span class="se-node-label">خلية أصلية افتراضية</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🟦</span><span class="se-node-label">انقسام متساوٍ</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🟪</span><span class="se-node-label">انقسام منصف</span></button></div>
+
+<p class="se-diagram-caption">مقارنة لمسارين بديلين، وليست خطوات متتابعة. المثال لا يمثل عدد كروموسومات الإنسان، والنواتج المنصفة هنا خلايا نموذجية.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🧫</span><div><strong data-detail-title>خلية أصلية افتراضية</strong><p data-detail-text>٤ كروموسومات في هذه الخلية.</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="6" aria-label="محاكاة إثرائية: تتبع أجيال الخلايا في الانقسام المتساوي">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>تتبع أجيال الخلايا في الانقسام المتساوي</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير عدد الخلايا إذا انقسمت كل خلية مرة في كل جيل، دون موت خلايا؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">الجيل في النموذج</p><div class="se-options" role="group" aria-label="الجيل في النموذج"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">البداية</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">بعد جيل واحد</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">بعد جيلين</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">هذه أعداد خلايا في نموذج مثالي، وليست كروموسومات أو معدل نمو نسيج حقيقي؛ لا يحاكي النشاط الانقسام المنصف.</p></div>
+ <div class="se-result"><p class="se-model-label">عدد الخلايا النموذجية المنحدرة من خلية بداية واحدة</p><div class="se-model" role="img" data-model aria-label="خلية البداية"><span class="se-symbol se-active" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span><span class="se-symbol" aria-hidden="true">🧫</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>خلية البداية</p><p class="se-observation" data-observation>خلية واحدة في المجموعة.</p></div><p class="se-explanation" data-explanation>نبدأ بخلية نموذجية واحدة، ونفترض توافر حاجاتها. قبل كل انقسام تنسخ مادتها الوراثية استعدادًا للتوزيع.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 ما عدد الخلايا المتوقع بعد جيل ثالث إذا استمرت الافتراضات نفسها؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف السادس الابتدائي — الجزء الأول من المقرر<br>الوحدة الأولى: تنوع الحياة · الفصل الثاني: الخلية والوراثة · انقسام الخلايا<br>المصدر: كتاب الطالب، صفحات الكتاب: ٥٠ – ٥٩ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['ينتج خليتين متماثلتين','mit','الانقسام المتساوي ينتج خليتين تماثل كلٌّ منهما الخلية الأصلية.'],
+           ['ينتج أربع خلايا جديدة','mei','في الانقسام المنصِّف تنقسم النواة مرتين.'],
+           ['يحدث في الخلايا الجسميَّة كخلايا الجلد والعظام','mit','ومنها خلايا الدم البيضاء وخلايا العضلات.'],
+           ['تحتوي الخلايا الناتجة على نصف العدد الأصليِّ','mei','فتحتوي الخلية الجنسية في الإنسان على ٢٣ كروموسومًا.'],
+           ['يحدث انقسام واحد فقط','mit','بينما يحدث انقسامان في المنصِّف.'],
+           ['تتكوَّن به الحيوانات المنوية والبُوَيضات','mei','فهو انقسام الخلايا الجنسية.'],
+           ['تتكوَّن فيه صفيحة خلوية في الخلية النباتية','mit','لأن للخلية النباتية جدارًا خلويًّا.'],
+           ['تصطفُّ فيه أزواج الكروموسومات المزدوجة','mei','خطوة من خطوات الانقسام المنصِّف.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع العبارات.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='عبارة '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g6l3SvgHost','g6l3Info',{'inter':'<span><b>الطور البيني</b> — تنمو الخلية وتؤدِّي وظائفها، و<b>تتضاعف المادة الوراثية</b> استعدادًا للانقسام.</span>','pro':'<span><b>الطور التمهيدي</b> — تتكثَّف <b>الكروموسومات</b> فتصبح مرئية، ويبدأ الغشاء النووي بالتلاشي.</span>','meta':'<span><b>الطور الاستوائي</b> — تصطفُّ الكروموسومات في <b>وسط الخلية</b> على خطٍّ واحد.</span>','ana':'<span><b>الطور الانفصالي</b> — تنفصل الكروموسومات ويتحرَّك نصفها إلى <b>كلِّ قطبٍ</b> من قطبَي الخلية.</span>','telo':'<span><b>الطور النهائي</b> — يتكوَّن غشاءٌ نوويٌّ حول كلِّ مجموعة، وتبدأ الخلية بالانقسام إلى قسمين.</span>','two':'<span><b>خليتان جديدتان</b> — تنتج <b>خليتان متماثلتان</b> لكلٍّ منهما العدد نفسه من الكروموسومات.</span>'},'');
+ERT.stepper({pills:'g6l3Pills', info:'g6l3Info', svg:'g6l3SvgHost', next:'g6l3Next', prev:'g6l3Prev', stages:[['inter','الطور البيني','تنمو الخلية وتؤدِّي وظائفها، و<b>تتضاعف المادة الوراثية</b> استعدادًا للانقسام.'],['pro','الطور التمهيدي','تتكثَّف <b>الكروموسومات</b> فتصبح مرئية، ويبدأ الغشاء النووي بالتلاشي.'],['meta','الطور الاستوائي','تصطفُّ الكروموسومات في <b>وسط الخلية</b> على خطٍّ واحد.'],['ana','الطور الانفصالي','تنفصل الكروموسومات ويتحرَّك نصفها إلى <b>كلِّ قطبٍ</b> من قطبَي الخلية.'],['telo','الطور النهائي','يتكوَّن غشاءٌ نوويٌّ حول كلِّ مجموعة، وتبدأ الخلية بالانقسام إلى قسمين.'],['two','خليتان جديدتان','تنتج <b>خليتان متماثلتان</b> لكلٍّ منهما العدد نفسه من الكروموسومات.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s6c1');
+EG.order({pool:'s6c2P', slots:'s6c2S', fb:'s6c2Fb', reset:'s6c2R', n:5});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"06_الصف_السادس_الابتدائي/01_تنوع_الحياة/02_الخلية_والوراثة/01_انقسام_الخلايا/علوم_سادس_ابتدائي_ف1_الدرس_الأول_انقسام_الخلايا.html","title":"انقسام الخلايا","grade":6,"emoji":"🧬","photoTopic":"cells","observeQuestion":"لماذا تحتاج الخلية إلى نسخ مادتها الوراثية قبل توزيعها على الخلايا الناتجة؟","facts":["تنسخ الخلية مادتها الوراثية قبل الانقسام، ثم توزع النسخ وفق خطوات منظمة على الخلايا الناتجة.","ينتج الانقسام المتساوي عادة خليتين لهما العدد نفسه من الكروموسومات الموجود في الخلية الأصلية.","يخفض الانقسام المنصف عدد مجموعات الكروموسومات إلى النصف، وتعيد عملية الإخصاب جمع مجموعتين."],"diagram":{"title":"قارن نواتج المتساوي والمنصف من خلية","relation":"comparison","nodes":[{"emoji":"🧫","label":"خلية أصلية افتراضية","detail":"٤ كروموسومات في هذه الخلية."},{"emoji":"🟦","label":"انقسام متساوٍ","detail":"خليتان؛ ٤ كروموسومات في كل خلية."},{"emoji":"🟪","label":"انقسام منصف","detail":"٤ خلايا؛ كروموسومان في كل خلية."}],"caption":"مقارنة لمسارين بديلين، وليست خطوات متتابعة. المثال لا يمثل عدد كروموسومات الإنسان، والنواتج المنصفة هنا خلايا نموذجية."},"lab":{"title":"تتبع أجيال الخلايا في الانقسام المتساوي","question":"كيف يتغير عدد الخلايا إذا انقسمت كل خلية مرة في كل جيل، دون موت خلايا؟","controlLabel":"الجيل في النموذج","options":["البداية","بعد جيل واحد","بعد جيلين"],"states":[{"label":"خلية البداية","emoji":"🧫","amount":1,"explanation":"نبدأ بخلية نموذجية واحدة، ونفترض توافر حاجاتها. قبل كل انقسام تنسخ مادتها الوراثية استعدادًا للتوزيع.","observation":"خلية واحدة في المجموعة."},{"label":"ناتج الانقسام الأول","emoji":"🧫","amount":2,"explanation":"بعد انقسام متساوٍ واحد واكتمال انفصال السيتوبلازم، تصبح المجموعة خليتين؛ ويحافظ كل منهما على عدد كروموسومات الخلية الأصلية.","observation":"خليتان من خلية البداية."},{"label":"ناتج الجيل الثاني","emoji":"🧫","amount":4,"explanation":"تنقسم كل واحدة من الخليتين انقسامًا متساويًا جديدًا، فتصبح المجموعة أربع خلايا. يظل عدد الكروموسومات في كل خلية ثابتًا.","observation":"أربع خلايا بعد جيلين."}],"quantityLabel":"عدد الخلايا النموذجية المنحدرة من خلية بداية واحدة","modelNote":"هذه أعداد خلايا في نموذج مثالي، وليست كروموسومات أو معدل نمو نسيج حقيقي؛ لا يحاكي النشاط الانقسام المنصف.","tryPrompt":"ما عدد الخلايا المتوقع بعد جيل ثالث إذا استمرت الافتراضات نفسها؟"},"sources":[{"title":"NHGRI: دورة الخلية","url":"https://www.genome.gov/genetics-glossary/Cell-Cycle"},{"title":"NHGRI: الانقسام المنصف","url":"https://www.genome.gov/genetics-glossary/Meiosis"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

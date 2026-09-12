@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – خامس ابتدائي – ف1 – التكيف والبقاء</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#3E9A8A;--g-dark:#245F55;--g-light:#E9F5F2}
+.card{border-color:#B9DED6}
+.cover{background:linear-gradient(140deg,#245F55 0%,#3E9A8A 55%,#7CC2B6 100%)}
+.endS{background:linear-gradient(140deg,#245F55,#3E9A8A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>التكيف والبقاء</h1><div class="rule"></div>
+<div class="meta">الصف الخامس الابتدائي<br>الوحدة الثانية: الأنظمة البيئية<br>الفصل الثالث: التفاعلات في الأنظمة البيئية — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ٩٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الثانية</h3><p>الأنظمة البيئية</p></div><div class="card"><h3>الفصل الثالث</h3><p>التفاعلات في الأنظمة البيئية</p></div><div class="card"><h3>الدرس الثاني</h3><p>التكيف والبقاء</p></div></div><div class="box idea" style="font-size:29px;">السؤال الأساسي: كيف يساعد التكيُّف المخلوقات الحية على البقاء في بيئاتها؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:27px"><li>أُعرِّف التكيُّف وأُبيِّن نوعَيه.</li><li>أُميِّز التكيُّفات التركيبية وأذكر أمثلة عليها.</li><li>أَصِف التكيُّفات السلوكية وأمثلتها.</li><li>أذكر بعض تكيُّفات النبات في بيئات مختلفة.</li><li>أُوضِّح تكيُّفات الحيوانات في البيئات الباردة والصحراوية والمائية.</li><li>أُفرِّق بين التمويه والتلوُّن والتشابه والمحاكاة.</li><li>أُوظِّف مهارة <b>مشكلة وحلّ</b>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:33px;">لماذا لا تنغرس أرجل الجمل في رمال الصحراء وهو ثقيل الوزن؟</div><p class="c">لأن خُفَّه مسطَّح وكبير — وهذا <b>تكيُّف تركيبي</b>. لنتعرَّف كيف يساعد التكيُّف على البقاء.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>الموطن والإطار البيئي</h3><p>لكل مخلوق مكان ودور خاصٌّ به.</p></div><div class="card center" style="text-align:center;"><h3>المفترس والفريسة</h3><p>علاقة يستفيد فيها المفترس على حساب الفريسة.</p></div><div class="card center" style="text-align:center;"><h3>العوامل المحدِّدة</h3><p>تتحكَّم في نمو الجماعات الحيوية.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(4,1fr)"><div class="card"><h3>التكيُّف</h3><p style="font-size:25px">خواصُّ تركيبية وسلوكية تساعد المخلوقات الحية على البقاء في بيئاتها.</p></div><div class="card"><h3>الحيوان المفترس</h3><p style="font-size:25px">حيوان يصطاد غيره ليحصل على غذائه.</p></div><div class="card"><h3>الفريسة</h3><p style="font-size:25px">المخلوق الحي الذي يصطاده المفترس.</p></div><div class="card"><h3>التمويه</h3><p style="font-size:25px">محاكاة الأشكال والألوان الطبيعية في البيئة بحيث يصعب تمييز الحيوان من محيطها.</p></div><div class="card"><h3>التلوُّن</h3><p style="font-size:25px">نوع من التمويه؛ فلون الحيوان يساعده على الاندماج مع المكان الذي يعيش فيه.</p></div><div class="card"><h3>التشابه</h3><p style="font-size:25px">نوع من التمويه يتطابق فيه لون الحيوان وشكله وتركيبه مع البيئة.</p></div><div class="card"><h3>المحاكاة</h3><p style="font-size:25px">التكيُّف الذي يلجأ فيه حيوان إلى حماية نفسه عن طريق التشبُّه بحيوان آخر.</p></div></div><div class="box note" style="font-size:27px;">مهارة القراءة في هذا الدرس: <b>مشكلة وحلّ</b> (المشكلة ← خطوات الحل ← الحل).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>كيف تكيَّفت دودة الأرض للعَيْش في بيئتها؟</h2><span class="src">ص ٩٧ — نشاط الكتاب</span></div>
+<div class="body"><div class="box ask" style="font-size:25px;"><b>أكوِّن فرضية:</b> تعيش ديدان الأرض تحت سطح التربة حيث الظلمة والرطوبة التي تحافظ على جلدها رطبًا. تُرى كيف تستجيب دودة الأرض للضوء؟ أكتب إجابتي على شكل فرضية على النحو التالي: «إذا وُضعت دودة الأرض في منطقة مضيئة فإنها تتحرَّك …………».</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:0 0 280px"><p class="c"><b>أحتاج إلى:</b></p><ul class="list" style="font-size:25px"><li>دودة أرض</li><li>مناديل ورقية سميكة</li><li>وعاء بلاستيكيٌّ</li><li>تربة طينية</li><li>ورقة سوداء</li><li>قفازات</li></ul></div><div style="flex:1 1 0"><p class="c"><b>أختبر فرضيَّتي:</b></p><ul class="list num" style="font-size:25px"><li><b>ألاحظ.</b> أضع مناديل ورقية سميكة ومبلَّلة في قاع وعاء بلاستيكيٍّ، ثم أضع دودة الأرض في وسطها. ماذا تفعل الدودة؟ كيف تتحرَّك؟</li><li><b>أجرِّب.</b> أضع ورقةً سوداء على نصف قاع الوعاء البلاستيكيِّ. ألاحظ كيف تستجيب دودة الأرض لهذا التغير؟ وأسجِّل ملاحظاتي.</li></ul><div class="box safe" style="font-size:24px;">ألبس القفازات، وأتعامل مع الدودة برفق، وأعيدها إلى التربة بعد النشاط، وأغسل يديَّ جيدًا.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ٩٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٣. <b>أفسِّر البيانات.</b> هل تدعم التجربة فرضيتي حول كيفية استجابة دودة الأرض للبيئة؟ أوضِّح إجابتي.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٩٧</span>إجابة نموذجية مقترحة: نعم؛ تتحرَّك دودة الأرض مبتعدةً عن الضوء ومتَّجهةً إلى الجزء المظلَّل تحت الورقة السوداء. وهذا يدعم الفرضية «إذا وُضعت دودة الأرض في منطقة مضيئة فإنها تتحرَّك <b>بعيدًا عن الضوء</b>». والسبب أنها تكيَّفت على العيش تحت سطح التربة حيث الظلمة والرطوبة التي تحافظ على جلدها رطبًا.</div></div><div class="box ask" style="font-size:27px;"><b>أستكشف أكثر:</b> هل تختلف استجابة دودة الأرض باختلاف لون الإضاءة؟ أضع خطَّةً لاختبار أثر لون الضوء الأبيض في دودة الأرض، وأسجِّل ملاحظاتي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما التكيُّف؟</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><div class="box idea" style="font-size:26px;">من حكمة الله سبحانه وتعالى أن جعل لكثير من المخلوقات الحَيَة <b>تكيُّفات</b> (خواصَّ تركيبية وسلوكية) تساعدها على البقاء في بيئاتها، وجعل هذه المخلوقات تورِّث هذه التكيفات للأجيال اللاحقة.</div><p class="c">والتكيُّف نوعان: <b>تركيبيٌّ</b>، و<b>سلوكيٌّ</b>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التكيُّفات التركيبية</h2><span class="src">ص ٩٨</span></div>
+<div class="body"><p class="c">التكيُّفات التركيبية تغيُّرات في تراكيب الجسم الداخلية أو الخارجيَّة. فلون الفرو، والأطراف الطويلة، والفكوك القويَّة، والقدرة على الرَّكض السَّريع، جميعُها تكيُّفات تركيبيَّة. وبعض هذه التكيفات تساعد المخلوقات الحية على البقاء في بيئتها بمشيئة الله تعالى.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>البطُّ</h3><p style="font-size:26px">له أرجل مسطَّحة ملتصقة الأصابع، وهذا تكيُّف تركيبيٌّ يساعده على العوم في الماء.</p></div><div class="card center" style="text-align:center;"><h3>الجمل</h3><p style="font-size:26px">خُفُّ الجمل مسطَّح وكبير، ويساعده على السير في الصحراء دون أن تنغرس أرجله في الرمال.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تكيُّفات الحماية والافتراس</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><p class="c">وهناك أنواع من التكيُّفات التركيبيَّة توفِّر الحماية للفرائس من <b>الحيوانات المفترسة</b>، وأخرى تساعد الحيوانات المفترسة على اصطياد فرائسها.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>السلاحف</h3><p style="font-size:27px">لها غطاء صلب يحميها من الحيوانات المفترسة.</p></div><div class="card center" style="text-align:center;"><h3>سمك القرش</h3><p style="font-size:27px">له حاسة شمٍّ قويَّة وأسنان حادَّة تساعدانه على الإمساك بفريسته.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التكيُّفات السَّلوكية</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><div class="box idea" style="font-size:31px;">يسمَّى التَّعديل في سلوك المخلوق الحيِّ <b>التكيفَ السُّلوكيَّ</b>.</div><p class="c">فالذئاب مثلًا تتنقَّل في مجموعات؛ لتتمكَّن من اصطياد <b>فريسة</b> كبيرة لا يستطيع ذئب واحد اصطيادها بمفرده. في المقابل تعيش معظم الفرائس وتتنقَّل في مجموعات؛ لتوفِّر الحماية لأنفسها من الأعداء، ومن ذلك مجموعات القردة في جبال عسير.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الهجرة والبيات الشتوي</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><p class="c">وتساعد التكيفات السَّلوكية الحيوانات على البقاء وخصوصًا في أثناء التغيُّرات الموسمية في المناخ.</p><div class="cards"><div class="card"><h3>الهجرة</h3><p style="font-size:26px">ومن ذلك هجرة الأسماك والطيور والفراشات؛ حيث تنتقل بعض الحيوانات في المواسم المختلفة من أجل الطعام والتكاثر في ظروف أفضل.</p></div><div class="card"><h3>البيات الشتويُّ</h3><p style="font-size:26px">وبعضها الآخر يعيش حالة البيات الشتويِّ في المواسم الباردة، ثم يعود إلى نشاطه عند ارتفاع درجات الحرارة في الربيع.</p></div></div><div class="box note" style="font-size:24px;">أنَّ التغيرات في الخصائص الفيزيائيَّة والسلوكيَّة بين الأفراد في المجتمع تمنح بعض الأفراد ميزة الاستمرار في الحياة وتنقل خصائصها للأجيال اللاحقة (النَّسل).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٩٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>مشكلة وحلٌّ.</b> كيف تأكل فقمة البحر الحيوانات ذات القشرة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٩٩</span><b>المشكلة:</b> الحيوانات ذات الغطاء — ومنها السرطان — قشرتها صلبة يصعب كسرها.<br><b>خطوات الحل:</b> تقوم فقمة البحر بكسر القشرة بصخرة صغيرة تضعها على بطنها، تستخدمها في ضغط السرطان على صخور الشاطئ.<br><b>الحل:</b> فتكسر صدفته وتأكله. وهذا <b>تكيُّف سلوكيٌّ</b>.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما التكيفات التركيبية والسُّلوكية لدى الإنسان؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٩٩</span><b>تركيبية:</b> كاتساع حدقة العين في الأماكن المُعتمة وضيقها عند الإضاءة القويَّة.<br><b>سلوكية:</b> تعلُّم مهارة الصَّيد باستخدام صخور وأدوات وأسلحة صغيرة أخرى، واستخدام التَّقنية لصناعة أجهزة للتَّبريد والتَّدفئة للتكيُّف مع أحوال الطَّقس المختلفة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما بعض تكيُّفات النبات؟</h2><span class="src">ص ١٠٠</span></div>
+<div class="body"><p class="c">لأزهار النَّباتات المغطَّاة البذور رائحة عطرة وزكيَّة، تجذب ناقلات حبوب اللقاح من الطيور والحشرات، كما أنَّ لها أوراقًا تلتقط ضوء الشمس، وجذورًا تمتصُّ الماء. وجميع هذه التكيفات تساعد هذه النباتات على البقاء.</p><div class="box idea" style="font-size:30px;">ولبعض النباتات تكيُّفات تركيبية تختلف بحسب بيئاتها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تكيُّفات نباتات الغابة المطيرة</h2><span class="src">ص ١٠٠</span></div>
+<div class="body"><p class="c">فالأوركيدا مثلًا — وهو من نباتات الغابة المطيرة — له تكيُّفات تساعده على البقاء رطبًا في درجات الحرارة العالية:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الساق</h3><p style="font-size:26px">أعضاء منتفخة من الساق لتخزين الماء.</p></div><div class="card center" style="text-align:center;"><h3>الجذور</h3><p style="font-size:26px">جذور هوائية تمتصُّ الماء من الهواء الرَّطب.</p></div><div class="card center" style="text-align:center;"><h3>الأوراق</h3><p style="font-size:26px">متكيِّفة بحيث تتخلَّص من الماء الزائد بسهولة.</p></div></div><div class="box note" style="font-size:26px;">أمَّا بعض نباتات الغابة — ومنها شجر البلُّوط — فتفقد أوراقَها في الشِّتاء، وهذا يساعدها على عدم فقدان الماء.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤال الكتاب</h2><span class="src">ص ١٠٠</span></div>
+<div class="body"><div class="qa"><p class="q">أيُّ جزء من نبات الأوركيدا يحتوي على الأعضاء المنتفخة؟ <br><span class="muted" style="font-size:24px">إرشاد: أنظر إلى الشكل والصورة. بأيِّ جزء تلتصق الأعضاء المنتفخة؟</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٠</span><b>الساق</b>؛ فالأعضاء المنتفخة أعضاء من الساق تلتصق به، ووظيفتها تخزين الماء.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تكيُّفات الصبَّار والنباتات المائية</h2><span class="src">ص ١٠١</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>نباتات الصبَّار</h3><p style="font-size:26px">تعيش في بيئة حارَّة وجافَّة، وتمتاز بأنَّ لها سيقانًا سميكة ذات طبقة شمعية تمنع فقدان الماء، ولها جذور كثيفة قريبة من السطح تمتصُّ ماء المطر بسرعة.</p></div><div class="card"><h3>النَّباتات المائية</h3><p style="font-size:26px">ومنها نبات الزنبق — لها ثغور على سطح الأوراق تساعدها على إدخال ثاني أكسيد الكربون، والتخلُّص من الأكسجين.</p></div></div><div class="box note" style="font-size:26px;"><b>تكيُّف مائيٌّ:</b> لنبات الزنبق ثغور على سطح الأوراق؛ لأن الجزء الأسفل من الورقة مغطًّى بالماء.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الدفاع ضدَّ آكلات الأعشاب</h2><span class="src">ص ١٠١</span></div>
+<div class="body"><p class="c">ولبعض النَّباتات تكيُّفات تساعدها على الدفاع عن نفسها ضدَّ آكلات الأعشاب.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>مواد كريهة الطعم</h3><p style="font-size:26px">فبعض النَّباتات مثلًا تفرز موادَّ كيميائية كريهة الطعم، فتمتنع آكلات الأعشاب من تناولها.</p></div><div class="card center" style="text-align:center;"><h3>مواد سامَّة</h3><p style="font-size:26px">وبعضها الآخر يفرز موادَّ كيميائية سامَّة لمعظم الحيوانات.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>تكيُّف الورقة</h2><span class="src">ص ١٠١ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:27px"><li>أتفحَّص أوراق نبات الرمث، ونبات التين البريِّ (الحماط)، ونبات لسان البحر، ثم أرسم ما أراه.</li><li><b>أقيس.</b> أستعمل المسطرة لقياس طول كل ورقة، ثم أسجِّل البيانات.</li><li><b>أقارن</b> بين الأوراق المختلفة.</li><li><b>أستنتج.</b> مع أيِّ أنواع البيئات تكيَّفت هذه الأوراق؟ أفسِّر إجابتي.</li></ul><div class="qa"><p class="q">٤. <b>أستنتج.</b> مع أيِّ أنواع البيئات تكيَّفت هذه الأوراق؟ أفسِّر إجابتي.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠١</span>إجابة نموذجية مقترحة: <b>الرمث</b> نبات صحراويٌّ؛ أوراقه صغيرة سميكة عصيرية تقلِّل فقدان الماء وتخزنه، فتكيَّف مع البيئة الحارَّة الجافَّة. و<b>التين البريُّ (الحماط)</b> أوراقه عريضة تلتقط أكبر قدر من ضوء الشمس، فتكيَّف مع البيئة الجبلية المعتدلة الرطبة. و<b>لسان البحر</b> نبات مائيٌّ؛ أوراقه شريطية طويلة تنساب مع حركة الماء، فتكيَّف مع البيئة المائية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٠١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>مشكلة وحلٌّ.</b> ما الذي يساعد النباتات المائية على التخلُّص من الأكسجين وأخذ ثاني أكسيد الكربون؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠١</span><b>المشكلة:</b> الجزء الأسفل من ورقة النبات المائي مغطًّى بالماء، فلا تستطيع الثغور السفلية العمل.<br><b>الحل:</b> لهذه النباتات — ومنها نبات الزنبق — <b>ثغور على سطح الأوراق</b> (الوجه العلويِّ) تساعدها على إدخال ثاني أكسيد الكربون والتخلُّص من الأكسجين.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> لماذا تتناسب التكيُّفات مع البيئة دائمًا؟ مثال: لماذا لا يملك نبات الصبَّار أوراقًا ليتخلَّص من الماء الزائد؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠١</span>لأن التكيُّف صفة تساعد المخلوق على <b>البقاء في بيئته هو</b>، فتكون ملائمة لظروف تلك البيئة. والصبَّار يعيش في بيئة حارَّة جافَّة الماء فيها نادر، فحاجته إلى <b>الاحتفاظ</b> بالماء لا إلى التخلُّص منه؛ لذا له سيقان سميكة ذات طبقة شمعية تمنع فقدان الماء. ولو كانت له أوراق عريضة لفقد ماءه بالنتح ومات.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما بعض تكيُّفات الحيوانات؟</h2><span class="src">ص ١٠٢</span></div>
+<div class="body"><p class="c">وهب الله سبحانه وتعالى للحيوانات تكيفات تساعدها على العيش في بيئاتها.</p><div class="cards"><div class="card"><h3>البيئة الباردة</h3><p style="font-size:25px">الحيوانات التي تعيش في بيئة باردة تمتاز بفراء سميكة، وكمية من الدُّهون الإضافية في الجسم تُبقيها دافئة.</p></div><div class="card"><h3>الصَّحراء</h3><p style="font-size:25px">أمَّا حيوانات الصَّحراء فغالبًا ما تنشط في الليل، وتَلزم مأواها في النَّهار لتفادي درجات الحرارة العالية.</p></div><div class="card"><h3>الماء</h3><p style="font-size:25px">فهي انسيابيَّة الشَّكل، ممَّا يساعدها على السِّباحة بسرعة في الماء. وبعضها يستطيع أن يحبس أنفاسه فترة طويلة، وبعضها الآخر يتنفَّس تحت الماء عن طريق الخياشيم.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تكيُّفات العاشبة والمفترسة</h2><span class="src">ص ١٠٢</span></div>
+<div class="body"><p class="c">وقد هيَّأ الله عزَّ وجل بحكمته بعض التكيفات لدى الحيوانات العاشبة، بحيث تستطيع تجنُّب الحيوانات المفترسة.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الغزال</h3><p style="font-size:26px">يستطيع الركض بسرعة مقدارها <b>٨٠ كيلومترًا في الساعة</b>.</p></div><div class="card center" style="text-align:center;"><h3>مواد كريهة الرائحة</h3><p style="font-size:26px">وتفرز بعض الحيوانات موادَّ كيميائية كريهة الرائحة، تجعل الحيوانات المفترسة تهرب مبتعدةً.</p></div></div><div class="box note" style="font-size:26px;">كما أنَّ للحيوانات المفترسة تكيُّفات تسمح لها بالصيد بشكل أفضلَ. فالبوم مثلًا له تكيفات عدَّة تجعل منه صيادًا ليليًّا ماهرًا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تكيُّفات البوم</h2><span class="src">ص ١٠٢</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:16%">العضو</th><th>التكيُّف</th></tr><tr><td>الرأس</td><td>يتمتَّع البوم بحاسة سمع قوية، فإحدى أذنيه أعلى من الأخرى، ممَّا يزيد من قدرته على تمييز الجهة التي جاء منها الصوت، والمسافة التي تفصله عن مصدر صوت الفريسة.</td></tr><tr><td>العينان</td><td>للبوم عينان كبيرتان تساعدانه على رؤية الفريسة في الظَّلام. وتقع عيناه في مقدمة رأسه ممَّا يمنحه قدرة على تركيز نظره على الفريسة.</td></tr><tr><td>الأجنحة</td><td>للبوم أجنحة ذات عضلات كبيرة وقوية تساعده على الصَّيد. كما تكتم صوت حركته في الهواء في أثناء الطيران، ممَّا يساعده على الطيران في هدوء ومباغتة الفريسة.</td></tr><tr><td>القدمان</td><td>لقدمَي البوم مخالب ضخمة تساعده على الإمساك بالفريسة، وهذا التكيُّف يساعده على الإمساك بالحيوانات الكبيرة.</td></tr></table><div class="box note" style="font-size:23px;">إنَّ التكيفات المختلفة في تركيب المخلوقات الحية وسلوكاتها جميعَها شواهد حيَّة على حكمة الخالق تبارك وتعالى. قال تعالى: ﴿قَالَ رَبُّنَا الَّذِي أَعْطَىٰ كُلَّ شَيْءٍ خَلْقَهُ ثُمَّ هَدَىٰ﴾ <span class="muted" style="font-size:23px">سورة طه: الآية ٥٠</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التَّمويه</h2><span class="src">ص ١٠٣</span></div>
+<div class="body"><div class="box idea" style="font-size:26px;">تدافع بعض الحيوانات عن نفسها عن طريق مُحاكاة الأشكال والألوان الطبيعيَّة في بيئتها؛ بحيث يَصعُب تمييزُها من محيطها. وتسمَّى هذه العمليةُ <b>التمويهَ</b>.</div><p class="c">يمكِّن التمويه الحيوانات المفترسة من التَّسلُّل ومباغتة فريستها، كما يمكِّن الفرائس من الاختباء عن عيون أعدائها.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التَّلوُّن والتَّشابُه</h2><span class="src">ص ١٠٣</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>التَّلوُّن</h3><p style="font-size:25px">نوع من أنواع التمويه؛ فلون الحيوان يساعده على الاندماج مع المكان الذي يعيش فيه للاحتماء من المفترسات. ومن ذلك لون فرو الثعلب القطبيِّ الذي يساعده على الاختباء في الثَّلج، وفي الصَّيف يتغيَّر لون فروه إلى لون النَّباتات التي تنمو في الجوِّ الدافئ.</p></div><div class="card"><h3>التَّشابُه</h3><p style="font-size:25px">نوع آخر من التَّمويه، بحيث يتطابق لونُها وشكلُها وتركيبُها مع البيئة. فأفعى أم جُنَيْب مثلًا تشبهُ في شكلِها ولونِها رمالَ الصحراء التي تعيشُ فيها.</p></div></div><div class="box note" style="font-size:24px;"><b>من الصور:</b> يساعد التَّلوُّن الأرانبَ القطبيةَ على الاندماج في البيئة الثَّلجية · يساعد التشابهُ السرعوفَ على الاندماج في بيئته · يساعد التَّلوُّن هذه الحشرةَ على الاندماج في بيئتها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٠٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>مشكلة وحلٌّ.</b> كيف يمكنُني معرفة ما إذا كان الأرنب من بيئة باردة أم من بيئة دافئة؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٣</span><b>المشكلة:</b> كيف أعرف بيئة الأرنب من مظهره؟<br><b>خطوات الحل:</b> أنظر إلى <b>لون فروه وسمكه</b>؛ فالتلوُّن يساعد الحيوان على الاندماج مع المكان الذي يعيش فيه.<br><b>الحل:</b> إذا كان فروه أبيضَ سميكًا فهو من <b>بيئة باردة</b> ثلجية؛ لأن اللون الأبيض يمكِّنه من الاندماج في الثلج والفرو السميك يبقيه دافئًا. وإذا كان فروه بلون النباتات أو التربة وأقلَّ سُمكًا فهو من <b>بيئة دافئة</b>.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> للعديد من النَّباتات المزهرة أزهار ذات ألوان زاهية تسهل ملاحظتها. لماذا لا تستعمل هذه الأزهار التَّمويه؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٣</span>لأن الأزهار تحتاج إلى <b>أن تُرى</b> لا أن تختفي؛ فألوانها الزاهية ورائحتها العطرة تجذب ناقلات حبوب اللقاح من الطيور والحشرات، وبذلك يتمُّ التلقيح ويتكاثر النبات. أما التمويه فتكيُّف يفيد من يريد الاختباء من المفترسات أو مباغتة الفريسة، وهذا لا ينطبق على الزهرة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما المحاكاةُ؟</h2><span class="src">ص ١٠٤</span></div>
+<div class="body"><p class="c">تتكيَّف بعض الحيوانات مع بيئتها من خلال تقليد مخلوقات أخرى متكيِّفة بشكل ناجح.</p><div class="box idea" style="font-size:25px;">والتكيُّف الذي يلجأ فيه حيوان إلى حماية نفسه عن طريق التَّشبُّه بحيوان آخر يُسمَّى <b>المحاكاة</b>؛ حيث تستطيع بعض الحيوانات أن تحاكيَ حيوانات أخرى خطرةً ومرهوبةً من أعدائها. فتُحاكي الأفعى الملك مثلًا ألوانَ الأفعى المرجانية السامّة.</div><div class="box note" style="font-size:24px;">تَستعمل بعض الحيوانات المفترسة المحاكاةَ لخداع فريستِها. فالسلاحف النهَّاشة مثلًا لها جزء لحميٌّ يتدلَّى من فمِها، يشبهُ الدودة، تستعملُه طُعمًا لجذب الأسماك، وعند اقتراب سمكة لتناول الدودة تنقضَّ عليها السّلحفاةُ وتمسكُ بها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>سؤال الكتاب</h2><span class="src">ص ١٠٤</span></div>
+<div class="body"><div class="qa"><p class="q">كيف أستطيعُ تمييز الأفعى الملك عن الأفعى المرجانية؟ <br><span class="muted" style="font-size:24px">إرشاد: أبحثُ عن فروق في نمط تلوُّن الجلد.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٤</span>أُميِّز بينهما بالنظر إلى <b>نمط ترتيب الحلقات الملوَّنة</b> على الجلد؛ فالأفعيان تتشاركان الألوان نفسها (الأحمر والأصفر والأسود) لكن ترتيب الحلقات يختلف بينهما. فالمحاكاة تجعل الشبه كبيرًا، غير أن تدقيق النظر في ترتيب الألوان يكشف الفرق. <span class="muted">(الأفعى الملك غير سامَّة، وإنما تُحاكي ألوان الأفعى المرجانية السامَّة لتحمي نفسها.)</span></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ١٠٤</span></div>
+<div class="body"><div class="qa"><p class="q"><b>مشكلة وحلٌّ.</b> كيف حلَّت السَّلاحف النهَّاشة مشكلةَ إمساكها بالأسماك؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٤</span><b>المشكلة:</b> السلحفاة النهَّاشة بطيئة، والأسماك سريعة يصعب الإمساك بها.<br><b>خطوات الحل:</b> لها جزء لحميٌّ يتدلَّى من فمها يشبه الدودة، تستعمله <b>طُعمًا</b> لجذب الأسماك.<br><b>الحل:</b> وعند اقتراب سمكة لتناول «الدودة» تنقضُّ عليها السلحفاة وتمسك بها. وهذه <b>محاكاة</b> يستعملها المفترس لخداع فريسته.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> كيف تزيدُ المحاكاة من فرص بقاء المخلوق الحيِّ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٤</span>لأن المخلوق الضعيف يتشبَّه بحيوان آخر خطر ومرهوب من الأعداء، فتبتعد عنه المفترسات ظنًّا أنه خطر — كالأفعى الملك التي تحاكي الأفعى المرجانية السامَّة. وعند المفترسات تزيد فرص الحصول على الغذاء بخداع الفريسة — كالسلحفاة النهَّاشة. فتزداد فرص البقاء في الحالتين.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>تركيبي أم سلوكي؟</h2><span class="src">ص ٩٨ — ٩٩</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأ التكيُّف، ثم أختار نوعه.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="str">تكيُّف تركيبي</button><button class="simBtn ghost" type="button" data-k="beh">تكيُّف سلوكي</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ١٠٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px"><b>التَّكيُّفات</b> صفات تساعد المخلوقات الحيَّة على البقاء في بيئاتها.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px">تشمل <b>تكيفات النبات</b> تغيُّرات في الأوراق، والأزهار، والسيقان، والجذور، تساعدها على البقاء في بيئتها.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px"><b>تكيفات الحيوان</b> تشمل: التَّمويه، والمحاكاة.</p></div></div><div class="box note" style="font-size:24px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطويةً ألخِّص فيها ما تعلمته عن التكيُّف والبقاء: (التكيفات التركيبية · التكيفات السلوكية · تكيفات النبات · تكيفات الحيوانات · التمويه · التلوُّن · التشابه · المحاكاة).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">التكيُّف والبقاء</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">تكيُّفات تركيبية</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">خُفُّ الجمل</span><span class="node leaf">أرجل البطِّ</span><span class="node leaf">غطاء السلحفاة</span><span class="node leaf">أسنان القرش</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">تكيُّفات سلوكية</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">الصيد في مجموعات</span><span class="node leaf">الهجرة</span><span class="node leaf">البيات الشتوي</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">تكيُّفات النبات</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">الأوركيدا</span><span class="node leaf">الصبَّار</span><span class="node leaf">الزنبق المائي</span><span class="node leaf">مواد كريهة أو سامَّة</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">التمويه والمحاكاة</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">التلوُّن</span><span class="node leaf">التشابه</span><span class="node leaf">المحاكاة</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكر، وأتحدث، وأكتب</h2><span class="src">ص ١٠٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> يسمَّى تقليد المخلوق الحيِّ لمخلوق حيٍّ آخر بهدف إخافة أعدائه …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span><b>المحاكاة</b>.</div></div><div class="qa"><p class="q">٢. <b>مشكلة وحلٌّ.</b> كيف تمكَّنت الحيوانات المائية من العيش في الماء؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span><b>المشكلة:</b> العيش في الماء يحتاج إلى الحركة السريعة فيه وإلى الحصول على الأكسجين.<br><b>خطوات الحل — تكيُّفات وهبها الله لها:</b> أجسامها <b>انسيابيَّة الشَّكل</b> ممَّا يساعدها على السِّباحة بسرعة في الماء؛ وبعضها يستطيع أن <b>يحبس أنفاسه</b> فترة طويلة؛ وبعضها الآخر <b>يتنفَّس تحت الماء عن طريق الخياشيم</b>.<br><b>الحل:</b> فتمكَّنت بذلك من العيش في الماء.</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> هل يمكن للمخلوق الحيِّ أن يتكيَّف في تركيب جسمه وسلوكه؟ أوضِّح.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span>نعم؛ فالتكيُّف نوعان: تركيبيٌّ وسلوكيٌّ، ويمكن أن يجتمعا في المخلوق نفسه. فالبوم مثلًا له تكيُّفات <b>تركيبية</b> (عينان كبيرتان، وأذن أعلى من الأخرى، وأجنحة تكتم الصوت، ومخالب ضخمة) وتكيُّف <b>سلوكيٌّ</b> هو الصيد ليلًا. وفقمة البحر لها سلوك استخدام الصخرة لكسر القشرة مع تكيُّفات تركيبية للسباحة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ١٠٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> أيُّ ممَّا يلي يعدُّ تكيُّفًا مع الجوِّ البارد؟<br>أ- فروٌ سميك وأذنان كبيرتان &nbsp;&nbsp; ب- فروٌ سميك وتخزين الدهون في الجسم<br>جـ- دهون الجسم والخياشيم &nbsp;&nbsp; د- الشكل الانسيابيُّ والخياشيم</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span><b>ب - فروٌ سميك وتخزين الدهون في الجسم</b>؛ فالحيوانات التي تعيش في بيئة باردة تمتاز بفراء سميكة وكمية من الدُّهون الإضافية في الجسم تُبقيها دافئة.</div></div><div class="qa"><p class="q">٥. <b>السؤال الأساسي.</b> كيف يساعد التكيُّف المخلوقات الحية على البقاء في بيئاتها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span>التكيُّفات خواصُّ <b>تركيبية</b> و<b>سلوكية</b> جعلها الله للمخلوقات لتساعدها على البقاء، وتورَّث للأجيال اللاحقة. فهي تمكِّنها من الحصول على الغذاء والماء (خُفُّ الجمل، جذور الصبَّار، أسنان القرش)، ومن حماية نفسها من المفترسات (غطاء السلحفاة، التمويه، التلوُّن، التشابه، المحاكاة، سرعة الغزال)، ومن مواجهة تغيُّرات المناخ (الفراء السميكة، الهجرة، البيات الشتوي).</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والكتابة · العلوم والفن</h2><span class="src">ص ١٠٥ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والكتابة — قصة خيالية.</b> ما سبب طول رقبة الزرافة؟ وكيف يساعدها ذلك على البقاء في بيئتها؟ أكتب قصةً وأوظِّف أحداثها في التعبير عن هذا التكيف للزرافة.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span>إجابة نموذجية مقترحة: طول الرقبة <b>تكيُّف تركيبيٌّ</b> يمكِّن الزرافة من الوصول إلى أوراق الأشجار العالية التي لا تصل إليها آكلات الأعشاب الأخرى، فتحصل على غذائها دون تنافس (فهي تحتلُّ إطارًا بيئيًّا مختلفًا)، كما يمنحها رؤية واسعة تكشف بها المفترسات من بعيد. وتُكتب القصة على لسان زرافة صغيرة تتعلَّم كيف تنقذها رقبتها الطويلة من الجوع ومن الأسد.</div></div><div class="qa"><p class="q"><b>العلوم والفن — فنُّ التكيُّف.</b> أرسم لوحةً تمثِّل حيوانًا يستخدم التَّمويه، والتَّلوُّن، والمحاكاة.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٥</span>إجابة نموذجية مقترحة: أقسم اللوحة ثلاثة أجزاء: (١) <b>التمويه/التشابه:</b> السرعوف مندمج بين أوراق العشب الأخضر. (٢) <b>التلوُّن:</b> الأرنب القطبيُّ الأبيض على الثلج، أو الثعلب القطبيُّ. (٣) <b>المحاكاة:</b> الأفعى الملك بألوان تشبه الأفعى المرجانية السامَّة. وأكتب تحت كل رسم اسم التكيُّف وفائدته.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">خُفُّ الجمل المسطَّح الكبير مثال على:</p><div class="opts"><button class="opt" type="button">تكيُّف سلوكي</button><button class="opt" type="button">تكيُّف تركيبي</button><button class="opt" type="button">محاكاة</button><button class="opt" type="button">تطفُّل</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">هجرة الطيور في المواسم المختلفة مثال على:</p><div class="opts"><button class="opt" type="button">تكيُّف تركيبي</button><button class="opt" type="button">تكيُّف سلوكي</button><button class="opt" type="button">تمويه</button><button class="opt" type="button">تلوُّن</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">محاكاة الأشكال والألوان الطبيعية بحيث يصعب تمييز الحيوان من محيطه:</p><div class="opts"><button class="opt" type="button">المحاكاة</button><button class="opt" type="button">التمويه</button><button class="opt" type="button">الهجرة</button><button class="opt" type="button">البيات الشتوي</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="2"><p class="q">تشبُّه الأفعى الملك بألوان الأفعى المرجانية السامَّة يسمَّى:</p><div class="opts"><button class="opt" type="button">التلوُّن</button><button class="opt" type="button">التشابه</button><button class="opt" type="button">المحاكاة</button><button class="opt" type="button">التكافل</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">سيقان الصبَّار السميكة ذات الطبقة الشمعية تفيد في:</p><div class="opts"><button class="opt" type="button">منع فقدان الماء</button><button class="opt" type="button">جذب الملقِّحات</button><button class="opt" type="button">التخلُّص من الماء</button><button class="opt" type="button">امتصاص الضوء</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">سرعة ركض الغزال المذكورة في الكتاب تقريبًا:</p><div class="opts"><button class="opt" type="button">٤٠ كم/ساعة</button><button class="opt" type="button">٦٠ كم/ساعة</button><button class="opt" type="button">٨٠ كم/ساعة</button><button class="opt" type="button">١٠٠ كم/ساعة</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أذكر تكيُّفًا تركيبيًّا وتكيُّفًا سلوكيًّا لحيوان واحد.</li><li>أُفرِّق بجملة واحدة بين التمويه والمحاكاة.</li><li>كيف يتكيَّف الصبَّار مع بيئته الحارَّة الجافَّة؟</li></ul><div class="box idea" style="font-size:29px;">الفكرة الرئيسة: التكيُّفات — تركيبية وسلوكية — صفات تساعد المخلوقات الحية على البقاء في بيئاتها.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>مقارنةٌ مصوَّرة: تكيُّفاتٌ في بيئتين</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1280" height="460" viewBox="0 0 1280 460" xmlns="http://www.w3.org/2000/svg" role="img" id="g5l6SvgHost"><g class="eHot" data-k="hot"><rect x="30" y="20" width="590" height="410" rx="20" fill="#B8860B" opacity=".16"/><rect x="30" y="20" width="590" height="410" rx="20" fill="none" stroke="#B8860B" stroke-width="4"/><g transform="translate(256,46) scale(1.15)"><path d="M18 92 q 6 -30 26 -32 q 10 -18 22 -2 q 14 -16 24 0 q 18 4 12 34" fill="#C9A063"/><rect x="24" y="84" width="8" height="24" rx="4" fill="#B08B52"/><rect x="44" y="84" width="8" height="24" rx="4" fill="#B08B52"/><rect x="70" y="84" width="8" height="24" rx="4" fill="#B08B52"/><rect x="88" y="84" width="8" height="24" rx="4" fill="#B08B52"/><path d="M18 92 q -10 -10 -4 -22 q 6 -10 16 -6" fill="#C9A063"/><circle cx="14" cy="70" r="3" fill="#3A2B10"/></g><g><text x="325" y="216" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مخلوقاتٌ في الصحراء</text><text x="325" y="216" font-size="30" fill="#B8860B" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مخلوقاتٌ في الصحراء</text></g><circle cx="586" cy="258" r="7" fill="#B8860B"/><g><text x="564" y="266" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تخزين الماء</text><text x="564" y="266" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تخزين الماء</text></g><circle cx="586" cy="302" r="7" fill="#B8860B"/><g><text x="564" y="310" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">النشاط ليلًا</text><text x="564" y="310" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">النشاط ليلًا</text></g><circle cx="586" cy="346" r="7" fill="#B8860B"/><g><text x="564" y="354" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">جلدٌ يقلِّل الفقد</text><text x="564" y="354" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">جلدٌ يقلِّل الفقد</text></g><rect class="hitBox" x="30" y="20" width="590" height="410" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="cold"><rect x="680" y="20" width="590" height="410" rx="20" fill="#2E6DA4" opacity=".16"/><rect x="680" y="20" width="590" height="410" rx="20" fill="none" stroke="#2E6DA4" stroke-width="4"/><g transform="translate(906,46) scale(1.15)"><ellipse cx="62" cy="78" rx="32" ry="24" fill="#B9A78F"/><circle cx="38" cy="58" r="18" fill="#C9B8A2"/><ellipse cx="30" cy="30" rx="7" ry="22" fill="#C9B8A2" transform="rotate(-12 30 30)"/><ellipse cx="48" cy="28" rx="7" ry="22" fill="#C9B8A2" transform="rotate(8 48 28)"/><circle cx="30" cy="56" r="3.4" fill="#2A2118"/><circle cx="94" cy="72" r="10" fill="#E4DCD0"/></g><g><text x="975" y="216" font-size="30" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مخلوقاتٌ في البرد</text><text x="975" y="216" font-size="30" fill="#2E6DA4" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مخلوقاتٌ في البرد</text></g><circle cx="1236" cy="258" r="7" fill="#2E6DA4"/><g><text x="1214" y="266" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">فراءٌ كثيف</text><text x="1214" y="266" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">فراءٌ كثيف</text></g><circle cx="1236" cy="302" r="7" fill="#2E6DA4"/><g><text x="1214" y="310" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">طبقة دهون</text><text x="1214" y="310" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">طبقة دهون</text></g><circle cx="1236" cy="346" r="7" fill="#2E6DA4"/><g><text x="1214" y="354" font-size="24" fill="#FFFFFF" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">لونٌ يموِّه في الثلج</text><text x="1214" y="354" font-size="24" fill="#1E2430" text-anchor="end" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">لونٌ يموِّه في الثلج</text></g><rect class="hitBox" x="680" y="20" width="590" height="410" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g></svg><div class="eCap">التكيُّف: صفاتٌ تساعد المخلوق على العيش في بيئته.</div></div><div class="eSteps" id="g5l6Pills"><span class="eStepPill" data-s="0">تكيُّفٌ مع الحرارة</span><span class="eStepPill" data-s="1">تكيُّفٌ مع البرودة</span></div><div class="eInfo" id="g5l6Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g5l6Prev">◀ السابق</button><button class="simBtn" type="button" id="g5l6Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: أشكالٌ من التكيُّف</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="0" y="70" width="120" height="40" fill="#E5CE9B"/><path d="M0 76 q 30 -14 60 0 t 60 0" fill="#D8BE85"/><circle cx="94" cy="34" r="17" fill="#F6C445"/><g><rect x="52" y="46" width="14" height="46" rx="7" fill="#4E9A34"/><rect x="34" y="58" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="34" y="58" width="10" height="24" rx="5" fill="#4E9A34"/><rect x="72" y="52" width="12" height="10" rx="5" fill="#4E9A34"/><rect x="74" y="52" width="10" height="28" rx="5" fill="#4E9A34"/></g></g></svg><h4>نباتاتُ الصحراء</h4><p>سيقانٌ تخزن الماء وأوراقٌ صغيرة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="58" cy="62" rx="38" ry="22" fill="#E2703A"/><path d="M96 62 l20 -16 v32z" fill="#C9552A"/><circle cx="34" cy="56" r="4" fill="#2A2A2A"/><path d="M56 40 q 10 -14 20 -2" stroke="#C9552A" stroke-width="6" fill="none"/><path d="M50 84 q 10 12 22 2" stroke="#C9552A" stroke-width="6" fill="none"/></g></svg><h4>أجسامٌ انسيابية</h4><p>تساعد على السباحة ضدَّ التيار</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="62" cy="62" rx="34" ry="24" fill="#3E7BB5"/><circle cx="34" cy="48" r="16" fill="#4E8CC7"/><circle cx="28" cy="45" r="3" fill="#1A2A3A"/><path d="M18 48 l-12 5 l12 5z" fill="#E8A33D"/><path d="M62 56 q 22 -18 38 -4 q -12 16 -38 12z" fill="#2E6392"/><path d="M92 66 l22 10 l-22 8z" fill="#2E6392"/></g></svg><h4>مناقيرُ متنوِّعة</h4><p>يناسب كلُّ منقارٍ نوعَ غذائه</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M14 92 q 24 -34 46 -12 q 22 22 46 -18" stroke="#7A9A3A" stroke-width="16" fill="none" stroke-linecap="round"/><circle cx="106" cy="62" r="10" fill="#6B8A2E"/><circle cx="110" cy="58" r="2.6" fill="#20260E"/><path d="M116 64 l10 3 l-10 3" stroke="#C0392B" stroke-width="3" fill="none"/></g></svg><h4>التمويه</h4><p>لونٌ يشبه البيئة فيصعب اكتشافه</p></div></div><div class="eCap">لكلِّ بيئةٍ تكيُّفاتٌ تناسب مخلوقاتها.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — بقاءٌ بالتكيُّف</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p><b>الجربوع</b> يقضي نهار الصحراء في جحره البارد ويخرج ليلًا؛ سلوكٌ بسيطٌ ينقذه من حرِّ النهار طوال العام.</p></div><div class="fFact"><div class="n">٢</div><p>بعض النباتات الصحراوية لها جذورٌ تمتدُّ <b>أفقيًّا</b> مسافاتٍ طويلةً لتلتقط أكبر قدرٍ من ماء المطر النادر.</p></div><div class="fFact"><div class="n">٣</div><p>التكيُّف ليس اختيارًا يقرِّره المخلوق؛ بل هو صفاتٌ وُهبت له تجعله <b>مناسبًا</b> لبيئته.</p></div></div><div class="fCap">لكلِّ بيئةٍ مخلوقاتٌ تناسبها.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s5f1"><div class="fCard"><div class="fIn"><div class="fF"><span>التكيُّف</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>خواصُّ تركيبية وسلوكية تساعد المخلوقات الحية على البقاء في بيئاتها.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الحيوان المفترس</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>حيوان يصطاد غيره ليحصل على غذائه.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الفريسة</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>المخلوق الحي الذي يصطاده المفترس.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التمويه</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>محاكاة الأشكال والألوان الطبيعية في البيئة بحيث يصعب تمييز الحيوان من محيطها.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التلوُّن</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نوع من التمويه؛ فلون الحيوان يساعده على الاندماج مع المكان الذي يعيش فيه.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التشابه</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نوع من التمويه يتطابق فيه لون الحيوان وشكله وتركيبه مع البيئة.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5f1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>تحدِّي الوقت — ٤٥ ثانية</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fBar"><span class="fPill warn" id="s5f2T">الوقت</span><span class="fPill" id="s5f2Sc">النقاط</span><button class="fBtn" type="button" id="s5f2Go">▶ ابدأ التحدي</button></div><div class="fQ" id="s5f2Q">اضغط «ابدأ التحدي» لتبدأ.</div><div class="fOpts" id="s5f2O"></div><div class="fFb" id="s5f2Fb"></div></div><div class="fCap">أجب عن أكبر عددٍ ممكنٍ من الأسئلة قبل انتهاء الوقت.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>تكيُّفٌ في بلادي</h4><p>اختر حيوانًا يعيش في بيئة المملكة، واذكر تكيُّفين ساعداه على العيش فيها.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لو نُقل دبٌّ قطبيٌّ إلى الصحراء، فما المشكلات التي ستواجهه؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="5" aria-label="إثراء مصور: التكيف والبقاء">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">أي لون لحشرة افتراضية قد يصعب تمييزه على هذه الرمال: لون قريب منها أم لون شديد الاختلاف؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/desert.jpg" alt="كثبان رملية تتتابع أمام جبال بعيدة في بيئة جافة" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>كثبان رملية في ولاية يوتا؛ تنقل الرياح الرمال وتعيد تشكيل سطح الكثبان.</figcaption><p class="se-credit">الصورة: Bureau of Land Management - Utah/Bob Wick · <a href="https://commons.wikimedia.org/wiki/File:Utah_Dunes_Landscape_-_West_Desert_District.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://commons.wikimedia.org/wiki/File:Utah_Dunes_Landscape_-_West_Desert_District.jpg#Licensing" target="_blank" rel="noopener noreferrer">Public domain</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>قد يساعد تشابه لون الحيوان وشكله مع محيطه على تقليل اكتشافه من المفترسات.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>التمويه يرتبط بخلفية محددة؛ اللون المفيد في موطن قد يكون واضحًا في موطن آخر.</span></p>
+<p class="se-fact"><span aria-hidden="true">🦎</span><span>تشمل التكيفات صفات تركيبية وسلوكية، ولا تظهر الصفة الوراثية فجأة لأن الفرد يحتاج إليها.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://www.nps.gov/teachers/classrooms/desert-adaptations.htm" target="_blank" rel="noopener noreferrer">خدمة المتنزهات الوطنية: تكيفات الصحراء</a></li><li><a href="https://home.nps.gov/whsa/learn/nature/white-animals-at-white-sands.htm" target="_blank" rel="noopener noreferrer">خدمة المتنزهات الوطنية: التمويه وألوان الخلفية</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="5" aria-label="رسم توضيحي: وسائل تساعد على البقاء">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>وسائل تساعد على البقاء</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="comparison" role="group" aria-label="وسائل تساعد على البقاء"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🦎</span><span class="se-node-label">التمويه</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🐝</span><span class="se-node-label">المحاكاة</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🦆</span><span class="se-node-label">تركيب الجسم</span></button><span class="se-connector" aria-hidden="true">•</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🐦</span><span class="se-node-label">السلوك</span></button></div>
+
+<p class="se-diagram-caption">أمثلة لطرق مختلفة؛ فائدتها تعتمد على البيئة ونوع المخلوق.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🦎</span><div><strong data-detail-title>التمويه</strong><p data-detail-text>تشابه مع الخلفية</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="5" aria-label="محاكاة إثرائية: الخلفية تغيّر الوضوح">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>الخلفية تغيّر الوضوح</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف يتغير وضوح حشرة بنية ثابتة اللون عندما نغيّر الخلفية فقط؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">خلفية الحشرة البنية</p><div class="se-options" role="group" aria-label="خلفية الحشرة البنية"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">أغصان بنية</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">تربة مختلطة</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">سطح فاتح</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">ليس احتمال افتراس مقاسًا؛ الرؤية والمسافة والحركة والإضاءة تختلف بين الحيوانات والظروف.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر تصوري لوضوح الحشرة أمام الخلفية</p><div class="se-model" role="img" data-model aria-label="وضوح قليل"><span class="se-symbol se-active" aria-hidden="true">🔎</span><span class="se-symbol se-active" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span><span class="se-symbol" aria-hidden="true">🔎</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>وضوح قليل</p><p class="se-observation" data-observation>مؤشر وضوح منخفض أمام الخلفية المتشابهة.</p></div><p class="se-explanation" data-explanation>تتشابه الحشرة مع الأغصان في اللون والشكل، فيصعب تمييز حدودها في هذا المشهد.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا لا نستنتج من صعوبة رؤية الحشرة أنها آمنة من جميع المفترسات؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الخامس الابتدائي — الجزء الأول من المقرر<br>الوحدة الثانية: الأنظمة البيئية · الفصل الثالث: التفاعلات في الأنظمة البيئية · التكيف والبقاء<br>المصدر: كتاب الطالب، صفحات الكتاب: ٩٦ – ١٠٥ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['خُفُّ الجمل المسطَّح الكبير','str','تغيُّر في تركيب الجسم الخارجي.'],
+           ['تنقُّل الذئاب في مجموعات للصيد','beh','تعديل في سلوك المخلوق الحي.'],
+           ['غطاء السلحفاة الصلب','str','تركيب خارجي يوفِّر الحماية.'],
+           ['هجرة الطيور والفراشات','beh','سلوك موسمي للطعام والتكاثر.'],
+           ['أسنان القرش الحادَّة وحاسَّة شمِّه','str','تراكيب تساعده على الإمساك بفريسته.'],
+           ['البيات الشتويُّ في المواسم الباردة','beh','سلوك يقلِّل النشاط حتى ارتفاع الحرارة.'],
+           ['أرجل البطِّ المسطَّحة الملتصقة الأصابع','str','تركيب يساعده على العوم في الماء.'],
+           ['نشاط حيوانات الصحراء في الليل','beh','سلوك لتفادي درجات الحرارة العالية.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع التكيُّفات.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='تكيُّف '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g5l6SvgHost','g5l6Info',{'hot':'<span><b>تكيُّفٌ مع الحرارة</b> — خزنُ الماء والنشاط ليلًا وتقليل فقد الماء من الجسم.</span>','cold':'<span><b>تكيُّفٌ مع البرودة</b> — الفراء الكثيف وطبقات الدهون والتمويه بلون البيئة.</span>'},'');
+ERT.stepper({pills:'g5l6Pills', info:'g5l6Info', svg:'g5l6SvgHost', next:'g5l6Next', prev:'g5l6Prev', stages:[['hot','تكيُّفٌ مع الحرارة','خزنُ الماء والنشاط ليلًا وتقليل فقد الماء من الجسم.'],['cold','تكيُّفٌ مع البرودة','الفراء الكثيف وطبقات الدهون والتمويه بلون البيئة.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s5f1');
+EG.timed({q:'s5f2Q', opts:'s5f2O', fb:'s5f2Fb', timer:'s5f2T', score:'s5f2Sc', start:'s5f2Go', sec:45, data:[['الجمل يتحمَّل العطش لأنه:',['يخزن الماء في جسمه','لا يشرب أبدًا','يتنفَّس بالماء'],0],['لون الحيوان الذي يشبه بيئته يُسمَّى:',['التمويه','الافتراس','التنافس'],0],['أوراق نباتات الصحراء غالبًا:',['صغيرةٌ أو إبريَّة','عريضةٌ جدًّا','غير موجودة'],0],['الجسم الانسيابيُّ في السمكة يساعدها على:',['السباحة بسهولة','الطيران','الحفر'],0],['الجربوع يخرج للبحث عن طعامه:',['ليلًا','ظهرًا','لا يخرج'],0]]});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"05_الصف_الخامس_الابتدائي/02_الأنظمة_البيئية/03_التفاعلات_في_الأنظمة_البيئية/02_التكيف_والبقاء/علوم_خامس_ابتدائي_ف1_الدرس_الثاني_التكيف_والبقاء.html","title":"التكيف والبقاء","grade":5,"emoji":"🦎","photoTopic":"desert","observeQuestion":"أي لون لحشرة افتراضية قد يصعب تمييزه على هذه الرمال: لون قريب منها أم لون شديد الاختلاف؟","facts":["قد يساعد تشابه لون الحيوان وشكله مع محيطه على تقليل اكتشافه من المفترسات.","التمويه يرتبط بخلفية محددة؛ اللون المفيد في موطن قد يكون واضحًا في موطن آخر.","تشمل التكيفات صفات تركيبية وسلوكية، ولا تظهر الصفة الوراثية فجأة لأن الفرد يحتاج إليها."],"diagram":{"title":"وسائل تساعد على البقاء","relation":"comparison","nodes":[{"emoji":"🦎","label":"التمويه","detail":"تشابه مع الخلفية"},{"emoji":"🐝","label":"المحاكاة","detail":"تشابه مع مخلوق آخر"},{"emoji":"🦆","label":"تركيب الجسم","detail":"أقدام سباحية في البط"},{"emoji":"🐦","label":"السلوك","detail":"الهجرة في بعض الطيور"}],"caption":"أمثلة لطرق مختلفة؛ فائدتها تعتمد على البيئة ونوع المخلوق."},"lab":{"title":"الخلفية تغيّر الوضوح","question":"كيف يتغير وضوح حشرة بنية ثابتة اللون عندما نغيّر الخلفية فقط؟","controlLabel":"خلفية الحشرة البنية","options":["أغصان بنية","تربة مختلطة","سطح فاتح"],"states":[{"label":"وضوح قليل","emoji":"🔎","amount":2,"explanation":"تتشابه الحشرة مع الأغصان في اللون والشكل، فيصعب تمييز حدودها في هذا المشهد.","observation":"مؤشر وضوح منخفض أمام الخلفية المتشابهة."},{"label":"وضوح متوسط","emoji":"🔎","amount":5,"explanation":"يوجد بعض التشابه مع التربة، لكن اختلاف أجزاء الخلفية يجعل بعض حدود الحشرة أوضح.","observation":"يزداد مؤشر الوضوح مقارنة بالأغصان."},{"label":"وضوح كبير","emoji":"🔎","amount":8,"explanation":"يبرز لون الحشرة البني أمام السطح الفاتح؛ تغيّرت الخلفية بينما بقيت صفة الحشرة نفسها.","observation":"أعلى وضوح في المقارنة التصورية."}],"quantityLabel":"مؤشر تصوري لوضوح الحشرة أمام الخلفية","modelNote":"ليس احتمال افتراس مقاسًا؛ الرؤية والمسافة والحركة والإضاءة تختلف بين الحيوانات والظروف.","tryPrompt":"لماذا لا نستنتج من صعوبة رؤية الحشرة أنها آمنة من جميع المفترسات؟"},"sources":[{"title":"خدمة المتنزهات الوطنية: تكيفات الصحراء","url":"https://www.nps.gov/teachers/classrooms/desert-adaptations.htm"},{"title":"خدمة المتنزهات الوطنية: التمويه وألوان الخلفية","url":"https://home.nps.gov/whsa/learn/nature/white-animals-at-white-sands.htm"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

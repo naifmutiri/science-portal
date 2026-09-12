@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – خامس ابتدائي – ف1 – التكاثر</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#3E9A8A;--g-dark:#245F55;--g-light:#E9F5F2}
+.card{border-color:#B9DED6}
+.cover{background:linear-gradient(140deg,#245F55 0%,#3E9A8A 55%,#7CC2B6 100%)}
+.endS{background:linear-gradient(140deg,#245F55,#3E9A8A)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>التكاثر</h1><div class="rule"></div>
+<div class="meta">الصف الخامس الابتدائي<br>الوحدة الأولى: تنوع الحياة<br>الفصل الثاني: الآباء والأبناء — الدرس الأول</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ٥٦</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الأولى</h3><p>تنوع الحياة</p></div><div class="card"><h3>الفصل الثاني</h3><p>الآباء والأبناء</p></div><div class="card"><h3>الدرس الأول</h3><p>التكاثر</p></div></div><div class="box idea" style="font-size:33px;">السؤال الأساسي: كيف تتكاثر المخلوقات الحية؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلم في هذا الدرس؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:28px"><li>أُعرِّف التكاثر وأُبيِّن أهميته لبقاء النوع.</li><li>أُعرِّف التكاثر الجنسي والإخصاب.</li><li>أُعرِّف التكاثر اللاجنسي وأذكر أمثلته في الممالك.</li><li>أَصِف طرق التكاثر اللاجنسي: الانقسام والتبرعم والتكاثر الخضري.</li><li>أُعرِّف الساق الجارية وأذكر أمثلة عليها.</li><li>أُقارن بين التكاثر الجنسي واللاجنسي.</li><li>أُوظِّف مهارة <b>التتابع</b>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأ بسؤال</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:31px;">قطعة صغيرة من ساق النعناع توضع في ماء… فتصير نبتة كاملة! كيف حدث ذلك دون بذرة؟</div><p class="c">لأن بعض المخلوقات تتكاثر من أب واحد فقط. لنتعرَّف نوعَي التكاثر.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفه من قبل</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>الممالك الست</h3><p>حيوانات · نباتات · فطريات · بدائيات · بكتيريا · طلائعيات.</p></div><div class="card center" style="text-align:center;"><h3>النباتات البذرية</h3><p>تتكاثر عن طريق البذور.</p></div><div class="card center" style="text-align:center;"><h3>الخلية</h3><p>وحدة بناء المخلوقات الحية.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفردات الدرس</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(3,1fr)"><div class="card"><h3>التكاثر الجنسي</h3><p style="font-size:25px">إنتاج مخلوقات حية جديدة من أبوين.</p></div><div class="card"><h3>الإخصاب</h3><p style="font-size:25px">اتحاد مشيج مذكَّر من الأب مع مشيج مؤنث من الأم.</p></div><div class="card"><h3>التكاثر اللاجنسي</h3><p style="font-size:25px">إنتاج مخلوقات حية من أب واحد فقط.</p></div><div class="card"><h3>التكاثر الخضري</h3><p style="font-size:25px">نمو نباتات جديدة انطلاقًا من الأوراق أو الجذور أو السيقان.</p></div><div class="card"><h3>الساق الجارية</h3><p style="font-size:25px">ساق نبات تغرس في التربة ويتم تدعيمها فتنمو وتصبح نباتًا جديدًا.</p></div></div><div class="box note" style="font-size:28px;">مهارة القراءة في هذا الدرس: <b>التتابع</b> (الأول ← التالي ← الأخير).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>هل تستطيع بعض النباتات الزهرية أن تتكاثر من دون بذور؟</h2><span class="src">ص ٥٧ — نشاط الكتاب</span></div>
+<div class="body"><div class="box ask" style="font-size:27px;"><b>أتوقَّع:</b> تعلمتُ أن النباتات الزهرية تتكاثر عن طريق البذور. هل يمكن لبعض النباتات التكاثر من دون بذور؟ وهل أستطيع استعمال جزء من النبات لإنتاج نبات جديد؟</div><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:0 0 300px"><p class="c"><b>أحتاج إلى:</b></p><ul class="list" style="font-size:26px"><li>نبات يتكاثر عن طريق الساق الجارية</li><li>مقص</li><li>عدسة مكبِّرة</li><li>كأس</li><li>ماء</li></ul></div><div style="flex:1 1 0"><p class="c"><b>أختبر توقُّعي:</b></p><ul class="list num" style="font-size:25px"><li>أقصُّ قطعة طولها ١٥سم تقريبًا من ساق نبات النعناع، وأترك ورقتين فقط بالقرب من قمة الساق، وأزيل باقي الأوراق.</li><li><b>ألاحظ.</b> أتفحَّص الجزء الذي قطعته من الساق باستعمال العدسة المكبِّرة. وأسجل ملاحظاتي.</li><li>أملأ ثلاثة أرباع الكأس بالماء. وأضع الساق فيها.</li><li><b>أفسِّر البيانات.</b> أفحص مكان القطع كل يوم باستعمال العدسة المكبِّرة، وأسجل ملاحظاتي حول التغيُّرات التي حدثت.</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>أستخلص النتائج · أستكشف أكثر</h2><span class="src">ص ٥٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٥. <b>أستنتج.</b> ماذا يحدث لمكان قطع الساق في الكأس المليئة بالماء؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٧</span>تنمو من مكان القطع <b>جذور</b> بيضاء دقيقة بعد أيام؛ لأن الساق الجارية تستطيع إنتاج نبات جديد كامل. وتبدأ الجذور صغيرة ثم تزداد طولًا وعددًا يومًا بعد يوم.</div></div><div class="qa"><p class="q">٦. هل يمكن أن ينمو نبات جديد من دون زراعة بذرة؟ أوضِّح ذلك.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٧</span>نعم؛ فبعض النباتات تتكاثر لاجنسيًّا بما يسمَّى <b>التكاثر الخضري</b>؛ حيث تنمو نباتات جديدة انطلاقًا من الأوراق أو الجذور أو السيقان. ومن ذلك قطعة ساق النعناع التي أنبتت جذورًا وصارت نباتًا جديدًا دون بذرة.</div></div><div class="box ask" style="font-size:26px;"><b>أستكشف أكثر:</b> هل هناك نباتات أخرى تنمو بطريقة مشابهة لنمو هذا النبات؟ أعمل استقصاءً لأجد جواب هذا السؤال. ثم أكتب تقريرًا بنتائجي وأعرضه على زملائي في الصف.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما التكاثر الجنسي؟ وما التكاثر اللاجنسي؟</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><p class="c">تنحدر المخلوقات الحية من مخلوقات حية أخرى. ويعتمد بقاء النوع الواحد من المخلوقات الحية على قدرته على إنتاج أفراد جدد. فكل مخلوق حي ينحدر من مخلوق حي من النوع نفسه، وذلك عن طريق عملية <b>التكاثر</b> التي تشمل انتقال المادة الوراثية من الآباء إلى الأبناء.</p><div class="box idea" style="font-size:27px;">وتحتوي المادة الوراثية على معلومات تتحكَّم في شكل المخلوق وأدائه وصفاته. والصفة الوراثية — ومنها طول النبات ولون أزهاره — من خواص المخلوق الحي. فالطول ولون الأزهار صفات تنتقل من الآباء إلى الأبناء.</div><p class="c">وهناك نوعان من التكاثر، هما التكاثر الجنسي والتكاثر اللاجنسي.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التكاثر الجنسي</h2><span class="src">ص ٥٨</span></div>
+<div class="body"><div class="box idea" style="font-size:31px;"><b>التكاثر الجنسي</b> هو إنتاج مخلوقات حية جديدة من أبوين.</div><p class="c">يبدأ تكوين المخلوق الحي باتحاد مشيج مذكَّر من الأب مع مشيج مؤنث من الأم بعملية تسمَّى <b>الإخصاب</b>. وينتج عن الإخصاب خلية مخصَّبة تحتوي على المادة الوراثية من كلا الأبوين، ثم تنمو هذه الخلية حتى تصير فردًا جديدًا يحمل صفات من الأبوين كليهما.</p><div class="box note" style="font-size:26px;">تحدث عملية الإخصاب في كثير من النباتات والحيوانات والإنسان. قال الله تعالى: ﴿إِنَّا خَلَقْنَا الْإِنسَانَ مِن نُّطْفَةٍ أَمْشَاجٍ نَّبْتَلِيهِ فَجَعَلْنَاهُ سَمِيعًا بَصِيرًا﴾<br><span class="muted" style="font-size:24px">سورة الإنسان: الآية ٢</span></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التكاثر اللاجنسي</h2><span class="src">ص ٥٩</span></div>
+<div class="body"><div class="box idea" style="font-size:29px;"><b>التكاثر اللاجنسي</b> هو إنتاج مخلوقات حية من أب واحد فقط. وينتج عنه أبناء يحملون الصفات الوراثية التي يحملها الأب.</div><p class="c">لا يحدث في هذا النوع من التكاثر اتحاد خلايا جنسية من الأب والأم. وبسبب وجود أب واحد لا يحدث اتحاد للمادة الوراثية.</p><div class="box note" style="font-size:30px;"><b>حقيقة:</b> تستطيع بعض المخلوقات الحية العديدة الخلايا التكاثر لاجنسيًّا.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>أين يوجد التكاثر اللاجنسي؟</h2><span class="src">ص ٥٩</span></div>
+<div class="body"><p class="c">طريقة التكاثر اللاجنسي موجودة في الممالك الست؛ فجميع أفراد مملكة البكتيريا، ومعظم الطلائعيات الوحيدة الخلية ومعظم الفطريات والعديد من النباتات، تتكاثر لاجنسيًّا.</p><div class="box idea" style="font-size:28px;">كما أن بعض الحيوانات — ومنها قنفذ البحر والمرجان والديدان — تستطيع التكاثر لاجنسيًّا، وكذلك بعض أنواع السَّحالي والضفادع والأسماك والحشرات.</div><div class="box note" style="font-size:29px;">كثير من النباتات تتكاثر لا جنسيًّا مثل نبات العنكبوت.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٥٩</span></div>
+<div class="body"><div class="qa"><p class="q"><b>التتابع.</b> ما الخطوة الأولى في التكاثر الجنسي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span>الخطوة الأولى هي <b>الإخصاب</b>؛ أيْ اتحاد مشيج مذكَّر من الأب مع مشيج مؤنث من الأم. وينتج عن ذلك خلية مخصَّبة، ثم تنمو هذه الخلية حتى تصير فردًا جديدًا.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ينتج عن التكاثر اللاجنسي مخلوقات حية تطابق الأب تمامًا في صفاتها. ما سلبيات هذا التكاثر؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٥٩</span>أن الأفراد الناتجة متشابهة تمامًا في قدرتها على التكيف مع البيئة التي تعيش فيها؛ فلا يوجد تنوُّع في الصفات. فإذا تغيَّرت البيئة أو ظهر مرض أو عدوٌّ جديد، تأثَّرت الجماعة كلها بالدرجة نفسها وقد تهلك؛ لأنه لا يوجد فرد يحمل صفة تساعده على النجاة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيف تتكاثر المخلوقات الحية لاجنسيًّا؟</h2><span class="src">ص ٦٠</span></div>
+<div class="body"><p class="c">تتكاثر مجموعة واسعة من المخلوقات الحية لاجنسيًّا بعدة طرق، منها:</p><div class="cards"><div class="card center" style="text-align:center;"><h3>الانقسام</h3><p>انقسام الخلية الواحدة إلى خليتين.</p></div><div class="card center" style="text-align:center;"><h3>التبرعم</h3><p>ينمو جزء من جسم الأب مكوِّنًا مخلوقًا جديدًا.</p></div><div class="card center" style="text-align:center;"><h3>التكاثر الخضري</h3><p>نمو نباتات جديدة من الأوراق أو الجذور أو السيقان.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الانقسام</h2><span class="src">ص ٦٠</span></div>
+<div class="body"><p class="c">البدائيات والبكتيريا ومعظم الطلائعيات الوحيدة الخلية تتكاثر عن طريق انقسام الخلية الواحدة إلى خليتين.</p><div class="box idea" style="font-size:28px;">تتضاعف المادة الوراثية في المخلوق الحي قبل عملية الانقسام، بحيث يحصل كلا المخلوقين الحيَّين الناتجين عن عملية الانقسام على المادة الوراثية نفسها.</div><div class="box note" style="font-size:30px;">بعض أنواع البكتيريا قد تنقسم إلى خليتين كلَّ عشرٍ أو عشرين دقيقةً.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التبرعم</h2><span class="src">ص ٦٠</span></div>
+<div class="body"><p class="c">هناك مخلوقات حية — منها الإسفنجيات والهَيدرا وبعض الفطريات — تتكاثر عن طريق التبرعم.</p><p class="c">وفي أثناء عملية التبرعم ينمو جزء من جسم المخلوق الحي الأب مكوِّنًا مخلوقًا حيًّا جديدًا.</p><div class="cards"><div class="card center" style="text-align:center;"><h3>ينفصل عن الأب</h3><p style="font-size:26px">في بعض المخلوقات الحية ينفصل هذا الجزء عن الأب، ويستمرُّ في النموِّ.</p></div><div class="card center" style="text-align:center;"><h3>يبقى ملتصقًا</h3><p style="font-size:26px">وفي بعض المخلوقات الحية الأخرى — ومنها المرجان — يبقى البُرعُم المتكوِّن ملتصقًا بالأب.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>لوحة التكاثر اللاجنسي</h2><span class="src">ص ٦٠ — نشاط الكتاب</span></div>
+<div class="body"><div style="display:flex;gap:30px;align-items:flex-start"><div style="flex:1 1 0"><ul class="list num" style="font-size:25px"><li>أبحث عن ثلاث طرق للتكاثر اللاجنسي عبر شبكة الإنترنت، وفي المجلات والكتب.</li><li>أجد المخلوقات الحية التي تتكاثر بهذه الطرق الثلاث.</li><li>أعمل لوحة أقارن فيها بين الطرق الثلاث للتكاثر اللاجنسي. قد تكون لوحتي رسمًا بيانيًّا أو مخططًا أو جدولًا.</li><li><b>أتواصل.</b> أقصُّ صورًا لمخلوقات حية تتكاثر لاجنسيًّا، وألصقها على اللوحة وأصفها.</li><li>فيمَ تتشابه طرق التكاثر اللاجنسي، وفيمَ تختلف؟</li></ul></div><div style="flex:0 0 430px"><table class="cmp"><tr><th style="width:24%"></th><th>الانقسام</th><th>التبرعم</th><th>السيقان الجارية</th></tr><tr><td>المخلوق الحي</td><td></td><td></td><td></td></tr><tr><td>الوصف</td><td></td><td></td><td></td></tr></table><div class="box safe" style="font-size:24px;">أستخدم الإنترنت بإشراف معلمي أو وليِّ أمري، وأعتمد المصادر الموثوقة، وأستعمل المقصَّ بحذر.</div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>إجابة سؤال النشاط</h2><span class="src">ص ٦٠ — سؤال الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٥. فيمَ تتشابه طرق التكاثر اللاجنسي، وفيمَ تختلف؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٠</span><b>تتشابه</b> في أنها جميعًا تنتج مخلوقات حية من <b>أب واحد فقط</b>، ولا يحدث فيها اتحاد خلايا جنسية ولا اتحاد للمادة الوراثية، والأبناء يحملون الصفات الوراثية التي يحملها الأب نفسها.<br><b>وتختلف</b> في الطريقة: ففي <b>الانقسام</b> تنقسم الخلية الواحدة إلى خليتين، وفي <b>التبرعم</b> ينمو جزء من جسم الأب مكوِّنًا مخلوقًا جديدًا قد ينفصل أو يبقى ملتصقًا، وفي <b>التكاثر الخضري</b> تنمو نباتات جديدة من الأوراق أو الجذور أو السيقان.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التكاثر الخضري</h2><span class="src">ص ٦١</span></div>
+<div class="body"><div class="box idea" style="font-size:28px;">يمكن لبعض النباتات أن تتكاثر بنوع من التكاثر اللاجنسي يسمَّى <b>التكاثر الخضري</b>؛ حيث تنمو نباتات جديدة انطلاقًا من الأوراق، أو الجذور، أو السيقان.</div><p class="c">العديد من النباتات الشائعة تتكاثر عن طريق <b>الساق الجارية</b>، وهي ساق نبات تغرس في التربة، ويتمُّ تدعيمها، فتنمو وتصبح نباتًا جديدًا، ومنها نبات النعناع.</p><div class="box note" style="font-size:26px;">كما يمكن للساق الجارية أن تنمو إلى أسفل من أفرع النبات المتدلِّية، ومن ذلك نبات الفراولة، ومعظم الأعشاب، وبعض أنواع شجر الحور، والسرخسيات.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>سؤال الكتاب</h2><span class="src">ص ٦١</span></div>
+<div class="body"><div class="qa"><p class="q">أيُّ جزء من نبات الفراولة يمكنه إنتاج نباتات جديدة دون بذور؟ <br><span class="muted" style="font-size:25px">إرشاد: أنظر إلى الصورة. أيُّ جزء من النبات الأصلي يتصل بنبات الفراولة الجديد؟</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦١</span><b>الساق الجارية</b>؛ فهي التي تمتد من النبات الأصلي وتغرس في التربة فتنمو وتصبح نباتًا جديدًا. وفي الصورة نرى الساق الممتدة على سطح التربة تصل بين النبات الأصلي والنبات الجديد.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>طرق أخرى للتكاثر اللاجنسي في الحيوانات</h2><span class="src">ص ٦١</span></div>
+<div class="body"><p class="c">بعض أنواع الأسماك والحشرات والضفادع والسَّحالي تتكاثر لاجنسيًّا بطرق مختلفة. فإناث هذه الحيوانات تضع البيض، وقد تخصَّب البيوض بعد ذلك. وفي بعض الحالات قد تنمو البيوض إلى مخلوق حي جديد دون إخصاب.</p><div class="box idea" style="font-size:27px;"><b>مثال النحل:</b> عندما تضع ملكة النحل البيوض تخصَّب بعضها، والبعض الآخر لا يخصَّب. تنمو البيوض المخصَّبة إلى إناث النحل أو النحل العامل، بينما تنمو البيوض غير المخصَّبة إلى ذكور النحل.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٦١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>التتابع.</b> أصف خطوات تكاثر البكتيريا.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦١</span>١) تتضاعف المادة الوراثية في الخلية البكتيرية.<br>٢) تنقسم الخلية الواحدة إلى خليتين.<br>٣) يحصل كلا المخلوقين الناتجين على المادة الوراثية نفسها، فيكونان مطابقين للأب.<br>وبعض أنواع البكتيريا قد تنقسم إلى خليتين كلَّ عشرٍ أو عشرين دقيقةً.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما الفرق بين النحل العامل وذكور النحل في طريقة التكاثر؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦١</span><b>النحل العامل</b> (إناث النحل) ينمو من بيوض <b>مخصَّبة</b>؛ أيْ عن طريق التكاثر الجنسي، فيحمل صفات من الأبوين. أما <b>ذكور النحل</b> فتنمو من بيوض <b>غير مخصَّبة</b>؛ أيْ عن طريق التكاثر اللاجنسي، فتحمل صفات أب واحد فقط.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>جنسي أم لاجنسي؟</h2><span class="src">ص ٥٨ — ٦١</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأ المثال، ثم أختار نوع التكاثر.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="sex">تكاثر جنسي</button><button class="simBtn ghost" type="button" data-k="asex">تكاثر لاجنسي</button></div><div class="simMsg" id="aMsg">أبدأ التصنيف.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادة النشاط</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الفرق بين التكاثر الجنسي والتكاثر اللاجنسي؟</h2><span class="src">ص ٦٢</span></div>
+<div class="body"><p class="c">هيَّأ الله — سبحانه وتعالى — لبعض المخلوقات الحية أن تتكاثر جنسيًّا، ويتكاثر بعضها الآخر لا جنسيًّا.</p><div class="box idea" style="font-size:26px;">إن المخلوقات الحية التي تتكاثر لا جنسيًّا لا يعتمد بعضها على بعض في التكاثر؛ لذا يمكنها العيش في عزلة عن باقي أفراد نوعها، وينتج عن تكاثرها لا جنسيًّا أفراد متشابهون تمامًا في قدرتها على التكيُّف مع البيئة التي يعيشون فيها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ميزة التكاثر الجنسي</h2><span class="src">ص ٦٢</span></div>
+<div class="body"><p class="c">التكاثر الجنسي يساعد على تحقيق التنوُّع والتحسُّن المتواصل في صفات المخلوقات الحية، يتيح للأبناء إمكانية التكيف بشكل أفضل مع التغيُّرات البيئية. والأبناء لا يشبهون آباءهم تمامًا؛ فبعضهم قد يكون أقصر أو أطول أو أسرع من البعض الآخر.</p><div class="box note" style="font-size:25px;">تُعدُّ القدرة على الركض السريع مثلًا ميزةً لبعض المخلوقات الحية، ومنها الفئران. فالفئران البطيئة تصطادها الحيوانات الأخرى بسهولة، ومنها الثعابين أو البوم. أما الفئران السريعة فتعيش مدةً أطول، وتتكاثر، فتنقل هذه الصفة (القدرة على الركض السريع) إلى أبنائها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>جدول المقارنة</h2><span class="src">ص ٦٢</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:18%">نوع التكاثر</th><th>عدد الآباء</th><th>الخلايا الجنسية</th><th>الأبناء</th><th>هل يوجد خلط للصفات؟</th></tr><tr><td>تكاثر لاجنسي</td><td>١</td><td>لا دور لها في التكاثر</td><td>يشبهون آباءهم تمامًا</td><td>لا</td></tr><tr><td>تكاثر جنسي</td><td>٢</td><td>تؤدِّي الدور الأساسي</td><td>يختلفون عن آبائهم في بعض الصفات</td><td>نعم</td></tr></table></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الصورة</span><h2>سؤال الكتاب</h2><span class="src">ص ٦٢</span></div>
+<div class="body"><div class="qa"><p class="q">كيف أستطيع معرفة أن الأرانب في الصورة ليست ناتجة عن تكاثر لاجنسي؟ <br><span class="muted" style="font-size:25px">إرشاد: أنظر إلى الأرانب. هل تتشابه تمامًا؟</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٢</span>لأنها <b>لا تتشابه تمامًا</b>؛ فألوانها وبقعها مختلفة بعضها عن بعض. والتكاثر اللاجنسي ينتج أبناءً يشبهون آباءهم تمامًا ولا يوجد فيه خلط للصفات، أما اختلاف الصفات فدليل على <b>التكاثر الجنسي</b> الذي يتيح التنوُّع.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلة الكتاب</h2><span class="src">ص ٦٢</span></div>
+<div class="body"><div class="qa"><p class="q"><b>التتابع.</b> أصف تتابع الأحداث التي قد تحدث لمجموعة من الفئران إذا ظهر عدوٌّ لها في موطنها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٢</span>١) يصطاد العدوُّ الفئران <b>البطيئة</b> بسهولة فتقلُّ أعدادها.<br>٢) تبقى الفئران <b>السريعة</b> فتعيش مدةً أطول.<br>٣) تتكاثر هذه الفئران السريعة.<br>٤) تنقل صفة القدرة على الركض السريع إلى أبنائها، فيزداد عدد الفئران السريعة في الجماعة.</div></div><div class="qa"><p class="q"><b>التفكير الناقد.</b> ما ميزة التكاثر اللاجنسي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٢</span>أن المخلوق الحي لا يعتمد على غيره في التكاثر؛ لذا يمكنه العيش في عزلة عن باقي أفراد نوعه ويتكاثر بمفرده. كما أنه سريع؛ فبعض أنواع البكتيريا قد تنقسم إلى خليتين كلَّ عشرٍ أو عشرين دقيقةً، فتزداد الأعداد بسرعة كبيرة.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخص الدرس</h2><span class="src">ص ٦٣</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">تنتج المخلوقات الحية عن مخلوقات حية أخرى عن طريق عملية <b>التكاثر</b>.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px">الانقسام والتبرعم والتكاثر الخضري طرق <b>للتكاثر اللاجنسي</b>، تتكاثر بها أنواع مختلفة من المخلوقات.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px">يتيح <b>التكاثر الجنسي</b> تنوُّع صفات المخلوقات الحية.</p></div></div><div class="box note" style="font-size:26px;"><b>المطويات — أنظم أفكاري:</b> أعمل مطوية ألخص فيها ما تعلمته عن التكاثر: (التكاثر) — (التكاثر اللاجنسي) — (التكاثر الجنسي).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظم مفاهيم الدرس</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">التكاثر</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">تكاثر جنسي</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">أبوان</span><span class="node leaf">الإخصاب</span><span class="node leaf">تنوُّع في الصفات</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">تكاثر لاجنسي</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">أب واحد</span><span class="node leaf">أبناء مطابقون للأب</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#245F55;color:#245F55">طرق لاجنسية</div><div class="line" style="background:#245F55"></div><div class="leaves"><span class="node leaf">الانقسام</span><span class="node leaf">التبرعم</span><span class="node leaf">التكاثر الخضري</span></div></div><div class="col"><div class="node sub" style="background:#E9F5F2;border-color:#3E9A8A;color:#3E9A8A">أمثلة</div><div class="line" style="background:#3E9A8A"></div><div class="leaves"><span class="node leaf">البكتيريا · الهيدرا · المرجان</span><span class="node leaf">النعناع · الفراولة · نبات العنكبوت</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكر، وأتحدث، وأكتب</h2><span class="src">ص ٦٣ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفردات.</b> تنتمي الساق الجارية إلى نوع من التكاثر اللاجنسي يسمَّى …………</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span><b>التكاثر الخضري</b>.</div></div><div class="qa"><p class="q">٢. <b>التتابع.</b> ماذا يحدث بعد تكوُّن برعم على مخلوق حي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span><b>الأول:</b> ينمو جزء من جسم المخلوق الحي الأب مكوِّنًا برعمًا.<br><b>التالي:</b> يستمرُّ البرعم في النمو حتى يصير مخلوقًا حيًّا جديدًا.<br><b>الأخير:</b> ينفصل هذا الجزء عن الأب ويستمرُّ في النمو في بعض المخلوقات، بينما يبقى ملتصقًا بالأب في مخلوقات أخرى ومنها المرجان.</div></div><div class="qa"><p class="q">٣. <b>التفكير الناقد.</b> ما مزايا التكاثر الجنسي؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span>يساعد على تحقيق <b>التنوُّع</b> والتحسُّن المتواصل في صفات المخلوقات الحية، ويتيح للأبناء إمكانية التكيف بشكل أفضل مع التغيُّرات البيئية؛ لأن الأبناء لا يشبهون آباءهم تمامًا، فبعضهم قد يكون أقصر أو أطول أو أسرع من البعض الآخر. وهذه الصفات المفيدة تنتقل إلى الأجيال التالية.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختار الإجابة الصحيحة · السؤال الأساسي</h2><span class="src">ص ٦٣ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختار الإجابة الصحيحة.</b> من خصائص التبرعم أن الأبناء:<br>أ. يَنتُجون عن بُوَيضة مخصَّبة. &nbsp;&nbsp; ب. يَنتُجون عن أب واحد.<br>جـ. ينتُجون عن أبوين اثنين. &nbsp;&nbsp; د. يَختلفون في صفاتهم عن الآباء.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span><b>ب - ينتُجون عن أب واحد</b>؛ لأن التبرعم أحد طرق التكاثر اللاجنسي، وفيه ينمو جزء من جسم المخلوق الحي الأب مكوِّنًا مخلوقًا حيًّا جديدًا.</div></div><div class="qa"><p class="q">٥. <b>السؤال الأساسي.</b> كيف تتكاثر المخلوقات الحية؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span>تتكاثر بنوعين: <b>التكاثر الجنسي</b> من أبوين، ويبدأ باتحاد مشيج مذكَّر من الأب مع مشيج مؤنث من الأم بعملية الإخصاب، فينتج فرد جديد يحمل صفات من الأبوين. و<b>التكاثر اللاجنسي</b> من أب واحد فقط، وينتج أبناء يحملون صفات الأب نفسها، وطرقه: الانقسام والتبرعم والتكاثر الخضري.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلوم والكتابة · العلوم والرياضيات</h2><span class="src">ص ٦٣ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلوم والكتابة — استنساخ الأغنام.</b> الاستنساخ طريقة اصطناعية لإنتاج مخلوق حي. استطاع العلماء استنساخ نعجة سمِّيت دولي. أكتب تقريرًا عن هذه النعجة وطريقة استنساخها.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span>إجابة نموذجية مقترحة: هذا سؤال بحثي يرجع فيه الطالب إلى مصادر المعلومات. ويرتبط بالدرس في أن الاستنساخ ينتج مخلوقًا يحمل الصفات الوراثية نفسها لمخلوق واحد — شأنه في ذلك شأن التكاثر اللاجنسي الذي ينتج أبناءً يشبهون الأب تمامًا. <span class="muted">(تفاصيل قصة النعجة دولي ليست واردة في صفحات الدرس؛ فلا تُنسب إلى الكتاب.)</span></div></div><div class="qa"><p class="q"><b>العلوم والرياضيات — حساب النحل.</b> يشكِّل ذكور النحل ١/٤ عدد النحل الإجمالي في الخلية. فإذا كان هناك ٣٠٠٠ نحلة في خلية النحل، فما عدد ذكور النحل؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ٦٣</span>٣٠٠٠ ÷ ٤ = <b>٧٥٠ ذكرًا</b> من النحل.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="1"><p class="q">إنتاج مخلوقات حية جديدة من أبوين يسمَّى:</p><div class="opts"><button class="opt" type="button">التكاثر اللاجنسي</button><button class="opt" type="button">التكاثر الجنسي</button><button class="opt" type="button">التبرعم</button><button class="opt" type="button">الانقسام</button></div><div class="fb"></div></div><div class="quiz" data-right="0"><p class="q">اتحاد مشيج مذكَّر مع مشيج مؤنث يسمَّى:</p><div class="opts"><button class="opt" type="button">الإخصاب</button><button class="opt" type="button">الانقسام</button><button class="opt" type="button">النتح</button><button class="opt" type="button">التبرعم</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">تتكاثر البكتيريا عن طريق:</p><div class="opts"><button class="opt" type="button">التبرعم</button><button class="opt" type="button">الانقسام</button><button class="opt" type="button">الساق الجارية</button><button class="opt" type="button">البذور</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلة تدريبية إضافية (من إعداد المعلم)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="0"><p class="q">من المخلوقات التي تتكاثر بالتبرعم:</p><div class="opts"><button class="opt" type="button">الهيدرا والإسفنجيات</button><button class="opt" type="button">الأسود</button><button class="opt" type="button">الأرانب</button><button class="opt" type="button">الفئران</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">نمو نباتات جديدة من الأوراق أو الجذور أو السيقان يسمَّى:</p><div class="opts"><button class="opt" type="button">الإخصاب</button><button class="opt" type="button">التكاثر الخضري</button><button class="opt" type="button">الانقسام</button><button class="opt" type="button">النتح</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">النوع الذي يتيح تنوُّع صفات المخلوقات الحية هو:</p><div class="opts"><button class="opt" type="button">التكاثر اللاجنسي</button><button class="opt" type="button">التكاثر الجنسي</button><button class="opt" type="button">التبرعم</button><button class="opt" type="button">الانقسام</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبل أن نُنهي الدرس</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أُفرِّق بجملة واحدة بين التكاثر الجنسي واللاجنسي.</li><li>أذكر ثلاث طرق للتكاثر اللاجنسي مع مثال لكلٍّ منها.</li><li>لماذا يُعدُّ التنوُّع ميزة للمخلوقات الحية؟</li></ul><div class="box idea" style="font-size:27px;">الفكرة الرئيسة: التكاثر انتقال المادة الوراثية من الآباء إلى الأبناء؛ جنسيًّا من أبوين مع تنوُّع، أو لاجنسيًّا من أب واحد بأبناء مطابقين.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: صورٌ من التكاثر اللاجنسي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1340" height="480" viewBox="0 0 1340 480" xmlns="http://www.w3.org/2000/svg" role="img" id="g5l3SvgHost"><defs><marker id="g5l3mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6B7889"/></marker></defs><rect x="0" y="0" width="1340" height="480" fill="#FBFCFD"/><g><text x="1110" y="66" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">الانشطار الثنائي</text><text x="1110" y="66" font-size="28" fill="#2C6B20" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">الانشطار الثنائي</text></g><ellipse cx="1240" cy="180" rx="52" ry="34" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="1240" cy="180" r="14" fill="#3E6E2E"/><path d="M1176 180 H 1120" stroke="#6B7889" stroke-width="6" marker-end="url(#g5l3mr)" stroke-linecap="round"/><ellipse cx="1040" cy="180" rx="60" ry="34" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="1016" cy="180" r="13" fill="#3E6E2E"/><circle cx="1064" cy="180" r="13" fill="#3E6E2E"/><path d="M1040 148 v64" stroke="#3F8E2E" stroke-width="4" stroke-dasharray="6 5"/><path d="M974 180 H 918" stroke="#6B7889" stroke-width="6" marker-end="url(#g5l3mr)" stroke-linecap="round"/><ellipse cx="800" cy="180" rx="38" ry="30" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="800" cy="180" r="12" fill="#3E6E2E"/><ellipse cx="880" cy="180" rx="38" ry="30" fill="#DCEFD2" stroke="#3F8E2E" stroke-width="5"/><circle cx="880" cy="180" r="12" fill="#3E6E2E"/><g><text x="1040" y="272" font-size="23" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مخلوقان متماثلان</text><text x="1040" y="272" font-size="23" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مخلوقان متماثلان</text></g><g><text x="660" y="66" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التبرعُم</text><text x="660" y="66" font-size="28" fill="#7A5410" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التبرعُم</text></g><circle cx="740" cy="180" r="42" fill="#F6E2B8" stroke="#C98A1E" stroke-width="5"/><circle cx="740" cy="180" r="14" fill="#B07C3E"/><path d="M694 180 H 654" stroke="#6B7889" stroke-width="6" marker-end="url(#g5l3mr)" stroke-linecap="round"/><circle cx="596" cy="180" r="42" fill="#F6E2B8" stroke="#C98A1E" stroke-width="5"/><circle cx="596" cy="180" r="14" fill="#B07C3E"/><circle cx="636" cy="146" r="20" fill="#F6E2B8" stroke="#C98A1E" stroke-width="4"/><circle cx="636" cy="146" r="7" fill="#B07C3E"/><g><text x="660" y="272" font-size="23" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">بروزٌ ينفصل</text><text x="660" y="272" font-size="23" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">بروزٌ ينفصل</text></g><g><text x="250" y="66" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">التكاثر بالأبواغ</text><text x="250" y="66" font-size="28" fill="#8E2050" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">التكاثر بالأبواغ</text></g><path d="M180 240 q 0 -70 40 -70 q 40 0 40 70z" fill="#E8DCC4"/><ellipse cx="220" cy="172" rx="70" ry="26" fill="#C46A3A"/><circle cx="152" cy="120" r="6" fill="#7A4410"/><circle cx="174" cy="108" r="6" fill="#7A4410"/><circle cx="196" cy="96" r="6" fill="#7A4410"/><circle cx="218" cy="120" r="6" fill="#7A4410"/><circle cx="240" cy="108" r="6" fill="#7A4410"/><circle cx="262" cy="96" r="6" fill="#7A4410"/><circle cx="284" cy="120" r="6" fill="#7A4410"/><g><text x="250" y="272" font-size="23" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أبواغٌ تنتشر وتنمو</text><text x="250" y="272" font-size="23" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أبواغٌ تنتشر وتنمو</text></g><g class="eHot" data-k="fission"><rect x="790" y="40" width="520" height="250" rx="18" fill="none" stroke="transparent"/><rect class="hitBox" x="790" y="40" width="520" height="250" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="bud"><rect x="500" y="40" width="270" height="250" rx="18" fill="none" stroke="transparent"/><rect class="hitBox" x="500" y="40" width="270" height="250" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="spore"><rect x="90" y="40" width="380" height="250" rx="18" fill="none" stroke="transparent"/><rect class="hitBox" x="90" y="40" width="380" height="250" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="670" y="372" font-size="27" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">جميعها صورٌ من التكاثر اللاجنسي</text><text x="670" y="372" font-size="27" fill="#1E2430" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">جميعها صورٌ من التكاثر اللاجنسي</text></g><g><text x="670" y="428" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">أما الاقتران فتكاثرٌ جنسي</text><text x="670" y="428" font-size="24" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">أما الاقتران فتكاثرٌ جنسي</text></g></svg><div class="eCap">ثلاث صورٍ لتكاثر المخلوقات الحية الدقيقة.</div></div><div class="eSteps" id="g5l3Pills"><span class="eStepPill" data-s="0">الانشطار الثنائي</span><span class="eStepPill" data-s="1">التبرعُم</span><span class="eStepPill" data-s="2">التكاثر بالأبواغ</span></div><div class="eInfo" id="g5l3Info">اضغط على أيِّ لوحةٍ لتعرف تفاصيلها.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g5l3Prev">◀ السابق</button><button class="simBtn" type="button" id="g5l3Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: التكاثر في النباتات</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M60 110 L60 62" stroke="#3F8E2E" stroke-width="7" stroke-linecap="round"/><ellipse cx="40" cy="84" rx="17" ry="9" fill="#57A83E" transform="rotate(-20 40 84)"/><g fill="#E4557E"><ellipse cx="60" cy="36" rx="11" ry="18"/><ellipse cx="60" cy="62" rx="11" ry="18"/><ellipse cx="47" cy="49" rx="18" ry="11"/><ellipse cx="73" cy="49" rx="18" ry="11"/></g><circle cx="60" cy="49" r="11" fill="#F6C445"/></g></svg><h4>الزهرة</h4><p>عضو التكاثر في النباتات الزهرية</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="70" rx="18" ry="28" fill="#4E7D2A"/><circle cx="60" cy="38" r="14" fill="#3E6821"/><path d="M46 34 l-12 -14 M74 34 l12 -14" stroke="#3E6821" stroke-width="5" stroke-linecap="round"/><ellipse cx="34" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(-24 34 60)" opacity=".9"/><ellipse cx="86" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(24 86 60)" opacity=".9"/><path d="M44 76 l-16 8 M44 88 l-16 6 M76 76 l16 8 M76 88 l16 6" stroke="#3E6821" stroke-width="4" stroke-linecap="round"/></g></svg><h4>الملقِّحات</h4><p>تنقل حبوب اللقاح من زهرةٍ إلى أخرى</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="62" rx="30" ry="38" fill="#B98040"/><ellipse cx="60" cy="62" rx="18" ry="26" fill="#E3C48E"/><path d="M60 44 q 8 16 0 34" stroke="#8A5A2B" stroke-width="5" fill="none"/></g></svg><h4>البذرة</h4><p>نباتٌ غير مكتمل النمو وغذاؤه المخزَّن</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M60 110 L60 56" stroke="#3F8E2E" stroke-width="7" stroke-linecap="round"/><ellipse cx="40" cy="56" rx="20" ry="12" fill="#57A83E" transform="rotate(-25 40 56)"/><ellipse cx="80" cy="52" rx="20" ry="12" fill="#3F8E2E" transform="rotate(25 80 52)"/><path d="M20 110 h80" stroke="#8A6636" stroke-width="9" stroke-linecap="round"/></g></svg><h4>الإنبات</h4><p>تنمو البذرة فتكوِّن نباتًا جديدًا</p></div></div><div class="eCap">التكاثر خاصيةٌ تحفظ بقاء النوع.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — رحلةُ البذرة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>بعض البذور تسافر <b>مئات الكيلومترات</b> ملتصقةً بفرو الحيوانات أو محمولةً على الرياح أو عائمةً في الماء.</p></div><div class="fFact"><div class="n">٢</div><p><b>النحلة</b> لا تنقل حبوب اللقاح عمدًا؛ إنما تبحث عن الرحيق فتُسدي للنبات خدمةً عظيمةً بغير قصد.</p></div><div class="fFact"><div class="n">٣</div><p>لو اختفت الملقِّحات لَنقصت ثمارٌ كثيرةٌ نأكلها؛ ولهذا تُعدُّ حمايةُ النحل مسألةً غذائيةً لا ترفًا.</p></div></div><div class="fCap">التكاثر يضمن بقاء النوع جيلًا بعد جيل.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s5c1"><div class="fCard"><div class="fIn"><div class="fF"><span>التكاثر الجنسي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>إنتاج مخلوقات حية جديدة من أبوين.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الإخصاب</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>اتحاد مشيج مذكَّر من الأب مع مشيج مؤنث من الأم.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التكاثر اللاجنسي</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>إنتاج مخلوقات حية من أب واحد فقط.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التكاثر الخضري</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>نمو نباتات جديدة انطلاقًا من الأوراق أو الجذور أو السيقان.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الساق الجارية</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>ساق نبات تغرس في التربة ويتم تدعيمها فتنمو وتصبح نباتًا جديدًا.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5c1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب خطوات تكوُّن البذرة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s5c2P"><button class="fChip" type="button" data-i="2">يحدث الإخصاب</button><button class="fChip" type="button" data-i="3">تتكوَّن البذرة</button><button class="fChip" type="button" data-i="0">تعلق حبة اللقاح بالميسم</button><button class="fChip" type="button" data-i="1">ينمو أنبوب اللقاح</button></div><div class="fSlots" id="s5c2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div></div><div class="fFb" id="s5c2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s5c2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب خطوات تكوُّن البذرة.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>تجربةٌ منزليةٌ آمنة</h4><p>ضع بذرة فولٍ على قطنٍ مبلَّلٍ في كوبٍ شفاف، وراقبها ثلاثة أيام: أيُّ جزءٍ يظهر أولًا؟</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>لماذا تنتج بعض النباتات آلاف البذور بينما تكفي واحدةٌ لنباتٍ جديد؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="5" aria-label="إثراء مصور: التكاثر">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">كيف يمكن لساق فراولة أفقية أن تنتج نباتًا جديدًا دون بذرة؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/strawberry_runner.jpg" alt="ساق مدادة من فراولة الزينة مع نبات صغير عند عقدتها" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>مداد في فراولة الزينة «بينك باندا»؛ قد تنمو نباتات جديدة عند عقد الساق الممتدة، وهو تكاثر خضري.</figcaption><p class="se-credit">الصورة: Frank Vincentz · <a href="https://commons.wikimedia.org/wiki/File:Pink_Panda_10_ies.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a> · الصورة الأصلية دون تعديل</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>التكاثر الخضري تكاثر لاجنسي تنتج فيه نباتات جديدة من أجزاء نبات قائم.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>تنمو للفراولة سيقان جارية، ويمكن أن تتكون جذور ونباتات جديدة عند عقدها.</span></p>
+<p class="se-fact"><span aria-hidden="true">🌱</span><span>تشبه النباتات الناتجة خضريًا النبات الأصل وراثيًا، مع إمكان حدوث تغيرات وراثية نادرة.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/biology-2e/pages/32-3-asexual-reproduction" target="_blank" rel="noopener noreferrer">OpenStax: التكاثر اللاجنسي في النباتات</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="5" aria-label="رسم توضيحي: الفراولة تتكاثر خضريًا">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>الفراولة تتكاثر خضريًا</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="الفراولة تتكاثر خضريًا"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🍓</span><span class="se-node-label">نبات أصل</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">〰️</span><span class="se-node-label">ساق أفقية</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🌱</span><span class="se-node-label">عقدة متجذرة</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🌿</span><span class="se-node-label">نبات جديد</span></button></div>
+
+<p class="se-diagram-caption">الساق الجارية جزء من النبات الأصل؛ لا يلزم تكوّن بذرة في هذا المسار.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🍓</span><div><strong data-detail-title>نبات أصل</strong><p data-detail-text>ينمو ويكوّن ساقًا جارية</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="5" aria-label="محاكاة إثرائية: نمو عقدة فراولة">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>نمو عقدة فراولة</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">متى تظهر جذور جديدة في مسار التكاثر الخضري الافتراضي؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">مرحلة النمو</p><div class="se-options" role="group" aria-label="مرحلة النمو"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">امتداد الساق</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">بداية التجذّر</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">تجذّر أوضح</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">نموذج مراحل، لا تجربة منزلية؛ الرموز ليست عدد الجذور المتوقع ولا تحدد مدة النمو.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر تصوري لنمو جذور العقدة الجديدة</p><div class="se-model" role="img" data-model aria-label="عقدة بلا جذور ظاهرة"><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span><span class="se-symbol" aria-hidden="true">🌱</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>عقدة بلا جذور ظاهرة</p><p class="se-observation" data-observation>لا تظهر رموز جذور للعقدة الجديدة.</p></div><p class="se-explanation" data-explanation>تمتد الساق من النبات الأصل؛ لم تبدأ جذور العقدة المختارة بالظهور في هذه المرحلة.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 ما الدليل في المخطط على أن هذا التكاثر خضري وليس عن طريق البذور؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الخامس الابتدائي — الجزء الأول من المقرر<br>الوحدة الأولى: تنوع الحياة · الفصل الثاني: الآباء والأبناء · التكاثر<br>المصدر: كتاب الطالب، صفحات الكتاب: ٥٦ – ٦٣ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var D=[['انقسام خلية بكتيريا إلى خليتين','asex','الانقسام طريقة تكاثر لاجنسي من أب واحد.'],
+           ['تكاثر الأسود','sex','ينتج عن أبوين، ويحمل الصغار صفات من كليهما.'],
+           ['تبرعم الهيدرا','asex','ينمو جزء من جسم الأب مكوِّنًا مخلوقًا جديدًا.'],
+           ['نمو نبات جديد من ساق النعناع الجارية','asex','تكاثر خضري من أب واحد.'],
+           ['اتحاد مشيج مذكَّر مع مشيج مؤنث','sex','هذه عملية الإخصاب في التكاثر الجنسي.'],
+           ['نمو بيوض النحل غير المخصَّبة إلى ذكور','asex','من دون إخصاب، فهو تكاثر لاجنسي.'],
+           ['نمو بيوض النحل المخصَّبة إلى نحل عامل','sex','حدث فيها إخصاب، فهو تكاثر جنسي.'],
+           ['تكاثر المرجان بالبرعم الملتصق','asex','تبرعم؛ وهو تكاثر لاجنسي.']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنت!'; tag.textContent='انتهى النشاط';
+        msg.className='simMsg good'; msg.textContent='أنهيت تصنيف جميع الأمثلة.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='مثال '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابة صحيحة: '+D[i][2]; }
+      else { msg.className='simMsg bad'; msg.textContent='أعيد التفكير: '+D[i][2]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأ التصنيف.'; show(); });
+    show();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+
+ERT.hotspots('g5l3SvgHost','g5l3Info',{'fission':'<span><b>الانشطار الثنائي</b> — تتضاعف المادة الوراثية ثم تنقسم الخلية إلى <b>مخلوقين متماثلين</b>؛ وهو تكاثرٌ لاجنسي.</span>','bud':'<span><b>التبرعُم</b> — ينمو <b>بروزٌ صغير</b> على الخلية الأم، وتنقسم النواة، ثم ينفصل البرعم مخلوقًا جديدًا.</span>','spore':'<span><b>التكاثر بالأبواغ</b> — تُنتَج <b>أبواغٌ</b> دقيقةٌ تتحمَّل الظروف القاسية، فإذا وجدت بيئةً مناسبةً نمت.</span>'},'');
+ERT.stepper({pills:'g5l3Pills', info:'g5l3Info', svg:'g5l3SvgHost', next:'g5l3Next', prev:'g5l3Prev', stages:[['fission','الانشطار الثنائي','تتضاعف المادة الوراثية ثم تنقسم الخلية إلى <b>مخلوقين متماثلين</b>؛ وهو تكاثرٌ لاجنسي.'],['bud','التبرعُم','ينمو <b>بروزٌ صغير</b> على الخلية الأم، وتنقسم النواة، ثم ينفصل البرعم مخلوقًا جديدًا.'],['spore','التكاثر بالأبواغ','تُنتَج <b>أبواغٌ</b> دقيقةٌ تتحمَّل الظروف القاسية، فإذا وجدت بيئةً مناسبةً نمت.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s5c1');
+EG.order({pool:'s5c2P', slots:'s5c2S', fb:'s5c2Fb', reset:'s5c2R', n:4});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"05_الصف_الخامس_الابتدائي/01_تنوع_الحياة/02_الآباء_والأبناء/01_التكاثر/علوم_خامس_ابتدائي_ف1_الدرس_الأول_التكاثر.html","title":"التكاثر","grade":5,"emoji":"🌱","photoTopic":"plants","observeQuestion":"كيف يمكن لساق فراولة أفقية أن تنتج نباتًا جديدًا دون بذرة؟","facts":["التكاثر الخضري تكاثر لاجنسي تنتج فيه نباتات جديدة من أجزاء نبات قائم.","تنمو للفراولة سيقان جارية، ويمكن أن تتكون جذور ونباتات جديدة عند عقدها.","تشبه النباتات الناتجة خضريًا النبات الأصل وراثيًا، مع إمكان حدوث تغيرات وراثية نادرة."],"diagram":{"title":"الفراولة تتكاثر خضريًا","relation":"sequence","nodes":[{"emoji":"🍓","label":"نبات أصل","detail":"ينمو ويكوّن ساقًا جارية"},{"emoji":"〰️","label":"ساق أفقية","detail":"تمتد فوق سطح التربة"},{"emoji":"🌱","label":"عقدة متجذرة","detail":"تكوّن جذورًا وأوراقًا"},{"emoji":"🌿","label":"نبات جديد","detail":"يمكنه الاستقلال بعد اكتمال نموه"}],"caption":"الساق الجارية جزء من النبات الأصل؛ لا يلزم تكوّن بذرة في هذا المسار."},"lab":{"title":"نمو عقدة فراولة","question":"متى تظهر جذور جديدة في مسار التكاثر الخضري الافتراضي؟","controlLabel":"مرحلة النمو","options":["امتداد الساق","بداية التجذّر","تجذّر أوضح"],"states":[{"label":"عقدة بلا جذور ظاهرة","emoji":"🌱","amount":0,"explanation":"تمتد الساق من النبات الأصل؛ لم تبدأ جذور العقدة المختارة بالظهور في هذه المرحلة.","observation":"لا تظهر رموز جذور للعقدة الجديدة."},{"label":"جذور أولية","emoji":"🌱","amount":2,"explanation":"تبدأ جذور جديدة بالظهور عند العقدة في ظروف مناسبة، بينما يبقى النبات الصغير متصلًا بالأصل.","observation":"تظهر رموز قليلة تمثل جذورًا ناشئة."},{"label":"مجموع جذري نامٍ","emoji":"🌱","amount":6,"explanation":"يزداد نمو الجذور مع الوقت، ويساعد النبات الجديد على امتصاص الماء عند نموه في التربة.","observation":"تظهر رموز أكثر تشير إلى امتداد الجذور."}],"quantityLabel":"مؤشر تصوري لنمو جذور العقدة الجديدة","modelNote":"نموذج مراحل، لا تجربة منزلية؛ الرموز ليست عدد الجذور المتوقع ولا تحدد مدة النمو.","tryPrompt":"ما الدليل في المخطط على أن هذا التكاثر خضري وليس عن طريق البذور؟"},"sources":[{"title":"OpenStax: التكاثر اللاجنسي في النباتات","url":"https://openstax.org/books/biology-2e/pages/32-3-asexual-reproduction"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>

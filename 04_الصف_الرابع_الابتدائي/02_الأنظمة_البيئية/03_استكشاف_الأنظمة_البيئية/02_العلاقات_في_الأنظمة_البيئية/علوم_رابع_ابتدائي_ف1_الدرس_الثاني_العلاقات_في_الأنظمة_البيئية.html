@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="author" content="نايف المطيري">
+<title>العلوم – رابع ابتدائي – ف1 – العلاقات في الأنظمة البيئية</title>
+<style>
+/* ================= أساسيات ================= */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#241a2e}
+body{font-family:"Sakkal Majalla","Segoe UI","Tahoma","Arial",sans-serif;direction:rtl}
+
+:root{
+  --g:#8E6BA8;        /* لون الصف الأول */
+  --g-dark:#5F4275;
+  --g-light:#F3EDF8;
+  --ink:#1E2430;
+  --ink2:#4A5568;
+  --ok:#1F8A5F;
+  --no:#C0392B;
+  --amber:#B7791F;
+  --amber-bg:#FFF8E6;
+}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#241a2e}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center;background:#fff;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.5)}
+
+/* ================= الشريحة ================= */
+.slide{position:absolute;inset:0;padding:56px 70px 92px;display:none;flex-direction:column;
+  opacity:0;transition:opacity .32s ease}
+.slide.on{display:flex;opacity:1}
+
+/* رأس الشريحة */
+.head{display:flex;align-items:center;gap:18px;border-bottom:5px solid var(--g);padding-bottom:14px;margin-bottom:26px;flex:0 0 auto}
+.head .tag{background:var(--g);color:#fff;font-size:23px;font-weight:700;padding:7px 22px;border-radius:30px;white-space:nowrap}
+.head h2{font-size:44px;color:var(--g-dark);font-weight:700;line-height:1.25}
+.head .src{margin-inline-start:auto;font-size:20px;color:var(--ink2);background:#F1F3F6;padding:6px 16px;border-radius:20px;white-space:nowrap}
+
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.center{align-items:center;text-align:center}
+
+/* نصوص */
+p.t{font-size:38px;color:var(--ink);line-height:1.75}
+p.big{font-size:46px;font-weight:700;color:var(--ink);line-height:1.6}
+.muted{color:var(--ink2)}
+.hl{background:#FFF3A8;padding:2px 10px;border-radius:6px;font-weight:700}
+.term{color:var(--g-dark);font-weight:700}
+
+/* بطاقات */
+.cards{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.card{background:var(--g-light);border:3px solid #DCCFE8;border-radius:20px;padding:26px 28px;flex:1 1 0;min-width:230px}
+.card h3{font-size:34px;color:var(--g-dark);margin-bottom:10px}
+.card p{font-size:30px;color:var(--ink);line-height:1.6}
+.card .ico{font-size:0;line-height:0;margin-bottom:12px;display:block}
+
+.box{border-radius:18px;padding:26px 32px;font-size:34px;line-height:1.7}
+.box.idea{background:var(--g-light);border-right:12px solid var(--g);color:var(--ink)}
+.box.safe{background:#FDEEEE;border-right:12px solid var(--no);color:#7A2018;font-size:30px}
+.box.note{background:var(--amber-bg);border-right:12px solid var(--amber);color:#6B4B10;font-size:29px}
+.box.ask{background:#E9F4FF;border-right:12px solid #2B6CB0;color:#17395C}
+
+/* قوائم */
+ul.list{list-style:none;display:flex;flex-direction:column;gap:16px}
+ul.list li{font-size:34px;color:var(--ink);background:#F7F8FA;border-radius:14px;padding:14px 22px;
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55}
+ul.list li::before{content:"●";color:var(--g);font-size:24px;line-height:1.6;flex:0 0 auto}
+ul.list.num{counter-reset:n}
+ul.list.num li::before{counter-increment:n;content:counter(n);background:var(--g);color:#fff;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+
+/* جدول */
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:32px;border-radius:16px;overflow:hidden}
+table.cmp th{background:var(--g);color:#fff;padding:16px;font-size:34px}
+table.cmp td{background:#F7F8FA;padding:16px 20px;border-bottom:2px solid #E6E9EE;text-align:center;color:var(--ink)}
+table.cmp tr:last-child td{border-bottom:none}
+
+/* أسئلة وإجابات */
+.qa{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.qa .q{font-size:33px;color:var(--ink);line-height:1.6;font-weight:700}
+.qa .q b{color:var(--g-dark)}
+.ansBtn{margin-top:14px;background:var(--g);color:#fff;border:none;border-radius:12px;
+  padding:11px 26px;font-size:25px;font-family:inherit;cursor:pointer;font-weight:700;transition:background .2s}
+.ansBtn:hover{background:var(--g-dark)}
+.ans{display:none;margin-top:14px;background:#EAF6F0;border-right:9px solid var(--ok);border-radius:12px;
+  padding:16px 22px;font-size:31px;color:#12503A;line-height:1.6}
+.ans.show{display:block}
+.ans .lbl{display:block;font-size:22px;color:var(--ok);font-weight:700;margin-bottom:6px}
+
+/* التقويم التفاعلي */
+.quiz{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:22px 26px}
+.quiz .q{font-size:33px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.opts{display:flex;gap:14px;flex-wrap:wrap}
+.opt{flex:1 1 240px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:14px 18px;
+  font-size:30px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.18s}
+.opt:hover{border-color:var(--g);background:var(--g-light)}
+.opt.right{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.opt.wrong{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fb{margin-top:12px;font-size:28px;font-weight:700;min-height:36px}
+
+/* خريطة المفاهيم */
+.map{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{background:var(--g);color:#fff;font-size:36px;font-weight:700;padding:16px 40px;border-radius:16px}
+.node.sub{background:var(--g-light);color:var(--g-dark);border:3px solid var(--g);font-size:32px;padding:14px 30px}
+.node.leaf{background:#F7F8FA;color:var(--ink);border:3px solid #D8DEE6;font-size:27px;font-weight:600;padding:11px 20px}
+.line{width:5px;height:26px;background:var(--g)}
+.row{display:flex;gap:60px;align-items:flex-start;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.leaves{display:flex;gap:12px;margin-top:0;flex-wrap:wrap;justify-content:center;max-width:520px}
+
+/* الغلاف */
+.cover{background:linear-gradient(140deg,#5F4275 0%,#8E6BA8 55%,#B294C9 100%);color:#fff;
+  padding:0;align-items:center;justify-content:center;text-align:center}
+.cover .inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
+.cover .kicker{font-size:28px;letter-spacing:1px;opacity:.92}
+.cover h1{font-size:94px;font-weight:700;line-height:1.2;text-shadow:0 4px 18px rgba(0,0,0,.28)}
+.cover .rule{width:230px;height:6px;background:#fff;opacity:.85;border-radius:4px;margin:6px 0}
+.cover .meta{font-size:31px;opacity:.96;line-height:1.9}
+.cover .by{margin-top:14px;font-size:26px;background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.45);padding:9px 30px;border-radius:30px}
+
+/* الشريحة الختامية */
+.endS{background:linear-gradient(140deg,#5F4275,#8E6BA8);color:#fff;align-items:center;justify-content:center;text-align:center}
+.endS h1{font-size:72px;font-weight:700;margin-bottom:24px}
+.endS .name{font-size:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.5);
+  padding:16px 56px;border-radius:20px}
+.endS .small{margin-top:26px;font-size:26px;opacity:.9;line-height:1.9}
+
+
+/* ================= المحاكاة التفاعلية ================= */
+.sim{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:20px 26px;display:flex;gap:26px;align-items:center}
+.simSide{flex:0 0 330px;display:flex;flex-direction:column;gap:12px}
+.simStage{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.tgl{display:flex;align-items:center;gap:14px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 18px;font-size:29px;cursor:pointer;font-family:inherit;color:var(--ink);transition:.18s}
+.tgl .dot{width:24px;height:24px;border-radius:50%;background:#C9CFD8;flex:0 0 auto}
+.tgl.on{border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.tgl.on .dot{background:var(--ok)}
+.simBtn{background:var(--g);color:#fff;border:none;border-radius:14px;padding:13px 26px;font-size:28px;
+  font-family:inherit;font-weight:700;cursor:pointer;transition:.18s}
+.simBtn:hover{background:var(--g-dark)}
+.simBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.simBtn:disabled{background:#C9CFD8;cursor:default}
+.simMsg{font-size:31px;font-weight:700;text-align:center;line-height:1.5;min-height:46px}
+.simMsg.good{color:var(--ok)} .simMsg.bad{color:var(--no)} .simMsg.neutral{color:var(--ink2)}
+.simCap{font-size:26px;color:var(--ink2);text-align:center}
+.dayPill{background:var(--g);color:#fff;border-radius:30px;padding:8px 26px;font-size:29px;font-weight:700;display:inline-block}
+.simRow{display:flex;gap:80px;align-items:flex-end;justify-content:center}
+.simCell{display:flex;flex-direction:column;align-items:center;gap:8px}
+.simCell h4{font-size:29px;color:var(--g-dark)}
+.simCell .st{font-size:25px;color:var(--ink2)}
+.simTag{background:#EAF0FF;color:#24406E;border:2px solid #B9CCEB;border-radius:10px;
+  padding:5px 16px;font-size:22px;font-weight:700;display:inline-block}
+.sortCard{background:#fff;border:3px solid #D8DEE6;border-radius:18px;padding:14px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+.sortCard .nm{font-size:34px;font-weight:700;color:var(--ink)}
+.sortBtns{display:flex;gap:18px;justify-content:center}
+.sortBtns .simBtn{min-width:250px}
+.score{font-size:26px;color:var(--ink2);font-weight:700}
+
+/* ================= شريط التحكم ================= */
+#bar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#FAFBFC;border-top:2px solid #E4E8ED;
+  display:flex;align-items:center;gap:12px;padding:0 22px;z-index:5}
+#bar button{background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 18px;
+  font-size:22px;font-family:inherit;cursor:pointer;font-weight:700;transition:.18s;white-space:nowrap}
+#bar button:hover{background:var(--g-dark)}
+#bar button:disabled{background:#C9CFD8;cursor:default}
+#counter{font-size:22px;color:var(--ink2);font-weight:700;margin-inline-start:auto;white-space:nowrap}
+#brand{font-size:20px;color:var(--ink2);white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:66px;height:7px;background:#E4E8ED;z-index:5}
+#prog i{display:block;height:100%;background:var(--g);width:0;transition:width .3s ease}
+
+/* رسوم SVG داخلية */
+svg.ill{display:block;margin:0 auto}
+
+:root{--g:#5E9E1E;--g-dark:#3B650F;--g-light:#EFF7E5}
+.card{border-color:#CFE5B4}
+.cover{background:linear-gradient(140deg,#3B650F 0%,#5E9E1E 55%,#8FC456 100%)}
+.endS{background:linear-gradient(140deg,#3B650F,#5E9E1E)}
+</style>
+<style id="enrichCSS">
+/* ============ الإثراء: رسوم ومحاكاات (إضافة غير هادمة) ============ */
+.slide.eSlide{padding:44px 60px 86px}
+.slide.eSlide .head{padding-bottom:10px;margin-bottom:16px}
+.eWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;flex:1 1 auto;min-height:0}
+.eWrap>*{flex:0 0 auto}
+.eFig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;max-width:100%;flex:1 1 auto;min-height:0}
+.eFig svg{display:block;max-width:100%;max-height:400px;width:auto;height:auto;flex:0 1 auto;min-height:0}
+.eFig .eCap{flex:0 0 auto}
+.eCap{font-size:24px;color:var(--ink2);text-align:center;line-height:1.4;max-width:1340px}
+.eRow{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}
+.eLegend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.eChip{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #D8DEE6;
+  border-radius:10px;padding:4px 13px;font-size:22px;color:var(--ink);font-weight:700}
+.eChip i{width:17px;height:17px;border-radius:5px;display:block;flex:0 0 auto}
+.eBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.eBtns .simBtn{padding:9px 22px;font-size:25px;border-radius:12px}
+.eInfo{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:14px;padding:9px 22px;
+  font-size:27px;color:var(--ink);line-height:1.4;text-align:center;width:100%;min-height:58px;
+  display:flex;align-items:center;justify-content:center}
+.eInfo b{color:var(--g-dark)}
+.eHot{cursor:pointer}
+.eHot:hover{opacity:.82}
+.eHot.sel .hitBox{stroke:var(--g-dark);stroke-width:5;stroke-dasharray:9 6}
+.eGal{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.eCard{background:var(--g-light);border:3px solid #DCCFE8;border-radius:16px;
+  padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;min-width:210px}
+.eCard h4{font-size:28px;color:var(--g-dark);text-align:center}
+.eCard p{font-size:23px;color:var(--ink);text-align:center;line-height:1.4}
+.eSteps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.eStepPill{background:#fff;border:2px solid #D8DEE6;border-radius:26px;padding:5px 16px;
+  font-size:22px;font-weight:700;color:var(--ink2);cursor:pointer}
+.eStepPill.on{background:var(--g);border-color:var(--g);color:#fff}
+.eNote{background:var(--amber-bg);border-right:10px solid var(--amber);color:#6B4B10;
+  border-radius:14px;padding:10px 20px;font-size:24px;line-height:1.45;text-align:center}
+</style>
+<style id="enrichCSS2">
+/* ============ إثراء (٢): حقائق وبطاقات وألعاب ============ */
+.fWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;flex:1 1 auto;min-height:0}
+.fCap{font-size:25px;color:var(--ink2);text-align:center;line-height:1.45;max-width:1320px}
+
+/* هل تعلم؟ */
+.fFacts{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;width:100%}
+.fFact{flex:1 1 0;min-width:250px;background:#FFF8E6;border:3px solid #E8C46A;border-radius:18px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.fFact .n{width:52px;height:52px;border-radius:50%;background:#B7791F;color:#fff;font-size:28px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.fFact p{font-size:26px;color:#5C4410;line-height:1.5}
+.fFact b{color:#8A5F06}
+
+/* بطاقات المفردات */
+.fFlash{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.fCard{flex:1 1 0;min-width:230px;height:186px;perspective:1000px;cursor:pointer}
+.fIn{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.fCard.on .fIn{transform:rotateY(180deg)}
+.fF,.fB{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 16px;text-align:center;gap:8px}
+.fF{background:var(--g);color:#fff;border:3px solid var(--g-dark)}
+.fF span{font-size:31px;font-weight:700;line-height:1.35}
+.fF i{font-style:normal;font-size:21px;opacity:.9}
+.fB{background:#fff;color:var(--ink);border:3px solid var(--g);transform:rotateY(180deg)}
+.fB span{font-size:24px;line-height:1.45}
+.fB i{font-style:normal;font-size:20px;color:var(--ink2);direction:ltr}
+
+/* لوحة اللعبة */
+.fGame{background:#F7F8FA;border:3px solid #E2E6EC;border-radius:18px;padding:14px 22px;
+  width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fQ{font-size:31px;font-weight:700;color:var(--ink);text-align:center;line-height:1.45;min-height:44px}
+.fOpts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fOpt{flex:1 1 210px;max-width:420px;background:#fff;border:3px solid #D8DEE6;border-radius:14px;
+  padding:11px 16px;font-size:27px;font-family:inherit;color:var(--ink);cursor:pointer;text-align:center;transition:.16s}
+.fOpt:hover{border-color:var(--g);background:var(--g-light)}
+.fOpt.ok{background:#EAF6F0;border-color:var(--ok);color:#12503A;font-weight:700}
+.fOpt.no{background:#FDEEEE;border-color:var(--no);color:#7A2018}
+.fOpt.dim{opacity:.45}
+.fFb{font-size:25px;font-weight:700;min-height:36px;text-align:center;line-height:1.4}
+.fFb.ok{color:var(--ok)} .fFb.no{color:var(--no)}
+.fBar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+.fPill{background:var(--g);color:#fff;border-radius:26px;padding:6px 20px;font-size:24px;font-weight:700}
+.fPill.warn{background:#B7791F}
+.fPill.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+.fBtn{background:var(--g);color:#fff;border:none;border-radius:12px;padding:9px 24px;font-size:25px;
+  font-family:inherit;font-weight:700;cursor:pointer}
+.fBtn:hover{background:var(--g-dark)}
+.fBtn.ghost{background:#fff;color:var(--g-dark);border:3px solid var(--g)}
+
+/* ترتيب الخطوات */
+.fPool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%}
+.fChip{background:#fff;border:3px solid #D8DEE6;border-radius:14px;padding:10px 18px;font-size:26px;
+  cursor:pointer;font-family:inherit;color:var(--ink);transition:.16s}
+.fChip:hover{border-color:var(--g);background:var(--g-light)}
+.fChip.used{opacity:.35;pointer-events:none}
+.fChip.bad{background:#FDEEEE;border-color:var(--no)}
+.fSlots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+.fSlot{min-width:180px;min-height:60px;border:3px dashed #C9D2DA;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:24px;color:#98A4AE;padding:6px 12px;text-align:center}
+.fSlot.full{border-style:solid;border-color:var(--ok);background:#EAF6F0;color:#12503A;font-weight:700}
+.fArrow{font-size:30px;color:#98A4AE;align-self:center}
+
+/* بطاقة تطبيق ومشروع */
+.fApply{display:flex;gap:18px;width:100%;justify-content:center;flex-wrap:wrap}
+.fBox{flex:1 1 0;min-width:280px;background:#fff;border:3px solid #DCE3E8;border-radius:18px;padding:16px 20px}
+.fBox h4{font-size:29px;color:var(--g-dark);margin-bottom:8px}
+.fBox p{font-size:25px;color:var(--ink);line-height:1.5}
+.fBox.warm{background:#FFF8E6;border-color:#E8C46A}
+.fBox.cool{background:#EAF4FB;border-color:#9FC4DE}
+.fBox.safe{background:#FDEEEE;border-color:#E2A8A2}
+.fBox.safe h4{color:#8E2018}
+</style>
+<!--SCIENCE-PLUS:STYLE:START-->
+<link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
+<!--SCIENCE-PLUS:STYLE:END-->
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+<section class="slide cover on"><div class="inner">
+<div class="kicker">المملكة العربية السعودية — وزارة التعليم</div>
+<div class="kicker">كتاب العلوم — الجزء الأول من المقرر — طبعة ١٤٤٧ / ٢٠٢٥</div>
+<div class="rule"></div><h1>العلاقات في الأنظمة البيئية</h1><div class="rule"></div>
+<div class="meta">الصف الرابع الابتدائي<br>الوحدة الثانية: الأنظمة البيئية<br>الفصل الثالث: استكشاف الأنظمة البيئية — الدرس الثاني</div>
+<div class="by">إعداد: نايف المطيري</div></div></section>
+<section class="slide"><div class="head"><span class="tag">موقع الدرس</span><h2>أين نحن من الكتاب؟</h2><span class="src">ص ١٠٨</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>الوحدة الثانية</h3><p>الأنظمةُ البيئيةُ</p></div><div class="card"><h3>الفصل الثالث</h3><p>استكشافُ الأنظمةِ البيئيةِ</p></div><div class="card"><h3>الدرس الثاني</h3><p>العلاقاتُ في الأنظمةِ البيئيةِ</p></div></div><div class="box idea" style="font-size:32px;">السؤالُ الأساسيُّ: كيفَ تحصلُ المخلوقاتُ الحيةُ على الطاقةِ؟</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أهداف التعلم</span><h2>ماذا سأتعلَّمُ في هذا الدرسِ؟</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:28px"><li>أُميِّزُ بينَ المنتجاتِ والمستهلكاتِ والمحلِّلاتِ.</li><li>أُصنِّفُ المستهلكاتِ إلى آكلةِ أعشابٍ وآكلةِ لحومٍ وقوارتَ.</li><li>أَصِفُ السلسلةَ الغذائيةَ على اليابسةِ وفي البركةِ.</li><li>أُوضِّحُ معنى الشبكةِ الغذائيةِ والعلاقةَ بينَ المفترسِ والفريسةِ.</li><li>أُفسِّرُ حدوثَ التنافسِ بينَ المخلوقاتِ الحيةِ.</li><li>أُبيِّنُ ما يمثِّلُهُ هرمُ الطاقةِ.</li><li>أُوظِّفُ مهارةَ <b>الاستنتاجِ</b>.</li></ul></div></section>
+<section class="slide"><div class="head"><span class="tag">تمهيد</span><h2>لنبدأْ بسؤالٍ</h2><span class="src"></span></div>
+<div class="body"><div class="box ask" style="font-size:34px;">منْ أينَ حصلَ الأسدُ على الطاقةِ التي تجعلُهُ يجري؟</div><p class="c">تتبَّعِ الطريقَ إلى الوراءِ: الأسدُ ← الغزالُ ← العشبُ ← <b>الشمسُ</b>. كلُّ الطاقةِ في النظامِ البيئيِّ أصلُها منَ الشمسِ.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">معرفة سابقة</span><h2>ما أعرفُهُ منْ قبلُ</h2><span class="src"></span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>النظامُ البيئيُّ</h3><p>عواملُ حيويةٌ وأخرى لاحيويةٌ تتفاعلُ.</p></div><div class="card center" style="text-align:center;"><h3>النباتُ الأخضرُ</h3><p>يصنعُ غذاءَهُ بنفسِهِ مستخدمًا ضوءَ الشمسِ.</p></div><div class="card center" style="text-align:center;"><h3>الحيوانُ</h3><p>لا يصنعُ غذاءَهُ، بلْ يحصلُ عليهِ منْ غيرِهِ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">المفردات</span><h2>مفرداتُ الدرسِ</h2><span class="src">ص ١١٠</span></div>
+<div class="body"><div class="cards" style="grid-template-columns:repeat(4,1fr)"><div class="card"><h3>المنتِجُ</h3><p style="font-size:25px">مخلوقٌ حيٌّ يصنعُ غذاءَهُ بنفسِهِ.</p></div><div class="card"><h3>المستهلِكُ</h3><p style="font-size:25px">مخلوقٌ حيٌّ لا يستطيعُ صنعَ غذائِهِ بنفسِهِ.</p></div><div class="card"><h3>المحلِّلُ</h3><p style="font-size:25px">مخلوقٌ يحلِّلُ الموادَّ الميتةَ للحصولِ على الطاقةِ.</p></div><div class="card"><h3>السلسلةُ الغذائيةُ</h3><p style="font-size:25px">انتقالُ الطاقةِ منْ مخلوقٍ إلى آخرَ.</p></div><div class="card"><h3>الشبكةُ الغذائيةُ</h3><p style="font-size:25px">تداخلُ السلاسلِ الغذائيةِ معًا.</p></div><div class="card"><h3>التنافسُ</h3><p style="font-size:25px">صراعٌ بينَ المخلوقاتِ الحيةِ على الطعامِ والماءِ.</p></div><div class="card"><h3>هرمُ الطاقةِ</h3><p style="font-size:25px">يوضِّحُ كميةَ الطاقةِ في كلِّ مستوًى منْ شبكةِ الغذاءِ.</p></div></div><div class="box note" style="font-size:28px;">مهارةُ القراءةِ في هذا الدرسِ: <b>الاستنتاجُ</b> (أدلةٌ منَ النصِّ ← استنتاجات).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>ما مقدارُ الطاقةِ التي تستهلكُها المخلوقاتُ الحيةُ؟</h2><span class="src">ص ١٠٩ — نشاط الكتاب</span></div>
+<div class="body"><div class="box idea" style="font-size:29px;"><b>الهدفُ:</b> عملُ نموذجٍ يوضِّحُ انتقالَ الطاقةِ منْ مخلوقٍ حيٍّ إلى آخرَ في النظامِ البيئيِّ.</div><div style="display:flex;gap:34px;align-items:flex-start"><div style="flex:0 0 300px"><p class="c"><b>أحتاجُ إلى:</b></p><ul class="list" style="font-size:26px"><li>قلمِ تخطيطٍ</li><li>أقلامِ تلوينٍ</li><li>مقصٍّ</li><li>بطاقاتٍ</li><li>مسطرةٍ متريةٍ</li><li>شريطٍ ورقيٍّ</li></ul></div><div style="flex:1 1 0"><p class="c"><b>الخطواتُ:</b></p><ul class="list num" style="font-size:24px"><li>أعملُ في مجموعةٍ مكوَّنةٍ منْ أربعةِ طلابٍ، وأكتبُ على البطاقاتِ الكلماتِ التاليةَ: الشمسُ، نباتٌ، آكلُ النباتِ، آكلُ اللحومِ.</li><li><b>أقيسُ.</b> أقصُّ شريطًا منْ ورقِ التجليدِ طولُهُ مترٌ، ليمثِّلَ كميةَ الطاقةِ التي يستخدمُها المخلوقُ الحيُّ، وأضعُ علامةً عندَ كلِّ ١٠سم على طولِ الشريطِ.</li><li><b>أعملُ نموذجًا.</b> يأخذُ كلُّ طالبٍ بطاقةً. يمرِّرُ الطالبُ الذي يحملُ بطاقةَ (الشمسِ) شريطَ الطاقةِ كاملًا إلى الطالبِ الذي يحملُ بطاقةَ (النباتِ).</li></ul></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف — نشاط استقصائي</span><h2>تتمَّةُ الخطواتِ وأستخلصُ النتائجَ</h2><span class="src">ص ١٠٩ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:26px"><li>يقومُ الطالبُ الذي يحملُ بطاقةَ (النباتِ) بقطعِ ١٠ سم منَ الشريطِ، ويعطيهِ الطالبَ الذي يحملُ بطاقةَ (آكلِ النباتِ)، ويُبقي الجزءَ الأكبرَ منْ شريطِ الطاقةِ لديهِ.</li><li>يقومُ الطالبُ الذي يحملُ بطاقةَ (آكلِ النباتِ) بقطعِ ١ سم منْ شريطِ الطاقةِ، ويمرِّرُهُ إلى الطالبِ الذي يحملُ بطاقةَ (آكلِ اللحومِ) ويُبقي الجزءَ الأكبرَ منْ شريطِ الطاقةِ لديهِ.</li></ul><div class="qa"><p class="q">٦. <b>أستنتجُ.</b> لماذا يُقطعُ شريطُ الطاقةِ قبلَ تمريرِهِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٩</span>لأنَّ جزءًا كبيرًا منَ الطاقةِ يُستهلَكُ في كلِّ مستوًى ولا ينتقلُ كاملًا؛ فالمخلوقُ يستعملُ معظمَ الطاقةِ في وظائفِ حياتِهِ ويُفقدُ بعضُها على شكلِ حرارةٍ، فلا ينتقلُ إلى المستوى التالي إلا جزءٌ صغيرٌ.</div></div><div class="qa"><p class="q">٧. <b>أستخدمُ الأرقامَ.</b> ما كميةُ الطاقةِ المتبقِّيةِ لآكلِ اللحومِ مقارنةً بالنباتِ وبآكلِ النباتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١٠٩</span>النباتُ أخذَ ١٠٠ سم، وآكلُ النباتِ أخذَ ١٠ سم، وآكلُ اللحومِ أخذَ ١ سم فقط؛ أيْ إنَّ آكلَ اللحومِ حصلَ على عُشرِ ما حصلَ عليهِ آكلُ النباتِ، وعلى جزءٍ منْ مئةٍ ممَّا حصلَ عليهِ النباتُ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أستكشف أكثر</span><h2>توسيعُ الاستقصاءِ</h2><span class="src">ص ١٠٩ — نشاط الكتاب</span></div>
+<div class="body"><div class="box ask" style="font-size:32px;">ما الذي أتوقَّعُ حدوثَهُ إذا لمْ يصنعِ النباتُ الغذاءَ؟ أصمِّمُ تجربةً لأستكشفَ ذلكَ.</div><div class="qa"><p class="q">إجابةٌ نموذجيةٌ مقترحةٌ لهذا التوقُّعِ:</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">إجابة نموذجية مقترحة</span>إذا لمْ يصنعِ النباتُ الغذاءَ فلنْ تجدَ آكلاتُ الأعشابِ طعامًا فتقلُّ أعدادُها ثمَّ تموتُ، وتتأثَّرُ بعدَها آكلاتُ اللحومِ؛ لأنَّ الطاقةَ في النظامِ البيئيِّ كلِّهِ تبدأُ منَ المنتجاتِ. وللتصميمِ: أضعُ نبتتينِ متماثلتينِ، أضعُ إحداهُما في الضوءِ والأخرى في الظلامِ التامِّ معَ تساوي الماءِ والتربةِ، وألاحظُ الفرقَ بعدَ أسبوعٍ.</div></div><div class="box safe" style="font-size:27px;">أستخدمُ المقصَّ بحذرٍ، وأوجِّهُ طرفَهُ بعيدًا عنْ جسمي وعنْ زملائي.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيفَ تعتمدُ المخلوقاتُ الحيةُ بعضُها على بعضٍ؟</h2><span class="src">ص ١١٠</span></div>
+<div class="body"><p class="c">لقدْ جعلَ اللهُ تعالى لكلِّ مخلوقٍ حيٍّ دورًا يؤدِّيهِ في النظامِ البيئيِّ لاستمرارِ حياتِهِ وحياةِ غيرِهِ منَ المخلوقاتِ. وقدِ اهتمَّ العلماءُ بدراسةِ العلاقاتِ بينَ هذهِ المخلوقاتِ والأدوارِ التي تؤدِّيها في المجتمعِ الحيويِّ لفهمِ النظامِ البيئيِّ.</p><div class="box idea" style="font-size:31px;"><b>المنتِجاتُ:</b> مخلوقاتٌ حيةٌ تصنعُ غذاءَها بنفسِها مستخدمةً طاقةَ الشمسِ. وتعتمدُ عليها كلُّ المخلوقاتِ الحيةِ في النظامِ البيئيِّ.</div><div class="cards"><div class="card center" style="text-align:center;"><h3>على اليابسةِ</h3><p style="font-size:27px">أهمُّ المنتجاتِ النباتاتُ الخضراءُ، ومنها الأشجارُ والأعشابُ.</p></div><div class="card center" style="text-align:center;"><h3>في المحيطاتِ والبحيراتِ</h3><p style="font-size:27px">المنتجاتُ الرئيسةُ هيَ الطحالبُ.</p></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>الأدوارُ في النظامِ البيئيِّ</h2><span class="src">ص ١١٠ — ١١١</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>المنتِجاتُ</h3><p style="font-size:27px">تصنعُ المنتِجاتُ غذاءَها مستخدمةً أشعةَ الشمسِ.</p></div><div class="card"><h3>المستهلِكاتُ</h3><p style="font-size:27px">تتغذَّى المستهلِكاتُ على المنتِجاتِ.</p></div><div class="card"><h3>المحلِّلاتُ</h3><p style="font-size:27px">تحلِّلُ المحلِّلاتُ بقايا المخلوقاتِ الحيةِ وأجسامَها بعدَ موتِها.</p></div></div><div class="box note" style="font-size:29px;"><b>المستهلِكاتُ:</b> المخلوقاتُ الحيةُ التي لا تستطيعُ صنعَ غذائِها بنفسِها، ومنها الطيورُ والثدييَّاتُ التي تستمدُّ طاقتَها منْ مخلوقاتٍ حيةٍ أخرى.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>تصنيفُ المستهلِكاتِ</h2><span class="src">ص ١١١</span></div>
+<div class="body"><table class="cmp"><tr><th style="width:22%">النوعُ</th><th>على ماذا يتغذَّى؟</th><th>أمثلةٌ منَ الكتابِ</th></tr><tr><td>آكلاتُ الأعشابِ</td><td>تأكلُ المنتِجاتِ فقط</td><td>القوارضُ · الأرانبُ · الغزلانُ</td></tr><tr><td>القوارتُ</td><td>تتغذَّى على المنتِجاتِ والمستهلِكاتِ</td><td>الراكونُ · بعضُ الطيورِ · الدبَبةُ</td></tr><tr><td>آكلاتُ اللحومِ</td><td>تتغذَّى على الحيواناتِ الآكلةِ للأعشابِ وعلى القوارتِ</td><td>القطُّ · الأسدُ · النمرُ · سمكُ القرشِ · بعضُ الطيورِ</td></tr></table><div class="box note" style="font-size:28px;">يمكنُ تصنيفُ المستهلِكاتِ تبعًا لنوعِ الغذاءِ الذي تحصلُ عليهِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>أُصنِّفُ الدورَ في النظامِ البيئيِّ</h2><span class="src">ص ١١٠ — ١١١</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أقرأُ اسمَ المخلوقِ، ثمَّ أختارُ دورَهُ في النظامِ البيئيِّ.</p><div class="sim" id="simA" style="flex-direction:column;gap:16px"><div class="sortCard" id="aCard"><span class="nm">—</span><span class="simTag" id="aTag">—</span></div><div class="sortBtns"><button class="simBtn" type="button" data-k="pro">منتِجٌ</button><button class="simBtn ghost" type="button" data-k="con">مستهلِكٌ</button><button class="simBtn ghost" type="button" data-k="dec">محلِّلٌ</button></div><div class="simMsg" id="aMsg">أبدأُ التصنيفَ.</div><div class="score" id="aScore">النتيجة: ٠ / ٠</div><div class="sortBtns"><button class="simBtn ghost" type="button" id="aReset">إعادةُ النشاطِ</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>المحلِّلاتُ</h2><span class="src">ص ١١١</span></div>
+<div class="body"><p class="c">تقومُ بعضُ المخلوقاتِ بتحليلِ الموادِّ الميتةِ للحصولِ على الطاقةِ، وتسمَّى هذهِ المخلوقاتُ <b>المحلِّلاتِ</b>، ومنها الديدانُ والبكتيريا والفطرياتُ.</p><div class="box idea" style="font-size:32px;">تقومُ المحلِّلاتُ بإعادةِ الموادِّ إلى النظامِ البيئيِّ بوصفِها موادَّ مغذِّيةً.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">نشاط</span><h2>المحلِّلاتُ</h2><span class="src">ص ١١١ — نشاط الكتاب</span></div>
+<div class="body"><ul class="list num" style="font-size:28px"><li>أبلِّلُ أربعةَ أنواعٍ منَ الأطعمةِ بالماءِ، وأضعُ كلًّا منها في كيسٍ بلاستيكيٍّ.</li><li>أغلقُ الأكياسَ وأضعُها في مكانٍ دافئٍ ومظلمٍ.</li><li><b>ألاحظُ</b> الأكياسَ كلَّ يومٍ، وأسجِّلُ ملاحظاتي في جدولٍ.</li><li><b>أتواصلُ.</b> كيفَ تغيَّرتِ الأطعمةُ؟ وماذا حدثَ؟</li></ul><div class="box safe" style="font-size:30px;"><b>أحذرُ:</b> لا أفتحُ الأكياسَ بعدَ إغلاقِها.</div><div class="qa"><p class="q"><b>أتواصلُ.</b> كيفَ تغيَّرتِ الأطعمةُ؟ وماذا حدثَ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١١</span>إجابةٌ نموذجيةٌ مقترحةٌ: تغيَّرَ لونُ الأطعمةِ وظهرَ عليها عفنٌ، وليَّنَتْ وتحلَّلتْ. حدثَ ذلكَ لأنَّ المحلِّلاتِ — البكتيريا والفطرياتِ — نمَتْ على الطعامِ وحلَّلَتْهُ للحصولِ على الطاقةِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١١١</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتجُ.</b> ماذا يمكنُ أنْ يحدثَ في حالةِ غيابِ المنتِجاتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١١</span>إذا غابتِ المنتِجاتُ فلنْ تجدَ آكلاتُ الأعشابِ غذاءً فتموتُ، ثمَّ لنْ تجدَ آكلاتُ اللحومِ فرائسَها فتموتُ أيضًا؛ لأنَّ المنتِجاتِ هيَ التي تُدخِلُ طاقةَ الشمسِ إلى النظامِ البيئيِّ، فينهارُ النظامُ البيئيُّ كلُّهُ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> هلْ تحصلُ المستهلِكاتُ على طاقتِها مباشرةً منَ الشمسِ؟ أوضِّحُ ذلكَ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١١</span>لا؛ فالمستهلِكاتُ لا تستطيعُ صنعَ غذائِها بنفسِها، وإنَّما تحصلُ على الطاقةِ بأكلِ المنتِجاتِ أوْ أكلِ مستهلِكاتٍ أخرى. فالشمسُ مصدرُ الطاقةِ، لكنَّها تُختزَنُ أولًا في المنتِجاتِ ثمَّ تنتقلُ إلى المستهلِكاتِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما السلسلةُ الغذائيةُ؟</h2><span class="src">ص ١١٢</span></div>
+<div class="body"><p class="c">يحتاجُ كلُّ مخلوقٍ حيٍّ إلى طاقةٍ ليعيشَ وينموَ. وقدْ جعلَ اللهُ تعالى لكلِّ مخلوقٍ مصدرًا للحصولِ على الطاقةِ التي يحتاجُ إليها. قالَ تعالى:</p><div class="box note" style="font-size:30px;">﴿وَكَأَيِّن مِّن دَابَّةٍ لَّا تَحْمِلُ رِزْقَهَا اللَّهُ يَرْزُقُهَا وَإِيَّاكُمْ ۚ وَهُوَ السَّمِيعُ الْعَلِيمُ﴾<br><span class="muted" style="font-size:25px">سورة العنكبوت: الآية ٦٠</span></div><p class="c">ومصدرُ الطاقةِ في النظامِ البيئيِّ هوَ <b>الشمسُ</b>. فالشمسُ مصدرُ الطاقةِ التي تُختزَنُ في المنتِجاتِ، وتنتقلُ منها إلى المستهلِكاتِ، ومنها إلى المحلِّلاتِ، وبذلكَ تنتقلُ الطاقةُ منْ مخلوقٍ إلى آخرَ فيما نسمِّيهِ <b>السلسلةَ الغذائيةَ</b>.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>السلسلةُ الغذائيةُ على اليابسةِ</h2><span class="src">ص ١١٢</span></div>
+<div class="body"><p class="c">تبدأُ السلسلةُ الغذائيةُ على اليابسةِ عادةً بالأعشابِ والأشجارِ وغيرِها منَ النباتاتِ الخضراءِ.</p><div class="map"><div class="node">سلسلةٌ غذائيةٌ على اليابسةِ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">نباتُ الشوكِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">منتِجٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">يرقةٌ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">مستهلِكةٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">سرعوفٌ (المنتس)</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">مستهلِكٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">سحليةٌ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">مستهلِكةٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">بومةٌ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">مستهلِكةٌ</span></div></div></div></div><div class="box note" style="font-size:27px;">وعندَما تموتُ هذهِ المستهلِكاتُ تقومُ المحلِّلاتُ بتحليلِ أنسجتِها الميتةِ إلى موادَّ أساسيةٍ تستعملُها المخلوقاتُ الحيةُ منْ جديدٍ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤالُ الكتابِ</h2><span class="src">ص ١١٢</span></div>
+<div class="body"><div class="qa"><p class="q">كيفَ تنتقلُ الطاقةُ في هذهِ السلسلةِ؟ <br><span class="muted" style="font-size:25px">إرشادٌ: تشيرُ الأسهمُ إلى المستهلِكِ التالي.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٢</span>تبدأُ الطاقةُ منَ الشمسِ فيختزنُها نباتُ الشوكِ (المنتِجُ)، ثمَّ تنتقلُ إلى اليرقةِ التي تأكلُ النباتَ، ثمَّ إلى السرعوفِ الذي يأكلُ اليرقةَ، ثمَّ إلى السحليةِ التي تأكلُ السرعوفَ، ثمَّ إلى البومةِ التي تأكلُ السحليةَ. ويقلُّ مقدارُ الطاقةِ في كلِّ خطوةٍ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>السلسلةُ الغذائيةُ في البركةِ</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><p class="c">تشبهُ السلسلةُ الغذائيةُ في البركةِ السلسلةَ الغذائيةَ على اليابسةِ؛ إذْ تبدأُ بالطحالبِ والنباتاتِ الخضراءِ التي تلتقطُ طاقةَ الشمسِ خلالَ عمليةِ البناءِ الضوئيِّ، وتُخزنُ الطاقةُ في الخلايا على شكلِ سكرٍ.</p><div class="map"><div class="node">سلسلةٌ غذائيةٌ في بركةٍ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">طحالبُ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">منتِجةٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">ذبابةٌ مائيةٌ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">آكلةُ أعشابٍ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">سمكةُ الشمسِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">آكلةُ لحومٍ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">مالكُ الحزينِ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">آكلُ لحومٍ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>كيفَ تسيرُ الطاقةُ في البركةِ؟</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><p class="c">تتغذَّى آكلاتُ الأعشابِ كبعضِ الحشراتِ (الذبابةِ المائيةِ مثلًا) على الطحالبِ. وتستخدمُ الحشراتُ الأكسجينَ لإطلاقِ الطاقةِ المخزونةِ في الطحالبِ؛ للقيامِ بوظائفِ الحياةِ الأساسيةِ، ومنها الحركةُ.</p><p class="c">وهناكَ آكلاتُ لحومٍ كالأسماكِ تستطيعُ القفزَ لالتقاطِ الحشراتِ، فتستفيدُ بذلكَ منَ الطاقةِ المخزونةِ في أجسامِها. وتصطادُ بعضُ الطيورِ — ومنها مالكُ الحزينِ — هذهِ الأسماكَ للحصولِ على الطاقةِ.</p><div class="box idea" style="font-size:30px;">وكما يتَّضحُ منْ تتبُّعِ السلسلةِ الغذائيةِ فإنَّ جزءًا منَ الطاقةِ الشمسيةِ قدْ وصلَ إلى مالكِ الحزينِ عبرَ هذهِ السلسلةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١١٣</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتجُ.</b> لماذا يُعدُّ مصطلحُ السلسلةِ الغذائيةِ وصفًا جيدًا لتوضيحِ العلاقاتِ بينَ المخلوقاتِ الحيةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٣</span>لأنَّ السلسلةَ تتكوَّنُ منْ حلقاتٍ مترابطةٍ، وكذلكَ المخلوقاتُ الحيةُ؛ فكلُّ مخلوقٍ حلقةٌ ترتبطُ بما قبلَها وما بعدَها في انتقالِ الطاقةِ، وإذا انقطعتْ حلقةٌ تأثَّرتْ بقيةُ الحلقاتِ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> ما أكبرُ سلسلةٍ غذائيةٍ يمكنُ أنْ تضعَها؟ ارسمْ مخطَّطًا توضِّحُ فيهِ سلسلتَكَ الغذائيةَ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٣</span>إجابةٌ نموذجيةٌ مقترحةٌ: الشمسُ ← عشبٌ ← جرادٌ ← ضفدعٌ ← ثعبانٌ ← نسرٌ ← محلِّلاتٌ (بكتيريا وفطرياتٌ). وكلَّما طالتِ السلسلةُ قلَّتِ الطاقةُ الواصلةُ إلى آخرِها.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما الشبكةُ الغذائيةُ؟</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><p class="c">تعدُّ سلاسلُ الغذاءِ نموذجًا جيدًا لتمثيلِ كيفيةِ انتقالِ الطاقةِ على شكلِ غذاءٍ، ولكنَّ هذا النموذجَ يبيِّنُ مسارًا واحدًا لنقلِ الطاقةِ. ومعظمُ الأنظمةِ البيئيةِ لها سلاسلُ غذاءٍ متداخلةٌ.</p><div class="box idea" style="font-size:30px;"><b>الشبكةُ الغذائيةُ:</b> تنتجُ عنْ تداخلِ السلاسلِ الغذائيةِ معًا، وهيَ توضِّحُ ترابطَ سلاسلِ الغذاءِ في النظامِ البيئيِّ، وتوضِّحُ أيضًا تصنيفَ المخلوقاتِ الحيةِ بحسبِ العلاقاتِ الغذائيةِ بينَها.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>المفترسُ والفريسةُ</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><div class="cards"><div class="card center" style="text-align:center;"><h3>المفترسُ</h3><p>هوَ آكلُ اللحومِ الذي يصطادُ ليحصلَ على طعامِهِ.</p></div><div class="card center" style="text-align:center;"><h3>الفريسةُ</h3><p>المخلوقُ الحيُّ الذي تمَّ اصطيادُهُ.</p></div></div><div class="box note" style="font-size:30px;">في معظمِ الشبكاتِ الغذائيةِ تكونُ المخلوقاتُ الحيةُ مفترسةً لمخلوقاتٍ معينةٍ وفريسةً لمخلوقاتٍ أخرى.</div><div class="map"><div class="node">شبكةٌ غذائيةٌ في المحيطِ (ص ١١٤)</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">عوالقُ نباتيةٌ وحيوانيةٌ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">القاعدةُ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">سمكُ السردينِ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">فريسةٌ للتونةِ وللنورسِ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">سمكةُ التونةِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">مفترسةٌ وفريسةٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">الدلفينُ والحوتُ القاتلُ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">مفترساتٌ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أقرأ الشكل</span><h2>سؤالُ الكتابِ</h2><span class="src">ص ١١٤</span></div>
+<div class="body"><div class="qa"><p class="q">أيُّ مفترسٍ في الشبكةِ الغذائيةِ لهُ أكبرُ عددٍ منَ الفرائسِ؟ <br><span class="muted" style="font-size:25px">إرشادٌ: تتَّجهُ الأسهمُ منَ الفريسةِ إلى المفترسِ.</span></p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٤</span><b>الحوتُ القاتلُ</b>؛ إذْ تتَّجهُ إليهِ أسهمٌ منْ أكثرَ منْ فريسةٍ في الشبكةِ (منَ التونةِ ومنَ الدلفينِ)، فهوَ في أعلى الشبكةِ الغذائيةِ في المحيطِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التنافسُ</h2><span class="src">ص ١١٥</span></div>
+<div class="body"><p class="c">قدْ يأخذُ المخلوقُ الحيُّ في الشبكةِ الغذائيةِ موقعًا في أكثرَ منْ سلسلةٍ غذائيةٍ، وفي هذهِ الحالةِ يحدثُ <b>التنافسُ</b>، وهوَ صراعٌ بينَ المخلوقاتِ الحيةِ على الطعامِ والماءِ وجميعِ احتياجاتِها الأخرى.</p><p class="c">أنظرُ إلى الشبكةِ الغذائيةِ على اليابسةِ. هناكَ آكلاتُ أعشابٍ مختلفةٌ، منها الغزالُ والطيورُ الصغيرةُ والفأرُ والأرنبُ والبقرةُ. ماذا يحدثُ إذا تغذَّتْ هذهِ المخلوقاتُ الحيةُ جميعُها على النباتِ نفسِهِ؟ سوفَ تتنافسُ جميعُها على الغذاءِ، وقدْ يستفيدُ أحدُها، بينَما يموتُ الآخرُ؛ إلَّا إذا وجدَ مصدرًا آخرَ للغذاءِ.</p></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>التنافسُ ليسَ بينَ الحيواناتِ فقط</h2><span class="src">ص ١١٥</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>بينَ النباتاتِ</h3><p style="font-size:27px">تتنافسُ النباتاتُ الصغيرةُ والأزهارُ معَ الأشجارِ الطويلةِ في الغابةِ للحصولِ على أشعةِ الشمسِ والموادِّ المغذِّيةِ.</p></div><div class="card"><h3>داخلَ المجموعةِ الواحدةِ</h3><p style="font-size:27px">قدْ نشاهدُ تنافسَ مجموعةٍ منَ العصافيرِ في حديقةٍ ما على ثمارِ بعضِ النباتاتِ وبُذورِها.</p></div></div><div class="box idea" style="font-size:31px;">ومعَ كلِّ هذا التنافسِ فإنَّ جميعَ المخلوقاتِ الحيةِ تعدُّ جزءًا منْ شبكةٍ غذائيةٍ ضخمةٍ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١١٥</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتجُ.</b> أيُّ الحيواناتِ في الشبكةِ الغذائيةِ في المحيطِ يتنافسُ معَ (الحوتِ القاتلِ) على الأسماكِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٥</span><b>الدلفينُ</b>؛ لأنَّهُ يتغذَّى على الأسماكِ نفسِها (سمكِ التونةِ والسردينِ) التي يتغذَّى عليها الحوتُ القاتلُ، وكذلكَ يشاركُهما طائرُ النورسِ في التغذِّي على السردينِ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> أستنتجُ أربعَ سلاسلَ غذائيةٍ مختلفةٍ منْ شبكةِ الغذاءِ في الشكلِ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٥</span>إجابةٌ نموذجيةٌ مقترحةٌ منْ شبكةِ اليابسةِ (ص ١١٥):<br>١) عشبٌ ← أرنبٌ ← ثعلبٌ.<br>٢) عشبٌ ← فأرٌ ← ثعبانٌ ← نسرٌ.<br>٣) عشبٌ ← غزالٌ ← نسرٌ.<br>٤) بذورٌ وثمارٌ ← عصفورٌ ← نسرٌ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>ما هرمُ الطاقةِ؟</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><p class="c">يوضِّحُ <b>هرمُ الطاقةِ</b> كميةَ الطاقةِ في كلِّ مستوًى منْ شبكةِ الغذاءِ؛ فالمنتِجاتُ تكونُ دائمًا في قاعدةِ الهرمِ؛ حيثُ تستعملُ كمياتٍ قليلةً منَ الطاقةِ الشمسيةِ لصنعِ الغذاءِ. تحرقُ الخلايا النباتيةُ بعضَ الطعامِ الذي تصنعُهُ، وتخزنُ الباقيَ في سيقانِها وأوراقِها وجذورِها.</p><p class="c">المستوى الثاني في الهرمِ يوضِّحُ المستهلِكاتِ؛ حيثُ تستهلكُ كمياتٍ كبيرةً لتبقى على قيدِ الحياةِ؛ وذلكَ لأنَّ <b>١٠٪</b> منْ طاقةِ النباتِ تنتقلُ إلى آكلاتِ الأعشابِ.</p><div class="box note" style="font-size:30px;"><b>حقيقةٌ:</b> آكلاتُ اللحومِ ليسَ لديها طاقةٌ أكثرُ منْ آكلاتِ الأعشابِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">الشرح والتفسير</span><h2>أينَ تذهبُ بقيةُ الطاقةِ؟</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><p class="c">بعضُ الطاقةِ تُفقدُ على شكلِ حرارةٍ؛ وذلكَ عندَما تهضمُ الحيواناتُ الأنسجةَ النباتيةَ، وبعضُ أنسجةِ النباتِ لا يمكنُ هضمُهُ، لذا يتمُّ التخلُّصُ منهُ على شكلِ فضلاتٍ.</p><p class="c">وتمثِّلُ القوارتُ (آكلاتُ النباتاتِ واللحومِ) المستوياتِ الأخرى منَ الهرمِ الغذائيِّ؛ ففي كلِّ مستوًى تفقدُ المستهلِكاتُ حوالَيْ <b>٩٠٪</b> منَ الطاقةِ المتبقيةِ. لذا تحصلُ المخلوقاتُ الحيةُ في قمةِ الهرمِ على أقلِّ كميةٍ منَ الطاقةِ المستمدَّةِ منَ الشمسِ.</p><div class="box idea" style="font-size:31px;">هرمُ الطاقةِ يمثِّلُ كميةَ الطاقةِ في كلِّ مستوًى منَ السلسلةِ الغذائيةِ.</div></div></section>
+<section class="slide"><div class="head"><span class="tag">سؤال تحقُّق</span><h2>هرمُ الطاقةِ — ١٠٪ في كلِّ مستوًى</h2><span class="src">ص ١١٦</span></div>
+<div class="body center"><p class="t' style='font-size:30px">أضغطُ الزرَّ لأتابعَ انتقالَ الطاقةِ منْ مستوًى إلى آخرَ.</p><div class="sim" id="simB" style="flex-direction:column;gap:14px"><div class="simRow" style="gap:34px;align-items:flex-end"><div class="simCell"><h4>المنتِجاتُ</h4><div id="b1" class="simTag" style="font-size:30px">١٠٠٠ وحدة</div></div><div class="simCell"><h4>آكلاتُ الأعشابِ</h4><div id="b2" class="simTag" style="font-size:30px">—</div></div><div class="simCell"><h4>آكلاتُ اللحومِ</h4><div id="b3" class="simTag" style="font-size:30px">—</div></div><div class="simCell"><h4>مفترسُ القمةِ</h4><div id="b4" class="simTag" style="font-size:30px">—</div></div></div><div class="simMsg" id="bMsg">الطاقةُ تبدأُ منَ الشمسِ وتُختزنُ في المنتِجاتِ.</div><div class="sortBtns"><button class="simBtn" type="button" id="bNext">انتقالُ الطاقةِ</button><button class="simBtn ghost" type="button" id="bReset">إعادة</button></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">أختبر نفسي</span><h2>أسئلةُ الكتابِ</h2><span class="src">ص ١١٦</span></div>
+<div class="body"><div class="qa"><p class="q"><b>أستنتجُ.</b> لماذا يكونُ عددُ المنتِجاتِ في شبكاتِ الغذاءِ أكثرَ منَ المستهلِكاتِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٦</span>لأنَّ الطاقةَ تقلُّ كلَّما ارتفعْنا في هرمِ الطاقةِ؛ فلا ينتقلُ منْ كلِّ مستوًى إلى الذي يليهِ إلا نحوُ ١٠٪. فيلزمُ عددٌ كبيرٌ منَ المنتِجاتِ لإعالةِ عددٍ أقلَّ منَ المستهلِكاتِ.</div></div><div class="qa"><p class="q"><b>التفكيرُ الناقدُ.</b> السلسلةُ الغذائيةُ في المحيطِ تحتوي على مخلوقاتٍ حيةٍ آكلةٍ للحومِ أكثرَ منَ السلسلةِ الغذائيةِ على اليابسةِ. لماذا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٦</span>إجابةٌ نموذجيةٌ مقترحةٌ: لأنَّ المنتِجاتِ في المحيطِ (العوالقَ النباتيةَ والطحالبَ) هائلةُ العددِ وتتكاثرُ بسرعةٍ كبيرةٍ، فتوفِّرُ طاقةً تكفي لسلسلةٍ أطولَ فيها مستوياتٌ أكثرُ منْ آكلاتِ اللحومِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">ملخص مصور</span><h2>ملخصُ الدرسِ</h2><span class="src">ص ١١٧</span></div>
+<div class="body"><div class="cards"><div class="card"><h3>١</h3><p style="font-size:25px">في النظامِ البيئيِّ، تقومُ <b>المنتِجاتُ</b> بصنعِ الغذاءِ الذي تأكلُهُ <b>المستهلِكاتُ</b>، أمَّا <b>المحلِّلاتُ</b> فتقومُ بتحليلِ الموادِّ الميتةِ وتعيدُها إلى النظامِ البيئيِّ على شكلِ موادَّ مغذِّيةٍ.</p></div><div class="card"><h3>٢</h3><p style="font-size:25px"><b>السلاسلُ والشبكاتُ الغذائيةُ</b> توضِّحُ العلاقاتِ بينَ المخلوقاتِ الحيةِ في النظامِ البيئيِّ.</p></div><div class="card"><h3>٣</h3><p style="font-size:25px"><b>هرمُ الطاقةِ</b> مخطَّطٌ يوضِّحُ كيفَ تنتقلُ الطاقةُ في النظامِ البيئيِّ.</p></div></div><div class="box note" style="font-size:25px;"><b>المطويات — أنظِّمُ أفكاري:</b> أعملُ مطويةً ألخِّصُ فيها ما تعلَّمتُهُ عنِ العلاقاتِ في الأنظمةِ البيئيةِ: (المنتِجاتُ، المستهلِكاتُ، المحلِّلاتُ) — (السلاسلُ والشبكاتُ الغذائيةُ) — (هرمُ الطاقةِ).</div></div></section>
+<section class="slide"><div class="head"><span class="tag">خريطة المفاهيم</span><h2>أنظِّمُ مفاهيمَ الدرسِ</h2><span class="src"></span></div>
+<div class="body"><div class="map"><div class="node">العلاقاتُ في الأنظمةِ البيئيةِ</div><div class="line"></div><div class="row"><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">الأدوارُ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">منتِجاتٌ</span><span class="node leaf">مستهلِكاتٌ</span><span class="node leaf">محلِّلاتٌ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">تصنيفُ المستهلِكاتِ</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">آكلاتُ أعشابٍ</span><span class="node leaf">قوارتُ</span><span class="node leaf">آكلاتُ لحومٍ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#3B650F;color:#3B650F">انتقالُ الطاقةِ</div><div class="line" style="background:#3B650F"></div><div class="leaves"><span class="node leaf">سلسلةٌ غذائيةٌ</span><span class="node leaf">شبكةٌ غذائيةٌ</span><span class="node leaf">هرمُ الطاقةِ</span></div></div><div class="col"><div class="node sub" style="background:#EFF7E5;border-color:#5E9E1E;color:#5E9E1E">علاقاتٌ أخرى</div><div class="line" style="background:#5E9E1E"></div><div class="leaves"><span class="node leaf">مفترسٌ وفريسةٌ</span><span class="node leaf">التنافسُ</span></div></div></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أفكِّرُ وأتحدَّثُ وأكتبُ</h2><span class="src">ص ١١٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">١. <b>المفرداتُ.</b> ما المحلِّلاتُ؟ أعطي أمثلةً عليها؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span>المحلِّلاتُ مخلوقاتٌ تقومُ بتحليلِ الموادِّ الميتةِ للحصولِ على الطاقةِ، وتعيدُ الموادَّ إلى النظامِ البيئيِّ بوصفِها موادَّ مغذِّيةً. أمثلتُها: الديدانُ، والبكتيريا، والفطرياتُ.</div></div><div class="qa"><p class="q">٢. <b>أستنتجُ.</b> قامَ عددٌ منَ العلماءِ بحصرِ آكلاتِ الأعشابِ وآكلاتِ اللحومِ في نظامٍ بيئيٍّ، ووجدوا أنَّ عددَ آكلاتِ اللحومِ يفوقُ عددَ آكلاتِ الأعشابِ. فهلْ يعدُّ هذا التعدادُ للحيواناتِ في المنطقةِ كاملًا؟ لماذا؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span>لا يعدُّ كاملًا؛ لأنَّ الطاقةَ تقلُّ كلَّما ارتفعْنا في هرمِ الطاقةِ، فالمفترضُ أنْ يكونَ عددُ آكلاتِ الأعشابِ أكبرَ منْ عددِ آكلاتِ اللحومِ. فالنتيجةُ تدلُّ على أنَّ العلماءَ لمْ يُحصوا جميعَ آكلاتِ الأعشابِ في المنطقةِ.</div></div><div class="qa"><p class="q">٣. <b>التفكيرُ الناقدُ.</b> لماذا تكونُ أسنانُ آكلاتِ اللحومِ حادةً جدًّا مقارنةً بأسنانِ آكلاتِ الأعشابِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span>لأنَّ آكلاتِ اللحومِ تصطادُ فرائسَها وتمزِّقُ اللحمَ، فتحتاجُ إلى أسنانٍ حادةٍ تُمسِكُ وتقطعُ. أمَّا آكلاتُ الأعشابِ فتحتاجُ إلى أسنانٍ عريضةٍ مسطَّحةٍ لطحنِ النباتاتِ وسحقِها.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>أختارُ الإجابةَ الصحيحةَ · السؤالُ الأساسيُّ</h2><span class="src">ص ١١٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q">٤. <b>أختارُ الإجابةَ الصحيحةَ.</b> ينشأُ عنِ اتِّحادِ سلسلتَيْ غذاءٍ أوْ أكثرَ:<br>أ- نظامٌ بيئيٌّ &nbsp;&nbsp; ب- شبكةُ غذاءٍ &nbsp;&nbsp; جـ- مجتمعٌ حيويٌّ &nbsp;&nbsp; د- هرمُ غذاءٍ</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span><b>ب - شبكةُ غذاءٍ</b>؛ لأنَّ الشبكةَ الغذائيةَ تنتجُ عنْ تداخلِ السلاسلِ الغذائيةِ معًا.</div></div><div class="qa"><p class="q">٥. <b>السؤالُ الأساسيُّ.</b> كيفَ تحصلُ المخلوقاتُ الحيةُ على الطاقةِ؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span>مصدرُ الطاقةِ هوَ الشمسُ. تلتقطُ المنتِجاتُ طاقةَ الشمسِ وتصنعُ غذاءَها، ثمَّ تنتقلُ الطاقةُ إلى المستهلِكاتِ التي تأكلُ المنتِجاتِ أوْ تأكلُ مستهلِكاتٍ أخرى، وأخيرًا تحلِّلُ المحلِّلاتُ بقايا المخلوقاتِ فتعيدُ الموادَّ المغذِّيةَ إلى النظامِ البيئيِّ. وفي كلِّ مستوًى لا ينتقلُ إلا نحوُ ١٠٪ منَ الطاقةِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">مراجعة الدرس</span><h2>العلومُ والرياضياتُ · العلومُ والفنُّ</h2><span class="src">ص ١١٧ — أسئلة الكتاب</span></div>
+<div class="body"><div class="qa"><p class="q"><b>العلومُ والرياضياتُ — أحسبُ عددَ آكلاتِ اللحومِ.</b> في النظامِ البيئيِّ الطبيعيِّ تكونُ أعدادُ آكلاتِ الأعشابِ ١٠ أضعافِ آكلاتِ اللحومِ. أحسبُ عددَ آكلاتِ اللحومِ التي قدْ أجدُها في نظامٍ بيئيٍّ يبلغُ عددُ آكلاتِ الأعشابِ فيهِ ٤٢٥٠؟</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span>٤٢٥٠ ÷ ١٠ = <b>٤٢٥</b> منْ آكلاتِ اللحومِ.</div></div><div class="qa"><p class="q"><b>العلومُ والفنُّ — أرسمُ شبكةً غذائيةً.</b> أبحثُ عنْ مخلوقاتٍ حيةٍ في بيئتي، ثمَّ أعملُ ملصقًا أوضِّحُ فيهِ شبكةً غذائيةً ترتبطُ فيها هذهِ المخلوقاتُ.</p><button class="ansBtn" type="button">إظهار الإجابة</button><div class="ans"><span class="lbl">سؤال الكتاب — ص ١١٧</span>إجابةٌ نموذجيةٌ مقترحةٌ: أرسمُ شبكةً منْ بيئتي المحليةِ: عشبٌ وشجرُ الطلحِ (منتِجاتٌ) ← جرادٌ وأرنبٌ وضبٌّ (آكلاتُ أعشابٍ) ← ثعلبٌ وحيَّةٌ وصقرٌ (آكلاتُ لحومٍ)، وأرسمُ الأسهمَ منَ الفريسةِ إلى المفترسِ، وأضيفُ المحلِّلاتِ (بكتيريا وفطرياتٍ) في الأسفلِ.</div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ (منْ إعدادِ المعلمِ)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="2"><p class="q">المخلوقُ الحيُّ الذي يصنعُ غذاءَهُ بنفسِهِ يسمَّى:</p><div class="opts"><button class="opt" type="button">مستهلِكًا</button><button class="opt" type="button">محلِّلًا</button><button class="opt" type="button">منتِجًا</button><button class="opt" type="button">مفترسًا</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الديدانُ والبكتيريا والفطرياتُ أمثلةٌ على:</p><div class="opts"><button class="opt" type="button">المنتِجاتِ</button><button class="opt" type="button">المحلِّلاتِ</button><button class="opt" type="button">آكلاتِ الأعشابِ</button><button class="opt" type="button">المفترساتِ</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">الحيوانُ الذي يتغذَّى على النباتاتِ والحيواناتِ معًا يسمَّى:</p><div class="opts"><button class="opt" type="button">آكلَ أعشابٍ</button><button class="opt" type="button">آكلَ لحومٍ</button><button class="opt" type="button">قارتًا</button><button class="opt" type="button">محلِّلًا</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">تقويم ختامي</span><h2>أسئلةٌ تدريبيةٌ إضافيةٌ (منْ إعدادِ المعلمِ)</h2><span class="src"></span></div>
+<div class="body"><div class="quiz" data-right="0"><p class="q">تشيرُ الأسهمُ في السلسلةِ الغذائيةِ إلى:</p><div class="opts"><button class="opt" type="button">المستهلِكِ التالي الذي تنتقلُ إليهِ الطاقةُ</button><button class="opt" type="button">الحيوانِ الأسرعِ</button><button class="opt" type="button">المخلوقِ الأكبرِ حجمًا</button><button class="opt" type="button">المكانِ الذي يعيشُ فيهِ</button></div><div class="fb"></div></div><div class="quiz" data-right="2"><p class="q">كمْ نسبةُ الطاقةِ التي تنتقلُ منْ مستوًى إلى المستوى الذي يليهِ تقريبًا؟</p><div class="opts"><button class="opt" type="button">١٠٠٪</button><button class="opt" type="button">٥٠٪</button><button class="opt" type="button">١٠٪</button><button class="opt" type="button">٩٠٪</button></div><div class="fb"></div></div><div class="quiz" data-right="1"><p class="q">الصراعُ بينَ المخلوقاتِ الحيةِ على الطعامِ والماءِ يسمَّى:</p><div class="opts"><button class="opt" type="button">الافتراسَ</button><button class="opt" type="button">التنافسَ</button><button class="opt" type="button">التحلُّلَ</button><button class="opt" type="button">البناءَ الضوئيَّ</button></div><div class="fb"></div></div></div></section>
+<section class="slide"><div class="head"><span class="tag">بطاقة خروج</span><h2>قبلَ أنْ نُنهيَ الدرسَ</h2><span class="src"></span></div>
+<div class="body"><ul class="list num" style="font-size:31px"><li>أكتبُ سلسلةً غذائيةً منْ ثلاثِ حلقاتٍ منْ بيئتي.</li><li>أُفرِّقُ بجملةٍ واحدةٍ بينَ المفترسِ والفريسةِ.</li><li>لماذا تكونُ قاعدةُ هرمِ الطاقةِ أكبرَ منْ قمتِهِ؟</li></ul><div class="box idea" style="font-size:29px;">الفكرةُ الرئيسةُ: تنتقلُ الطاقةُ منَ الشمسِ إلى المنتِجاتِ ثمَّ إلى المستهلِكاتِ ثمَّ إلى المحلِّلاتِ، وتقلُّ كميتُها في كلِّ مستوًى.</div></div></section>
+<!--ENRICH-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لوحةٌ تفاعلية: مستوياتُ الغذاء</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eFig"><svg class="ill" width="1180" height="520" viewBox="0 0 1180 520" xmlns="http://www.w3.org/2000/svg" role="img" id="g4l7SvgHost"><g class="eHot" data-k="l4"><polygon points="485,30 695,30 791,136 389,136" fill="#8E2F29" stroke="#FFFFFF" stroke-width="4"/><g><text x="590" y="92.0" font-size="28" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مستهلِك ثالث</text><text x="590" y="92.0" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مستهلِك ثالث</text></g><rect class="hitBox" x="388" y="30" width="402" height="112" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="l3"><polygon points="389,142 791,142 888,248 292,248" fill="#C0392B" stroke="#FFFFFF" stroke-width="4"/><g><text x="590" y="204.0" font-size="28" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مستهلِك ثانٍ</text><text x="590" y="204.0" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مستهلِك ثانٍ</text></g><rect class="hitBox" x="292" y="142" width="595" height="112" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="l2"><polygon points="292,254 888,254 984,360 196,360" fill="#E8A33D" stroke="#FFFFFF" stroke-width="4"/><g><text x="590" y="316.0" font-size="28" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">مستهلِك أول</text><text x="590" y="316.0" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">مستهلِك أول</text></g><rect class="hitBox" x="196" y="254" width="787" height="112" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g class="eHot" data-k="l1"><polygon points="196,366 984,366 1080,472 100,472" fill="#3B7D2A" stroke="#FFFFFF" stroke-width="4"/><g><text x="590" y="428.0" font-size="28" fill="rgba(20,26,36,.55)" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="rgba(20,26,36,.55)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">المنتِجات</text><text x="590" y="428.0" font-size="28" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">المنتِجات</text></g><rect class="hitBox" x="100" y="366" width="980" height="112" rx="14" fill="transparent" stroke="transparent" stroke-width="0"/></g><g><text x="590" y="506" font-size="24" fill="#FFFFFF" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">تقلُّ الطاقة كلَّما ارتفعنا مستوًى — ينتقل نحو ١ / ١٠ فقط</text><text x="590" y="506" font-size="24" fill="#4A5568" text-anchor="middle" font-weight="700" font-family="Sakkal Majalla,Segoe UI,Tahoma,sans-serif">تقلُّ الطاقة كلَّما ارتفعنا مستوًى — ينتقل نحو ١ / ١٠ فقط</text></g></svg><div class="eCap">هرم الطاقة: تقلُّ الطاقة والأعداد كلَّما ارتفعنا مستوًى.</div></div><div class="eSteps" id="g4l7Pills"><span class="eStepPill" data-s="0">المنتِجات</span><span class="eStepPill" data-s="1">المستهلِك الأول</span><span class="eStepPill" data-s="2">المستهلِك الثاني</span><span class="eStepPill" data-s="3">المستهلِك الثالث</span></div><div class="eInfo" id="g4l7Info">اضغط على أيِّ عنصرٍ في الرسم، أو تابع الخطوات بالترتيب.</div><div class="eBtns"><button class="simBtn ghost" type="button" id="g4l7Prev">◀ السابق</button><button class="simBtn" type="button" id="g4l7Next">التالي ▶</button></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>معرضٌ مصوَّر: علاقاتٌ بين المخلوقات</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="eGal"><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="60" cy="70" rx="18" ry="28" fill="#4E7D2A"/><circle cx="60" cy="38" r="14" fill="#3E6821"/><path d="M46 34 l-12 -14 M74 34 l12 -14" stroke="#3E6821" stroke-width="5" stroke-linecap="round"/><ellipse cx="34" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(-24 34 60)" opacity=".9"/><ellipse cx="86" cy="60" rx="18" ry="9" fill="#8FC456" transform="rotate(24 86 60)" opacity=".9"/><path d="M44 76 l-16 8 M44 88 l-16 6 M76 76 l16 8 M76 88 l16 6" stroke="#3E6821" stroke-width="4" stroke-linecap="round"/></g></svg><h4>التقايُض</h4><p>ينتفع الطرفان معًا كالنحل والزهرة</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><ellipse cx="62" cy="62" rx="34" ry="24" fill="#3E7BB5"/><circle cx="34" cy="48" r="16" fill="#4E8CC7"/><circle cx="28" cy="45" r="3" fill="#1A2A3A"/><path d="M18 48 l-12 5 l12 5z" fill="#E8A33D"/><path d="M62 56 q 22 -18 38 -4 q -12 16 -38 12z" fill="#2E6392"/><path d="M92 66 l22 10 l-22 8z" fill="#2E6392"/></g></svg><h4>الافتراس</h4><p>مفترسٌ يصطاد فريسةً ليتغذَّى عليها</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><path d="M42 108 q 0 -34 18 -34 q 18 0 18 34z" fill="#E8DCC4"/><ellipse cx="60" cy="62" rx="42" ry="24" fill="#C46A3A"/><circle cx="42" cy="56" r="6" fill="#F0E2C8"/><circle cx="72" cy="52" r="5" fill="#F0E2C8"/><circle cx="86" cy="64" r="4" fill="#F0E2C8"/></g></svg><h4>التطفُّل</h4><p>ينتفع طرفٌ ويتضرَّر الآخر</p></div><div class="eCard"><svg class="ill" width="148" height="138" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,0) scale(0.95)"><rect x="10" y="86" width="100" height="24" rx="8" fill="#8A6636"/><path d="M60 92 L60 40" stroke="#4E9A34" stroke-width="8" stroke-linecap="round"/><ellipse cx="60" cy="30" rx="24" ry="18" fill="#3F8E2E"/><ellipse cx="34" cy="52" rx="21" ry="12" fill="#57A83E" transform="rotate(-22 34 52)"/><ellipse cx="86" cy="52" rx="21" ry="12" fill="#57A83E" transform="rotate(22 86 52)"/><path d="M60 92 v14 M60 98 l-14 8 M60 100 l14 6" stroke="#6B4A24" stroke-width="5" fill="none" stroke-linecap="round"/></g></svg><h4>التنافُس</h4><p>تنافسٌ على الغذاء والماء والضوء</p></div></div><div class="eCap">تتنوَّع العلاقات بين مخلوقات النظام البيئي.</div></div></div></section>
+<!--ENRICH-SLIDES-END-->
+<!--ENRICH2-SLIDES-START-->
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>هل تعلم؟ — من يأكل مَن؟</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFacts"><div class="fFact"><div class="n">١</div><p>كلُّ سلسلةٍ غذائيةٍ تبدأ <b>بمنتِج</b>؛ فلو اختفت النباتات لانهار النظام كلُّه.</p></div><div class="fFact"><div class="n">٢</div><p>الطاقة تقلُّ كلَّما انتقلنا مستوًى أعلى؛ ولهذا <b>أعداد المفترسات قليلة</b> دائمًا.</p></div><div class="fFact"><div class="n">٣</div><p>المخلوق الواحد قد يظهر في أكثر من سلسلةٍ غذائية؛ ومن هنا جاءت فكرة <b>الشبكة</b> الغذائية.</p></div></div><div class="fCap">الغذاء هو الرابط بين مخلوقات النظام البيئي.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>بطاقات المفردات — اقلبها!</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fFlash" id="s4g1"><div class="fCard"><div class="fIn"><div class="fF"><span>المنتِجُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مخلوقٌ حيٌّ يصنعُ غذاءَهُ بنفسِهِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>المستهلِكُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مخلوقٌ حيٌّ لا يستطيعُ صنعَ غذائِهِ بنفسِهِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>المحلِّلُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>مخلوقٌ يحلِّلُ الموادَّ الميتةَ للحصولِ على الطاقةِ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>السلسلةُ الغذائيةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>انتقالُ الطاقةِ منْ مخلوقٍ إلى آخرَ.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>الشبكةُ الغذائيةُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>تداخلُ السلاسلِ الغذائيةِ معًا.</span></div></div></div><div class="fCard"><div class="fIn"><div class="fF"><span>التنافسُ</span><i>اضغط لترى المعنى</i></div><div class="fB"><span>صراعٌ بينَ المخلوقاتِ الحيةِ على الطعامِ والماءِ.</span></div></div></div></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4g1All">إظهار كل المعاني</button></div><div class="fCap">اضغط على البطاقة لترى المعنى.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>لعبة: رتِّب انتقال الطاقة</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fGame"><div class="fPool" id="s4g2P"><button class="fChip" type="button" data-i="3">آكل اللحوم</button><button class="fChip" type="button" data-i="0">الشمس</button><button class="fChip" type="button" data-i="1">النبات</button><button class="fChip" type="button" data-i="2">آكل الأعشاب</button></div><div class="fSlots" id="s4g2S"><div class="fSlot">١</div><div class="fSlot">٢</div><div class="fSlot">٣</div><div class="fSlot">٤</div></div><div class="fFb" id="s4g2Fb"></div><div class="fBar"><button class="fBtn ghost" type="button" id="s4g2R">↻ إعادة الترتيب</button></div></div><div class="fCap">رتِّب انتقال الطاقة.</div></div></div></div></section>
+<section class="slide eSlide"><div class="head"><span class="tag">إثراء اختياري</span><h2>العلوم في حياتي</h2><span class="src">إثراء اختياري</span></div><div class="body"><div class="eWrap"><div class="fWrap"><div class="fApply"><div class="fBox cool"><h4>سلسلتي أنا</h4><p>اكتب سلسلةً غذائيةً تنتهي بك أنت، وابدأها من الشمس.</p></div><div class="fBox warm"><h4>سؤال تفكير</h4><p>ماذا يحدث لأعداد النباتات لو اختفت آكلات الأعشاب من المرعى؟</p></div></div></div></div></div></section>
+<!--ENRICH2-SLIDES-END-->
+<!--SCIENCE-PLUS:SLIDES:START-->
+<section class="slide science-plus" data-enrichment="photo" data-grade="4" aria-label="إثراء مصور: العلاقات في الأنظمة البيئية">
+<div class="se-head"><span class="se-badge">🔎 إثراء مصوّر</span><h2>عدسة العلوم</h2><span class="se-head-note">ألاحظ · أتساءل · أفسّر</span></div>
+<p class="se-question">من أين يحصل الأرنب العاشب على طاقته، وفي أي اتجاه نرسم سهم انتقال الطاقة من غذائه؟</p>
+<div class="se-photo-layout">
+ <figure class="se-photo-figure"><div class="se-photo-frame"><img class="se-photo" src="../../../../assets/enrichment/photos/animal.jpg" alt="أرنب بني يقف بين الأعشاب" decoding="async"><button class="se-zoom-button" type="button" data-photo-zoom>🔍 تكبير الصورة</button></div><figcaption>أرنب أوروبي يتغذى على العشب؛ مثال لحيوان ثديي عاشب.</figcaption><p class="se-credit">الصورة: Diliff · <a href="https://commons.wikimedia.org/wiki/File:European_Rabbit,_Lake_District,_UK_-_August_2011.jpg" target="_blank" rel="noopener noreferrer">مصدر الصورة</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a> · نسخة مصغرة دون تغيير المحتوى</p></figure>
+ <div class="se-facts"><p class="se-fact"><span aria-hidden="true">👁️</span><span>يشير سهم السلسلة الغذائية من الغذاء إلى المخلوق الذي يأكله، مبينًا اتجاه انتقال الطاقة.</span></p>
+<p class="se-fact"><span aria-hidden="true">💡</span><span>تتداخل سلاسل كثيرة في شبكة غذائية؛ فقد يملك المخلوق أكثر من مصدر غذاء.</span></p>
+<p class="se-fact"><span aria-hidden="true">🌾</span><span>لا تنتقل كل الطاقة إلى المستوى التالي؛ يستخدم المخلوق بعضها وتنتشر طاقة حرارية إلى البيئة.</span></p><details class="se-sources"><summary>مراجع الإثراء للمعلم</summary><ul><li><a href="https://openstax.org/books/concepts-biology/pages/20-1-energy-flow-through-ecosystems" target="_blank" rel="noopener noreferrer">OpenStax: انتقال الطاقة والسلاسل والشبكات الغذائية</a></li></ul></details></div>
+</div>
+</section>
+<section class="slide science-plus" data-enrichment="diagram" data-grade="4" aria-label="رسم توضيحي: طاقة تنتقل مع الغذاء">
+<div class="se-head"><span class="se-badge">🧩 رسم تفاعلي</span><h2>طاقة تنتقل مع الغذاء</h2><span class="se-head-note">أربط الأفكار</span></div>
+<p class="se-subtitle">اضغط عناصر الرسم لاكتشاف معناها والعلاقة بينها.</p>
+<div class="se-diagram" data-relation="sequence" role="group" aria-label="طاقة تنتقل مع الغذاء"><button type="button" class="se-node" data-node="0" aria-pressed="true"><span class="se-node-index">1</span><span class="se-node-icon" aria-hidden="true">🌾</span><span class="se-node-label">عشب</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="1" aria-pressed="false"><span class="se-node-index">2</span><span class="se-node-icon" aria-hidden="true">🦗</span><span class="se-node-label">جرادة</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="2" aria-pressed="false"><span class="se-node-index">3</span><span class="se-node-icon" aria-hidden="true">🐸</span><span class="se-node-label">ضفدع</span></button><span class="se-connector" aria-hidden="true">←</span><button type="button" class="se-node" data-node="3" aria-pressed="false"><span class="se-node-index">4</span><span class="se-node-icon" aria-hidden="true">🐍</span><span class="se-node-label">ثعبان</span></button></div>
+
+<p class="se-diagram-caption">الأسهم من المأكول إلى الآكل: العشب إلى الجرادة إلى الضفدع إلى الثعبان؛ هذه سلسلة نموذجية داخل شبكة أوسع.</p>
+<div class="se-detail" role="status" aria-live="polite"><span class="se-detail-emoji" data-detail-icon aria-hidden="true">🌾</span><div><strong data-detail-title>عشب</strong><p data-detail-text>منتج يصنع الغذاء بالضوء</p></div></div>
+</section>
+<section class="slide science-plus" data-enrichment="lab" data-grade="4" aria-label="محاكاة إثرائية: الطاقة عبر المستويات">
+<div class="se-head"><span class="se-badge">🧪 مختبر الاستكشاف</span><h2>الطاقة عبر المستويات</h2><span class="se-head-note">أتوقّع · أجرّب · أقارن</span></div>
+<p class="se-question">كيف نقارن الطاقة المتاحة في ثلاثة مستويات غذائية من النموذج نفسه؟</p>
+<div class="se-lab-grid">
+ <div class="se-controls"><p class="se-control-label">المستوى الغذائي</p><div class="se-options" role="group" aria-label="المستوى الغذائي"><button class="se-choice" data-choice="0" type="button" aria-pressed="true">المنتجات</button><button class="se-choice" data-choice="1" type="button" aria-pressed="false">آكلات المنتجات</button><button class="se-choice" data-choice="2" type="button" aria-pressed="false">مفترساتها</button></div><div class="se-actions"><button type="button" class="se-run" data-run>▶ شغّل المحاكاة</button><button type="button" class="se-reset" data-reset>↺ إعادة</button></div><p class="se-note">الرموز ليست سعرات أو نسب انتقال ثابتة؛ تختلف كفاءة انتقال الطاقة بين الأنظمة والكائنات.</p></div>
+ <div class="se-result"><p class="se-model-label">مؤشر تصوري للطاقة المتاحة عند كل مستوى غذائي</p><div class="se-model" role="img" data-model aria-label="قاعدة الطاقة"><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol se-active" aria-hidden="true">⚡</span><span class="se-symbol" aria-hidden="true">⚡</span></div><div aria-live="polite" aria-atomic="true"><p class="se-state-name" data-state-name>قاعدة الطاقة</p><p class="se-observation" data-observation>أكبر مؤشر للطاقة المتاحة في مستويات النموذج.</p></div><p class="se-explanation" data-explanation>تلتقط المنتجات طاقة الضوء وتخزن جزءًا منها في مواد غذائية؛ تمثل قاعدة هذه السلسلة.</p><p class="se-observation-log" data-log>توقّع النتيجة، ثم غيّر الحالة وشغّل المحاكاة.</p></div>
+</div>
+<p class="se-inquiry">🤔 لماذا لا يمثل هرم الطاقة بالضرورة أحجام أجسام الحيوانات؟</p>
+</section>
+<!--SCIENCE-PLUS:SLIDES:END-->
+<section class="slide endS"><div class="body center" style="justify-content:center">
+<h1>انْتَهَى الدَّرْسُ</h1><div class="name">إعداد: نايف المطيري</div>
+<div class="small">العلوم — الصف الرابع الابتدائي — الجزء الأول من المقرر<br>الوحدة الثانية: الأنظمة البيئية · الفصل الثالث: استكشاف الأنظمة البيئية · العلاقات في الأنظمة البيئية<br>المصدر: كتاب الطالب، صفحات الكتاب: ١٠٨ – ١١٧ — طبعة ١٤٤٧ / ٢٠٢٥</div>
+</div></section>
+<div id="prog"><i></i></div>
+<div id="bar">
+  <button id="bHome" type="button">&#8634; البداية</button>
+  <button id="bPrev" type="button">&#9654; السابق</button>
+  <button id="bNext" type="button">التالي &#9664;</button>
+  <button id="bAns" type="button">إظهار كل الإجابات</button>
+  <button id="bFull" type="button">&#9974; ملء الشاشة</button>
+  <span id="brand">إعداد: نايف المطيري</span>
+  <span id="counter"></span>
+</div>
+</div>
+</div>
+<script>
+
+(function(){
+  "use strict";
+  var stage    = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var slides   = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter  = document.getElementById('counter');
+  var progBar  = document.querySelector('#prog i');
+  var i = 0, total = slides.length, allAns = false;
+
+  /* ---- تحجيم المسرح ليملأ الشاشة دون تمرير ---- */
+  function fit(){
+    var w = viewport.clientWidth, h = viewport.clientHeight;
+    var s = Math.min(w/1600, h/900);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit,120); });
+
+  /* ---- التنقل ---- */
+  function show(n){
+    if(n < 0) n = 0;
+    if(n > total-1) n = total-1;
+    slides[i].classList.remove('on');
+    i = n;
+    slides[i].classList.add('on');
+    counter.textContent = 'الشريحة ' + (i+1) + ' من ' + total;
+    progBar.style.width = ((i+1)/total*100) + '%';
+    document.getElementById('bPrev').disabled = (i === 0);
+    document.getElementById('bNext').disabled = (i === total-1);
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('bNext').addEventListener('click', next);
+  document.getElementById('bPrev').addEventListener('click', prev);
+  document.getElementById('bHome').addEventListener('click', function(){ show(0); });
+
+  /* ---- ملء الشاشة ---- */
+  document.getElementById('bFull').addEventListener('click', function(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+      if(d.requestFullscreen) d.requestFullscreen();
+      else if(d.webkitRequestFullscreen) d.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    setTimeout(fit, 220);
+  });
+  document.addEventListener('fullscreenchange', function(){ setTimeout(fit,120); });
+
+  /* ---- إظهار/إخفاء الإجابات ---- */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.ansBtn') : null;
+    if(!b) return;
+    var box = b.parentNode.querySelector('.ans');
+    if(!box) return;
+    var open = box.classList.toggle('show');
+    b.textContent = open ? 'إخفاء الإجابة' : 'إظهار الإجابة';
+  });
+
+  document.getElementById('bAns').addEventListener('click', function(){
+    allAns = !allAns;
+    document.querySelectorAll('.ans').forEach(function(a){ a.classList.toggle('show', allAns); });
+    document.querySelectorAll('.ansBtn').forEach(function(b){ b.textContent = allAns ? 'إخفاء الإجابة' : 'إظهار الإجابة'; });
+    this.textContent = allAns ? 'إخفاء كل الإجابات' : 'إظهار كل الإجابات';
+  });
+
+  /* ---- التقويم التفاعلي ---- */
+  document.querySelectorAll('.quiz').forEach(function(q){
+    var right = parseInt(q.getAttribute('data-right'), 10);
+    var opts  = Array.prototype.slice.call(q.querySelectorAll('.opt'));
+    var fb    = q.querySelector('.fb');
+    opts.forEach(function(o, idx){
+      o.addEventListener('click', function(){
+        opts.forEach(function(x){ x.classList.remove('right','wrong'); });
+        if(idx === right){
+          o.classList.add('right');
+          fb.textContent = '✔ إجابة صحيحة، أحسنت!';
+          fb.style.color = '#1F8A5F';
+        } else {
+          o.classList.add('wrong');
+          opts[right].classList.add('right');
+          fb.textContent = '✖ الإجابة الصحيحة موضّحة باللون الأخضر.';
+          fb.style.color = '#C0392B';
+        }
+      });
+    });
+  });
+
+
+
+  (function(){
+    var box=document.getElementById('simA'); if(!box) return;
+    var card=document.getElementById('aCard'), nm=card.querySelector('.nm');
+    var tag=document.getElementById('aTag'), msg=document.getElementById('aMsg'), sc=document.getElementById('aScore');
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(n){ return String(n).split('').map(function(d){return AR[+d];}).join(''); }
+    var T={pro:'منتِجٌ يصنعُ غذاءَهُ بنفسِهِ.',con:'مستهلِكٌ لا يصنعُ غذاءَهُ بنفسِهِ.',dec:'محلِّلٌ يحلِّلُ الموادَّ الميتةَ.'};
+    var D=[['الشجرةُ','pro'],['الأرنبُ','con'],['الفطرياتُ','dec'],['الطحالبُ','pro'],
+           ['الأسدُ','con'],['البكتيريا','dec'],['العشبُ','pro'],['الديدانُ','dec']];
+    var i=0,right=0,done=0;
+    function show(){
+      if(i>=D.length){ nm.textContent='أحسنتَ!'; tag.textContent='انتهى النشاطُ';
+        msg.className='simMsg good'; msg.textContent='أنهيتُ تصنيفَ جميعِ المخلوقاتِ.'; return; }
+      nm.textContent=D[i][0]; tag.textContent='مخلوق '+ar(i+1)+' من '+ar(D.length);
+    }
+    function pick(k){
+      if(i>=D.length) return; done++;
+      if(k===D[i][1]){ right++; msg.className='simMsg good'; msg.textContent='إجابةٌ صحيحةٌ: «'+D[i][0]+'» '+T[D[i][1]]; }
+      else { msg.className='simMsg bad'; msg.textContent='أُعيدُ التفكيرَ: «'+D[i][0]+'» '+T[D[i][1]]; }
+      sc.textContent='النتيجة: '+ar(right)+' / '+ar(done);
+      i++; setTimeout(show,60);
+    }
+    box.querySelectorAll('.simBtn[data-k]').forEach(function(b){
+      b.addEventListener('click',function(){ pick(b.getAttribute('data-k')); }); });
+    document.getElementById('aReset').addEventListener('click',function(){
+      i=0;right=0;done=0; sc.textContent='النتيجة: ٠ / ٠';
+      msg.className='simMsg'; msg.textContent='أبدأُ التصنيفَ.'; show(); });
+    show();
+  })();
+
+  (function(){
+    var box=document.getElementById('simB'); if(!box) return;
+    var msg=document.getElementById('bMsg');
+    var cells=[document.getElementById('b1'),document.getElementById('b2'),document.getElementById('b3'),document.getElementById('b4')];
+    var AR=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function ar(s){ return String(s).split('').map(function(d){ return (d>='0'&&d<='9')?AR[+d]:d; }).join(''); }
+    var vals=['١٠٠٠ وحدة','١٠٠ وحدة','١٠ وحدات','١ وحدة'];
+    var txt=['الطاقةُ تبدأُ منَ الشمسِ وتُختزنُ في المنتِجاتِ.',
+             'انتقلَ ١٠٪ فقط إلى آكلاتِ الأعشابِ، والباقي فُقدَ حرارةً وفضلاتٍ.',
+             'وانتقلَ ١٠٪ منْ ذلكَ إلى آكلاتِ اللحومِ.',
+             'ووصلَ إلى مفترسِ القمةِ أقلُّ كميةٍ منَ الطاقةِ. لذا قاعدةُ الهرمِ أكبرُ منْ قمتِهِ.'];
+    var step=0;
+    function draw(){
+      for(var j=0;j<4;j++){ cells[j].textContent = (j<=step)? vals[j] : '—'; }
+      msg.className='simMsg '+(step===3?'good':'neutral'); msg.textContent=txt[step];
+      document.getElementById('bNext').disabled = (step===3);
+    }
+    document.getElementById('bNext').addEventListener('click',function(){ if(step<3){step++; draw();} });
+    document.getElementById('bReset').addEventListener('click',function(){ step=0; draw(); });
+    draw();
+  })();
+  /* ---- لوحة المفاتيح ---- */
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if(k === 'ArrowLeft' || k === 'PageDown' || k === ' '){ e.preventDefault(); next(); }
+    else if(k === 'ArrowRight' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if(k === 'Home'){ e.preventDefault(); show(0); }
+    else if(k === 'End'){ e.preventDefault(); show(total-1); }
+  });
+
+  /* ---- اللمس والسحب ---- */
+  var x0 = null, y0 = null;
+  viewport.addEventListener('touchstart', function(e){
+    x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+  }, {passive:true});
+  viewport.addEventListener('touchend', function(e){
+    if(x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) prev(); else next();   /* RTL: السحب لليسار = السابق */
+    }
+    x0 = null; y0 = null;
+  }, {passive:true});
+
+  /* ---- عجلة الفأرة ---- */
+  var wheelLock = false;
+  viewport.addEventListener('wheel', function(e){
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 24) return;
+    wheelLock = true;
+    if(e.deltaY > 0) next(); else prev();
+    setTimeout(function(){ wheelLock = false; }, 380);
+  }, {passive:true});
+
+  fit();
+  show(0);
+})();
+
+</script>
+<!--ENRICH-JS-START--><script>
+
+var ERT = (function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id){ return document.getElementById(id); }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  function hotspots(rootId, infoId, map, dflt){
+    var root = $(rootId); if(!root) return;
+    var inf = $(infoId);
+    var gs = root.querySelectorAll('.eHot');
+    Array.prototype.forEach.call(gs, function(g){
+      g.addEventListener('click', function(){
+        Array.prototype.forEach.call(gs, function(x){ x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var k = g.getAttribute('data-k');
+        if(inf) inf.innerHTML = map[k] || dflt || '';
+      });
+    });
+  }
+
+  function flow(cfg){
+    var host = $(cfg.svg); if(!host) return null;
+    var layer = document.createElementNS(NS,'g');
+    layer.setAttribute('class','eTokLayer');
+    host.appendChild(layer);
+    var toks = [], built = false;
+    function build(){
+      if(built) return; built = true;
+      cfg.items.forEach(function(it){
+        var p = host.querySelector('#'+it.path); if(!p) return;
+        var L = 0;
+        try { L = p.getTotalLength(); } catch(e){ L = 0; }
+        if(!L) return;
+        var n = it.n || 3;
+        for(var k=0;k<n;k++){
+          var c = document.createElementNS(NS,'circle');
+          c.setAttribute('r', it.r || 9);
+          c.setAttribute('fill', it.color || '#ffffff');
+          c.setAttribute('stroke', 'rgba(0,0,0,.22)');
+          c.setAttribute('stroke-width', '2');
+          c.setAttribute('opacity', '0');
+          layer.appendChild(c);
+          toks.push({el:c, path:p, L:L, t:(k/n), dur:(it.dur||3200)});
+        }
+      });
+    }
+    var raf = null, last = 0, running = false;
+    function step(ts){
+      if(!last) last = ts;
+      var dt = ts - last; last = ts;
+      if(dt > 120) dt = 16;
+      for(var i=0;i<toks.length;i++){
+        var t = toks[i];
+        t.t += dt / t.dur;
+        while(t.t > 1) t.t -= 1;
+        var pt = t.path.getPointAtLength(t.L * t.t);
+        t.el.setAttribute('cx', pt.x);
+        t.el.setAttribute('cy', pt.y);
+        t.el.setAttribute('opacity','1');
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function play(){ build(); if(running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); raf = null;
+      toks.forEach(function(t){ t.el.setAttribute('opacity','0'); }); }
+    var api = {play:play, stop:stop, toggle:function(){ running ? stop() : play(); }};
+    if(cfg.btn){ var b = $(cfg.btn); if(b) b.addEventListener('click', function(){
+        api.toggle(); b.textContent = running ? '⏸ إيقاف الحركة' : '▶ تشغيل الحركة'; }); }
+    autoOnSlide(host, api);
+    return api;
+  }
+
+  function autoOnSlide(el, api){
+    var s = slideOf(el); if(!s) return;
+    if(s.classList.contains('on')) api.play();
+    var mo = new MutationObserver(function(){
+      if(s.classList.contains('on')) api.play(); else api.stop();
+    });
+    mo.observe(s, {attributes:true, attributeFilter:['class']});
+  }
+
+  function stepper(cfg){
+    var pillsBox = $(cfg.pills), inf = $(cfg.info), host = $(cfg.svg);
+    var i = 0, n = cfg.stages.length;
+    var pills = pillsBox ? pillsBox.querySelectorAll('.eStepPill') : [];
+    function render(){
+      var st = cfg.stages[i];
+      Array.prototype.forEach.call(pills, function(p, k){ p.classList.toggle('on', k === i); });
+      if(inf) inf.innerHTML = '<span><b>' + st[1] + '</b> — ' + st[2] + '</span>';
+      if(host){
+        Array.prototype.forEach.call(host.querySelectorAll('.eHot'), function(g){
+          g.classList.toggle('sel', g.getAttribute('data-k') === st[0]);
+        });
+      }
+    }
+    function go(k){ i = (k + n) % n; render(); }
+    if(cfg.next){ var bn = $(cfg.next); if(bn) bn.addEventListener('click', function(){ go(i+1); }); }
+    if(cfg.prev){ var bp = $(cfg.prev); if(bp) bp.addEventListener('click', function(){ go(i-1); }); }
+    Array.prototype.forEach.call(pills, function(p, k){ p.addEventListener('click', function(){ go(k); }); });
+    render();
+    return {go:go};
+  }
+
+  return {hotspots:hotspots, flow:flow, stepper:stepper, $:$};
+})();
+
+ERT.hotspots('g4l7SvgHost','g4l7Info',{'l1':'<span><b>المنتِجات</b> — قاعدة الهرم؛ تصنع غذاءها بالبناء الضوئي وتدعم المخلوقات كافة، ولذلك <b>أعدادها الأكبر</b>.</span>','l2':'<span><b>المستهلِك الأول</b> — يتغذَّى على المنتِجات، ولا يصل إليه إلا نحو <b>١ / ١٠</b> من طاقة المستوى الذي قبله.</span>','l3':'<span><b>المستهلِك الثاني</b> — يتغذَّى على المستهلِك الأول، فتقلُّ الطاقة أكثر وتقلُّ الأعداد.</span>','l4':'<span><b>المستهلِك الثالث</b> — في قمة الهرم؛ أقلُّ المستويات طاقةً وأقلُّها عددًا.</span>'},'');
+ERT.stepper({pills:'g4l7Pills', info:'g4l7Info', svg:'g4l7SvgHost', next:'g4l7Next', prev:'g4l7Prev', stages:[['l1','المنتِجات','قاعدة الهرم؛ تصنع غذاءها بالبناء الضوئي وتدعم المخلوقات كافة، ولذلك <b>أعدادها الأكبر</b>.'],['l2','المستهلِك الأول','يتغذَّى على المنتِجات، ولا يصل إليه إلا نحو <b>١ / ١٠</b> من طاقة المستوى الذي قبله.'],['l3','المستهلِك الثاني','يتغذَّى على المستهلِك الأول، فتقلُّ الطاقة أكثر وتقلُّ الأعداد.'],['l4','المستهلِك الثالث','في قمة الهرم؛ أقلُّ المستويات طاقةً وأقلُّها عددًا.']]});
+
+</script><!--ENRICH-JS-END-->
+<!--ENRICH2-JS-START--><script>
+
+var EG = (function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function ar(x){ var s=String(x), o=''; for(var i=0;i<s.length;i++){ o += '٠١٢٣٤٥٦٧٨٩'[s.charCodeAt(i)-48]; } return o; }
+  function slideOf(el){ while(el && !(el.classList && el.classList.contains('slide'))) el = el.parentNode; return el; }
+
+  /* ---- بطاقات المفردات: اضغط لتقلب ---- */
+  function flash(boxId){
+    var b = $(boxId); if(!b) return;
+    Array.prototype.forEach.call(b.querySelectorAll('.fCard'), function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('on'); });
+    });
+    var all = $(boxId+'All');
+    if(all) all.addEventListener('click', function(){
+      var cards = b.querySelectorAll('.fCard');
+      var anyOff = Array.prototype.some.call(cards, function(c){ return !c.classList.contains('on'); });
+      Array.prototype.forEach.call(cards, function(c){ c.classList.toggle('on', anyOff); });
+      all.textContent = anyOff ? 'إخفاء المعاني' : 'إظهار كل المعاني';
+    });
+  }
+
+  /* ---- صواب أم خطأ ---- */
+  function tf(cfg){
+    var q = $(cfg.q), fb = $(cfg.fb), sc = $(cfg.score), bt = $(cfg.btnT), bf = $(cfg.btnF), rs = $(cfg.reset);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0;
+    function show(){
+      if(i >= D.length){
+        q.textContent = 'انتهى النشاط — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+        fb.textContent = ok === D.length ? 'ممتاز! إجاباتك كلُّها صحيحة.' : 'أعد المحاولة لتحسين نتيجتك.';
+        fb.className = 'fFb ok';
+        bt.disabled = bf.disabled = true; return;
+      }
+      q.textContent = D[i][0]; fb.textContent = ''; fb.className = 'fFb';
+      bt.disabled = bf.disabled = false;
+    }
+    function ans(v){
+      if(i >= D.length) return;
+      var right = (D[i][1] === 'T');
+      if(v === right){ ok++; fb.textContent = '✔ صحيح — ' + D[i][2]; fb.className = 'fFb ok'; }
+      else { fb.textContent = '✖ غير صحيح — ' + D[i][2]; fb.className = 'fFb no'; }
+      i++; sc.textContent = 'النتيجة: ' + ar(ok) + ' / ' + ar(D.length);
+      bt.disabled = bf.disabled = true;
+      setTimeout(show, 1500);
+    }
+    bt.addEventListener('click', function(){ ans(true); });
+    bf.addEventListener('click', function(){ ans(false); });
+    if(rs) rs.addEventListener('click', function(){ i=0; ok=0; sc.textContent='النتيجة: ٠ / '+ar(D.length); show(); });
+    sc.textContent = 'النتيجة: ٠ / ' + ar(D.length);
+    show();
+  }
+
+  /* ---- رتِّب الخطوات ---- */
+  function order(cfg){
+    var pool = $(cfg.pool), slots = $(cfg.slots), fb = $(cfg.fb), rs = $(cfg.reset);
+    if(!pool) return;
+    var need = 0, total = cfg.n;
+    function reset(){
+      need = 0;
+      Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){ c.classList.remove('used','bad'); });
+      Array.prototype.forEach.call(slots.querySelectorAll('.fSlot'), function(s, k){
+        s.classList.remove('full'); s.textContent = ar(k+1);
+      });
+      fb.textContent = 'اضغط الخطوات بالترتيب الصحيح.'; fb.className = 'fFb';
+    }
+    Array.prototype.forEach.call(pool.querySelectorAll('.fChip'), function(c){
+      c.addEventListener('click', function(){
+        var idx = parseInt(c.getAttribute('data-i'), 10);
+        if(idx === need){
+          c.classList.add('used');
+          var s = slots.querySelectorAll('.fSlot')[need];
+          s.classList.add('full'); s.textContent = c.textContent;
+          need++;
+          if(need === total){ fb.textContent = '✔ أحسنت! الترتيب صحيحٌ كاملًا.'; fb.className = 'fFb ok'; }
+          else { fb.textContent = '✔ خطوةٌ صحيحة — تابع.'; fb.className = 'fFb ok'; }
+        } else {
+          c.classList.add('bad'); fb.textContent = '✖ ليست هذه الخطوة التالية، فكِّر مرةً أخرى.'; fb.className = 'fFb no';
+          setTimeout(function(){ c.classList.remove('bad'); }, 700);
+        }
+      });
+    });
+    if(rs) rs.addEventListener('click', reset);
+    reset();
+  }
+
+  /* ---- تحدي الوقت ---- */
+  function timed(cfg){
+    var q = $(cfg.q), opts = $(cfg.opts), fb = $(cfg.fb), tm = $(cfg.timer), sc = $(cfg.score),
+        st = $(cfg.start);
+    if(!q) return;
+    var D = cfg.data, i = 0, ok = 0, left = cfg.sec || 60, run = false, iv = null;
+    function paint(){
+      if(i >= D.length){ finish('انتهت الأسئلة'); return; }
+      q.textContent = D[i][0];
+      opts.innerHTML = '';
+      D[i][1].forEach(function(t, k){
+        var b = document.createElement('button');
+        b.className = 'fOpt'; b.type = 'button'; b.textContent = t;
+        b.addEventListener('click', function(){ pick(k, b); });
+        opts.appendChild(b);
+      });
+      fb.textContent = '';
+    }
+    function pick(k, b){
+      if(!run) return;
+      var right = D[i][2];
+      if(k === right){ ok++; b.classList.add('ok'); fb.textContent = '✔ صحيح'; fb.className = 'fFb ok'; }
+      else { b.classList.add('no'); opts.children[right].classList.add('ok'); fb.textContent = '✖ الصحيح موضَّحٌ بالأخضر'; fb.className = 'fFb no'; }
+      sc.textContent = 'النقاط: ' + ar(ok);
+      Array.prototype.forEach.call(opts.children, function(x){ x.disabled = true; });
+      i++;
+      setTimeout(function(){ if(run) paint(); }, 800);
+    }
+    function finish(msg){
+      run = false; clearInterval(iv);
+      q.textContent = (msg || 'انتهى الوقت') + ' — نتيجتك ' + ar(ok) + ' من ' + ar(D.length);
+      opts.innerHTML = ''; fb.textContent = 'اضغط «ابدأ التحدي» للمحاولة مرةً أخرى.'; fb.className = 'fFb';
+      st.textContent = '↻ إعادة التحدي'; st.disabled = false;
+    }
+    st.addEventListener('click', function(){
+      i = 0; ok = 0; left = cfg.sec || 60; run = true;
+      sc.textContent = 'النقاط: ٠'; tm.textContent = 'الوقت: ' + ar(left);
+      st.disabled = true; paint();
+      clearInterval(iv);
+      iv = setInterval(function(){
+        left--; tm.textContent = 'الوقت: ' + ar(left);
+        if(left <= 0) finish('انتهى الوقت');
+      }, 1000);
+      var s = slideOf(q);
+      if(s){ var mo = new MutationObserver(function(){ if(!s.classList.contains('on') && run) finish('توقَّف التحدي'); });
+             mo.observe(s, {attributes:true, attributeFilter:['class']}); }
+    });
+    tm.textContent = 'الوقت: ' + ar(cfg.sec || 60);
+    sc.textContent = 'النقاط: ٠';
+  }
+
+  return {flash:flash, tf:tf, order:order, timed:timed};
+})();
+
+EG.flash('s4g1');
+EG.order({pool:'s4g2P', slots:'s4g2S', fb:'s4g2Fb', reset:'s4g2R', n:4});
+
+</script><!--ENRICH2-JS-END-->
+<!--SCIENCE-PLUS:SCRIPT:START-->
+<script type="application/json" data-science-plus>{"path":"04_الصف_الرابع_الابتدائي/02_الأنظمة_البيئية/03_استكشاف_الأنظمة_البيئية/02_العلاقات_في_الأنظمة_البيئية/علوم_رابع_ابتدائي_ف1_الدرس_الثاني_العلاقات_في_الأنظمة_البيئية.html","title":"العلاقات في الأنظمة البيئية","grade":4,"emoji":"🌾","photoTopic":"animals","observeQuestion":"من أين يحصل الأرنب العاشب على طاقته، وفي أي اتجاه نرسم سهم انتقال الطاقة من غذائه؟","facts":["يشير سهم السلسلة الغذائية من الغذاء إلى المخلوق الذي يأكله، مبينًا اتجاه انتقال الطاقة.","تتداخل سلاسل كثيرة في شبكة غذائية؛ فقد يملك المخلوق أكثر من مصدر غذاء.","لا تنتقل كل الطاقة إلى المستوى التالي؛ يستخدم المخلوق بعضها وتنتشر طاقة حرارية إلى البيئة."],"diagram":{"title":"طاقة تنتقل مع الغذاء","relation":"sequence","nodes":[{"emoji":"🌾","label":"عشب","detail":"منتج يصنع الغذاء بالضوء"},{"emoji":"🦗","label":"جرادة","detail":"مستهلك يأكل العشب"},{"emoji":"🐸","label":"ضفدع","detail":"مستهلك يأكل الجرادة"},{"emoji":"🐍","label":"ثعبان","detail":"قد يأكل الضفدع"}],"caption":"الأسهم من المأكول إلى الآكل: العشب إلى الجرادة إلى الضفدع إلى الثعبان؛ هذه سلسلة نموذجية داخل شبكة أوسع."},"lab":{"title":"الطاقة عبر المستويات","question":"كيف نقارن الطاقة المتاحة في ثلاثة مستويات غذائية من النموذج نفسه؟","controlLabel":"المستوى الغذائي","options":["المنتجات","آكلات المنتجات","مفترساتها"],"states":[{"label":"قاعدة الطاقة","emoji":"⚡","amount":9,"explanation":"تلتقط المنتجات طاقة الضوء وتخزن جزءًا منها في مواد غذائية؛ تمثل قاعدة هذه السلسلة.","observation":"أكبر مؤشر للطاقة المتاحة في مستويات النموذج."},{"label":"طاقة أقل للمستوى التالي","emoji":"⚡","amount":4,"explanation":"تحصل آكلات المنتجات على جزء من الطاقة؛ فلا تأكل كل أجزاء النباتات ولا تحول كل ما تأكله إلى نمو.","observation":"ينخفض مؤشر الطاقة عند المستوى الثاني."},{"label":"طاقة أقل في القمة","emoji":"⚡","amount":1,"explanation":"يصل جزء أصغر إلى المفترسات بعد استخدام الطاقة وانتشار الحرارة عند الانتقال عبر المستويات السابقة.","observation":"أصغر مؤشر في المستويات الثلاثة."}],"quantityLabel":"مؤشر تصوري للطاقة المتاحة عند كل مستوى غذائي","modelNote":"الرموز ليست سعرات أو نسب انتقال ثابتة؛ تختلف كفاءة انتقال الطاقة بين الأنظمة والكائنات.","tryPrompt":"لماذا لا يمثل هرم الطاقة بالضرورة أحجام أجسام الحيوانات؟"},"sources":[{"title":"OpenStax: انتقال الطاقة والسلاسل والشبكات الغذائية","url":"https://openstax.org/books/concepts-biology/pages/20-1-energy-flow-through-ecosystems"}]}</script>
+<script src="../../../../assets/enrichment/enrichment.js" defer></script>
+<!--SCIENCE-PLUS:SCRIPT:END-->
+</body>
+</html>
