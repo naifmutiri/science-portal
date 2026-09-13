@@ -294,12 +294,14 @@ svg.ill{display:block;margin:0 auto}
 <!--SCIENCE-PLUS:STYLE:END-->
 
 
+
 <style id="pv-css">
 /* عرض صفّي — وضع العرض البعيد وعدسة التكبير */
 #bar button.pv-on{background:#0A1B30}
 #bar button.pv-on:hover{background:#16304E}
 #bar #brand{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #bar button.pv-b{flex:none}
+#viewport>#stage{flex:0 0 auto}   /* يمنع الفليكس من ضغط المسرح في النوافذ الضيقة */
 #viewport.pv-arm{cursor:zoom-in}
 #viewport.pv-zoom{cursor:zoom-out}
 #stage.pv-far .slide{padding:30px 44px 82px}
@@ -908,6 +910,7 @@ EG.order({pool:'s4g2P', slots:'s4g2S', fb:'s4g2Fb', reset:'s4g2R', n:4});
 <!--SCIENCE-PLUS:SCRIPT:END-->
 
 
+
 <script id="pv-js">
 (function(){"use strict";
 try{
@@ -918,18 +921,24 @@ try{
   if(!slides.length) return;
 
   /* ============ التحكم في التحويل (يشمل حالة العدسة) ============ */
-  var lens=0, lx=800, ly=450, armed=false;
-  function base(){ return Math.min(vp.clientWidth/1600, vp.clientHeight/900); }
+  var lens=0, lx=0.5, ly=0.5, armed=false;   /* lx/ly كسور من المسرح */
   function apply(){
-    var S=base()*(lens||1),
-        l0=(vp.clientWidth-1600)/2, t0=(vp.clientHeight-900)/2, tx, ty;
+    stage.style.transform='none';                     /* قياس الصندوق قبل التحويل */
+    var lw=stage.offsetWidth||1600, lh=stage.offsetHeight||900;
+    var r0=stage.getBoundingClientRect(), vr=vp.getBoundingClientRect();
+    var vw=vp.clientWidth, vh=vp.clientHeight;
+    var S=Math.min(vw/lw, vh/lh)*(lens||1), tx, ty;
     if(lens){
-      tx=800-lx*S; ty=450-ly*S;
-      var mnx=vp.clientWidth-l0-1600*S, mxx=-l0,
-          mny=vp.clientHeight-t0-900*S, mxy=-t0;
-      tx = (mnx>mxx) ? (mnx+mxx)/2 : Math.min(mxx, Math.max(mnx, tx));
-      ty = (mny>mxy) ? (mny+mxy)/2 : Math.min(mxy, Math.max(mny, ty));
-    } else { tx=800-800*S; ty=450-450*S; }
+      tx=vr.left+vw/2-r0.left-lx*lw*S;
+      ty=vr.top +vh/2-r0.top -ly*lh*S;
+      var mxx=vr.left-r0.left, mnx=vr.left+vw-r0.left-lw*S,
+          mxy=vr.top -r0.top,  mny=vr.top +vh-r0.top -lh*S;
+      tx=(mnx>mxx)?(mnx+mxx)/2:Math.min(mxx,Math.max(mnx,tx));
+      ty=(mny>mxy)?(mny+mxy)/2:Math.min(mxy,Math.max(mny,ty));
+    } else {
+      tx=vr.left+(vw-lw*S)/2-r0.left;
+      ty=vr.top +(vh-lh*S)/2-r0.top;
+    }
     stage.style.transformOrigin='0 0';
     stage.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+S.toFixed(5)+')';
   }
@@ -972,7 +981,8 @@ try{
     for(var i=0;i<n.length;i++){ n[i].style.fontSize=''; n[i].style.lineHeight=''; }
   }
   function fits(sl){
-    var cs=getComputedStyle(sl), r=sl.getBoundingClientRect(), sc=(r.width/1600)||1;
+    var cs=getComputedStyle(sl), r=sl.getBoundingClientRect(),
+        sc=(r.width/(sl.offsetWidth||1600))||1;
     var k=sl.children, top=Infinity, bot=-Infinity, lef=Infinity, rig=-Infinity;
     for(var i=0;i<k.length;i++){
       if(getComputedStyle(k[i]).display==='none') continue;
@@ -1020,8 +1030,8 @@ try{
     e.preventDefault(); e.stopPropagation();
     if(lens){ lensOff(); return; }
     var r=stage.getBoundingClientRect();
-    lx=(e.clientX-r.left)/r.width*1600;
-    ly=(e.clientY-r.top )/r.height*900;
+    lx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
+    ly=Math.min(1,Math.max(0,(e.clientY-r.top )/r.height));
     lens=2; syncLens(); apply();
   }, true);
   document.addEventListener('keydown', function(e){
