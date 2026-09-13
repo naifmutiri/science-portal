@@ -292,6 +292,24 @@ svg.ill{display:block;margin:0 auto}
 <!--SCIENCE-PLUS:STYLE:START-->
 <link rel="stylesheet" href="../../../../assets/enrichment/enrichment.css">
 <!--SCIENCE-PLUS:STYLE:END-->
+
+<style id="pv-css">
+/* عرض صفّي — وضع العرض البعيد وعدسة التكبير */
+#bar button.pv-on{background:#0A1B30}
+#bar button.pv-on:hover{background:#16304E}
+#bar #brand{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bar button.pv-b{flex:none}
+#viewport.pv-arm{cursor:zoom-in}
+#viewport.pv-zoom{cursor:zoom-out}
+#stage.pv-far .slide{padding:34px 46px 84px}
+#pv-tip{
+  position:fixed;z-index:60;left:50%;top:18px;transform:translateX(-50%);
+  background:rgba(10,27,48,.94);color:#EBF1F9;font-family:inherit;font-size:17px;
+  padding:9px 18px;border-radius:9px;border:1px solid rgba(216,180,94,.5);
+  pointer-events:none;opacity:0;transition:opacity .2s ease}
+#pv-tip.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#pv-tip{transition:none}}
+</style>
 </head>
 <body>
 <div id="viewport">
@@ -1110,5 +1128,141 @@ EG.tf({q:'s4d2Q', fb:'s4d2Fb', score:'s4d2Sc', btnT:'s4d2T', btnF:'s4d2F', reset
 <script type="application/json" data-science-plus>{"path":"04_الصف_الرابع_الابتدائي/01_المخلوقات_الحية/02_المملكة_الحيوانية/02_الحيوانات_الفقارية/علوم_رابع_ابتدائي_ف1_الدرس_الثاني_الحيوانات_الفقارية.html","title":"الحيوانات الفقارية","grade":4,"emoji":"🦴","photoTopic":"animals","observeQuestion":"إلى أي مجموعة ينتمي الأرنب ذو الشعر، وما التركيب الداخلي الذي يجعله فقاريًا؟","facts":["تمتلك الفقاريات هيكلًا داخليًا وعمودًا فقريًا يدعم الجسم ويحمي الحبل الشوكي.","الريش صفة مميزة للطيور، والشعر والغدد المنتجة للحليب من الصفات المميزة للثدييات.","لا يكفي مكان المعيشة وحده للتصنيف؛ فالحوت ثديي يتنفس الهواء رغم معيشته في الماء."],"diagram":{"title":"مجموعات فقارية مألوفة","relation":"comparison","nodes":[{"emoji":"🐟","label":"أسماك","detail":"تتنفس معظمها بالخياشيم"},{"emoji":"🐸","label":"برمائيات","detail":"جلد كثير منها رطب"},{"emoji":"🦎","label":"زواحف","detail":"جلدها مغطى بحراشف"},{"emoji":"🐦","label":"طيور","detail":"لها ريش"},{"emoji":"🐈","label":"ثدييات","detail":"ترضع صغارها"}],"caption":"مجموعات عامة للمقارنة؛ يفصل الدرس الأسماك إلى طوائف متعددة، وتوجد اختلافات داخل كل مجموعة."},"lab":{"title":"قائمة صفات ثابتة","question":"كم صفة نجد من هذه الثلاث: عمود فقري، رئتان، شعر؟","controlLabel":"العينة التي نفحصها","options":["سمكة ذهبية","عصفور","قطة"],"states":[{"label":"صفة واحدة من القائمة","emoji":"✅","amount":1,"explanation":"للسمكة الذهبية عمود فقري؛ وهي تتنفس بالخياشيم ولا تمتلك شعرًا، فلا تنطبق الصفتان الأخريان.","observation":"تنطبق صفة العمود الفقري."},{"label":"صفتان من القائمة","emoji":"✅","amount":2,"explanation":"للعصفور عمود فقري ورئتان؛ يغطي الريش جسمه، ولا يعد الريش شعرًا.","observation":"تنطبق صفتا العمود الفقري والرئتين."},{"label":"ثلاث صفات من القائمة","emoji":"✅","amount":3,"explanation":"للقطة عمود فقري ورئتان وشعر؛ توافق الصفات الثلاث المختارة لهذه المقارنة.","observation":"تنطبق الصفات الثلاث."}],"quantityLabel":"عدد الصفات المنطبقة من قائمة محددة من ثلاث صفات","modelNote":"العدد يصف القائمة المختارة فقط؛ لا يقيس قيمة الحيوان أو نجاحه أو تعقيد جسمه.","tryPrompt":"هل سيتغير ترتيب الأعداد لو اخترنا صفات تخص الأسماك بدل الشعر والرئتين؟"},"sources":[{"title":"OpenStax: الفقاريات وخصائص مجموعاتها","url":"https://openstax.org/books/concepts-biology/pages/15-6-vertebrates"}]}</script>
 <script src="../../../../assets/enrichment/enrichment.js" defer></script>
 <!--SCIENCE-PLUS:SCRIPT:END-->
+
+<script id="pv-js">
+(function(){"use strict";
+try{
+  var stage=document.getElementById('stage'), vp=document.getElementById('viewport'),
+      bar=document.getElementById('bar');
+  if(!stage||!vp||!bar) return;
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  if(!slides.length) return;
+
+  /* ============ التحكم في التحويل (يشمل حالة العدسة) ============ */
+  var lens=0, lx=800, ly=450, armed=false;
+  function base(){ return Math.min(vp.clientWidth/1600, vp.clientHeight/900); }
+  function apply(){
+    var S=base()*(lens||1),
+        l0=(vp.clientWidth-1600)/2, t0=(vp.clientHeight-900)/2, tx, ty;
+    if(lens){
+      tx=800-lx*S; ty=450-ly*S;
+      var mnx=vp.clientWidth-l0-1600*S, mxx=-l0,
+          mny=vp.clientHeight-t0-900*S, mxy=-t0;
+      tx = (mnx>mxx) ? (mnx+mxx)/2 : Math.min(mxx, Math.max(mnx, tx));
+      ty = (mny>mxy) ? (mny+mxy)/2 : Math.min(mxy, Math.max(mny, ty));
+    } else { tx=800-800*S; ty=450-450*S; }
+    stage.style.transformOrigin='0 0';
+    stage.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+S.toFixed(5)+')';
+  }
+  window.addEventListener('resize', apply);
+  window.addEventListener('orientationchange', function(){ setTimeout(apply,140); });
+
+  /* ============ رسالة قصيرة ============ */
+  var tip=document.createElement('div'); tip.id='pv-tip'; document.body.appendChild(tip);
+  var tipT=null;
+  function say(t){ tip.textContent=t; tip.classList.add('on');
+    clearTimeout(tipT); tipT=setTimeout(function(){tip.classList.remove('on');},2200); }
+
+  /* ============ وضع العرض البعيد ============ */
+  var TARGET=1.30, CEIL=38, far=false;
+  function baseSize(el){
+    if(el.getAttribute('data-pvb')===null){
+      el.setAttribute('data-pvb', String(parseFloat(getComputedStyle(el).fontSize)||0));
+    }
+    return parseFloat(el.getAttribute('data-pvb'));
+  }
+  function setF(sl,f){
+    var n=sl.querySelectorAll('*');
+    for(var i=0;i<n.length;i++){
+      var b=baseSize(n[i]);
+      n[i].style.fontSize = (b && b<CEIL) ? (b*f).toFixed(2)+'px' : '';
+    }
+  }
+  function clearF(sl){
+    var n=sl.querySelectorAll('*');
+    for(var i=0;i<n.length;i++) n[i].style.fontSize='';
+  }
+  function fits(sl){
+    return sl.scrollHeight<=sl.clientHeight+1 && sl.scrollWidth<=sl.clientWidth+1;
+  }
+  function tune(sl){
+    if(!far){ clearF(sl); return; }
+    if(!sl.classList.contains('on')) return;          /* لا يُقاس إلا الظاهر */
+    var f=TARGET;
+    while(f>1.001){ setF(sl,f); if(fits(sl)) break; f-=0.05; }
+    if(f<=1.001){ clearF(sl); f=1; }
+    sl.setAttribute('data-pvf', f.toFixed(2));
+  }
+  function setFar(on){
+    far=!!on;
+    stage.classList.toggle('pv-far', far);
+    bFar.classList.toggle('pv-on', far);
+    bFar.setAttribute('aria-pressed', far?'true':'false');
+    for(var i=0;i<slides.length;i++){ slides[i].removeAttribute('data-pvf'); if(!far) clearF(slides[i]); }
+    var act=document.querySelector('.slide.on'); if(act) tune(act);
+    try{ localStorage.setItem('pvFar', far?'1':'0'); }catch(e){}
+    if(act && far) say('عرض بعيد: تكبير النص ×'+(act.getAttribute('data-pvf')||'1'));
+    else if(!far) say('عرض بعيد: متوقف');
+  }
+
+  /* ============ عدسة التكبير ============ */
+  function syncLens(){
+    bLens.classList.toggle('pv-on', armed||!!lens);
+    bLens.setAttribute('aria-pressed',(armed||!!lens)?'true':'false');
+    vp.classList.toggle('pv-arm', armed && !lens);
+    vp.classList.toggle('pv-zoom', !!lens);
+  }
+  function lensOff(){ lens=0; armed=false; syncLens(); apply(); }
+  vp.addEventListener('click', function(e){
+    if(!armed && !lens) return;
+    e.preventDefault(); e.stopPropagation();
+    if(lens){ lensOff(); return; }
+    var r=stage.getBoundingClientRect();
+    lx=(e.clientX-r.left)/r.width*1600;
+    ly=(e.clientY-r.top )/r.height*900;
+    lens=2; syncLens(); apply();
+  }, true);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape' && (armed||lens)){ lensOff(); say('انتهت العدسة'); }
+  });
+
+  /* ============ الأزرار ============ */
+  function mk(id,label){
+    var b=document.createElement('button');
+    b.type='button'; b.id=id; b.className='pv-b'; b.textContent=label;
+    b.setAttribute('aria-pressed','false');
+    return b;
+  }
+  var bFar=mk('bFar','عرض بعيد'), bLens=mk('bLens','عدسة');
+  var brand=document.getElementById('brand');
+  if(brand){ bar.insertBefore(bFar,brand); bar.insertBefore(bLens,brand); }
+  else { bar.appendChild(bFar); bar.appendChild(bLens); }
+  bFar.addEventListener('click', function(){ setFar(!far); });
+  bLens.addEventListener('click', function(){
+    if(armed||lens){ lensOff(); say('انتهت العدسة'); }
+    else { armed=true; syncLens(); say('اضغط على الموضع المراد تكبيره'); }
+  });
+
+  /* ============ متابعة تغيّر الشريحة ============ */
+  var mo=new MutationObserver(function(m){
+    for(var i=0;i<m.length;i++){
+      var t=m[i].target;
+      if(t.classList && t.classList.contains('slide') && t.classList.contains('on')){
+        if(lens||armed) lensOff();
+        if(far && t.getAttribute('data-pvf')===null) tune(t);
+      }
+    }
+  });
+  for(var i=0;i<slides.length;i++) mo.observe(slides[i],{attributes:true,attributeFilter:['class']});
+
+  /* ============ البدء ============ */
+  apply();
+  var saved='0'; try{ saved=localStorage.getItem('pvFar')||'0'; }catch(e){}
+  if(saved==='1'){ far=true; stage.classList.add('pv-far'); bFar.classList.add('pv-on');
+    bFar.setAttribute('aria-pressed','true');
+    var a=document.querySelector('.slide.on'); if(a) tune(a); }
+}catch(err){ if(window.console) console.warn('present:', err); }
+})();
+</script>
 </body>
 </html>
